@@ -249,6 +249,180 @@ engineering:
       - "《Kubernetes权威指南》"
       - "《SRE: Google运维解密》"
 
+  embedded:
+    display_name: "嵌入式开发"
+    description: "嵌入式系统、物联网、实时操作系统"
+    keywords:
+      - 嵌入式Linux
+      - RTOS
+      - 物联网
+      - 驱动开发
+      - 低功耗设计
+      - 硬件接口
+      - ARM/RISC-V
+      - 固件开发
+    common_stacks:
+      - C/C++
+      - FreeRTOS/Zephyr
+      - Linux Kernel
+      - ARM/STM32
+      - MQTT/CoAP
+      - Yocto/Buildroot
+    typical_roles:
+      - 嵌入式工程师
+      - 物联网工程师
+      - 驱动开发工程师
+      - 固件工程师
+    common_questions:
+      - "如何优化嵌入式系统的功耗？"
+      - "实时操作系统的调度策略有哪些？"
+      - "如何调试硬件相关的bug？"
+      - "中断处理的最佳实践是什么？"
+      - "如何设计一个稳定的物联网通信协议？"
+    recommended_reading:
+      - "《嵌入式系统设计》"
+      - "《深入理解Linux内核》"
+
+  game_dev:
+    display_name: "游戏开发"
+    description: "游戏引擎、图形渲染、游戏逻辑"
+    keywords:
+      - 游戏引擎
+      - 图形渲染
+      - 物理引擎
+      - 网络同步
+      - 性能优化
+      - 游戏AI
+      - ECS架构
+      - 热更新
+    common_stacks:
+      - Unity/Unreal Engine
+      - C#/C++
+      - Lua/Python
+      - DirectX/Vulkan
+      - Box2D/PhysX
+      - Photon/Mirror
+    typical_roles:
+      - 游戏开发工程师
+      - 游戏引擎工程师
+      - 图形渲染工程师
+      - 游戏客户端工程师
+    common_questions:
+      - "如何优化游戏的渲染性能？"
+      - "网络游戏的同步策略有哪些？"
+      - "ECS架构的优势是什么？"
+      - "如何实现高效的碰撞检测？"
+      - "游戏热更新的原理是什么？"
+    recommended_reading:
+      - "《游戏引擎架构》"
+      - "《实时渲染》"
+      - "《游戏编程模式》"
+
+  blockchain:
+    display_name: "区块链/Web3"
+    description: "智能合约、去中心化应用、加密货币"
+    keywords:
+      - 智能合约
+      - DeFi
+      - NFT
+      - 共识算法
+      - 加密货币
+      - 去中心化
+      - Layer2
+      - 跨链
+    common_stacks:
+      - Solidity/Rust
+      - Ethereum/Polygon
+      - Web3.js/Ethers.js
+      - Hardhat/Truffle
+      - IPFS
+      - The Graph
+    typical_roles:
+      - 区块链工程师
+      - 智能合约工程师
+      - Web3开发工程师
+      - DeFi工程师
+    common_questions:
+      - "如何保证智能合约的安全性？"
+      - "共识算法的权衡是什么？（PoW vs PoS）"
+      - "Layer2如何提升扩展性？"
+      - "如何审计智能合约？"
+      - "跨链桥的安全风险有哪些？"
+    recommended_reading:
+      - "《精通以太坊》"
+      - "《区块链技术指南》"
+      - "Solidity官方文档"
+
+  security:
+    display_name: "网络安全"
+    description: "安全攻防、渗透测试、安全架构"
+    keywords:
+      - 渗透测试
+      - 漏洞挖掘
+      - 应用安全
+      - 网络安全
+      - 安全架构
+      - 加密算法
+      - 身份认证
+      - 威胁建模
+    common_stacks:
+      - Kali Linux
+      - Metasploit/Burp Suite
+      - Wireshark
+      - SIEM工具
+      - WAF
+      - OAuth2/JWT
+    typical_roles:
+      - 安全工程师
+      - 渗透测试工程师
+      - 安全架构师
+      - 应用安全工程师
+    common_questions:
+      - "如何进行Web应用安全测试？"
+      - "常见的OWASP Top 10漏洞有哪些？"
+      - "如何设计一个安全的认证系统？"
+      - "SQL注入的原理和防护方法？"
+      - "零信任架构的核心概念是什么？"
+    recommended_reading:
+      - "《Web应用安全权威指南》"
+      - "《黑客攻防技术宝典》"
+      - "OWASP官方指南"
+
+  test_qa:
+    display_name: "测试/质量保障"
+    description: "自动化测试、性能测试、测试架构"
+    keywords:
+      - 自动化测试
+      - 单元测试
+      - 集成测试
+      - 性能测试
+      - 测试框架
+      - CI/CD
+      - 测试覆盖率
+      - Mock/Stub
+    common_stacks:
+      - Selenium/Playwright
+      - JUnit/PyTest
+      - JMeter/K6
+      - Postman/REST Assured
+      - Jenkins/GitLab CI
+      - Allure
+    typical_roles:
+      - 测试开发工程师
+      - 自动化测试工程师
+      - 性能测试工程师
+      - 质量保障工程师
+    common_questions:
+      - "如何设计一个自动化测试框架？"
+      - "单元测试的最佳实践是什么？"
+      - "如何进行有效的性能测试？"
+      - "测试覆盖率多少合适？"
+      - "如何在CI/CD中集成测试？"
+    recommended_reading:
+      - "《Google软件测试之道》"
+      - "《持续交付》"
+      - "《测试驱动开发》"
+
 research:
   cv_segmentation:
     display_name: "计算机视觉-图像分割"
@@ -468,3 +642,192 @@ research:
     recommended_reading:
       - "《Reinforcement Learning: An Introduction》"
       - "Spinning Up in Deep RL"
+
+  robotics:
+    display_name: "机器人学"
+    description: "机器人感知、运动规划、自主导航"
+    keywords:
+      - SLAM
+      - 运动规划
+      - 机器人控制
+      - 传感器融合
+      - 视觉导航
+      - 抓取规划
+      - 人机交互
+      - 自主导航
+    canonical_papers:
+      - "ORB-SLAM (TRO 2017)"
+      - "ROS: Robot Operating System (ICRA 2009)"
+      - "GraspNet (CVPR 2020)"
+      - "NeRF-Navigation (CoRL 2022)"
+      - "RT-1: Robotics Transformer (arXiv 2022)"
+    conferences:
+      - ICRA
+      - IROS
+      - CoRL
+      - RSS
+      - CVPR
+    typical_venues:
+      - TRO
+      - RAL
+      - IJRR
+    common_questions:
+      - "SLAM的核心挑战是什么？"
+      - "如何进行运动规划避障？"
+      - "传感器融合的方法有哪些？"
+      - "端到端学习在机器人中的应用？"
+      - "如何评估机器人抓取算法？"
+    recommended_reading:
+      - "《Probabilistic Robotics》"
+      - "《机器人学导论》"
+      - "ROS官方教程"
+
+  graph_learning:
+    display_name: "图学习"
+    description: "图神经网络、知识图谱、图表示学习"
+    keywords:
+      - 图神经网络
+      - 知识图谱
+      - 图表示学习
+      - 图分类
+      - 链接预测
+      - 消息传递
+      - 图生成
+      - 异构图
+    canonical_papers:
+      - "GCN (ICLR 2017)"
+      - "GAT (ICLR 2018)"
+      - "GraphSAGE (NeurIPS 2017)"
+      - "Graph Transformer (NeurIPS 2020)"
+      - "DiffPool (NeurIPS 2018)"
+    conferences:
+      - NeurIPS
+      - ICML
+      - ICLR
+      - KDD
+      - WWW
+    typical_venues:
+      - TKDE
+      - JMLR
+    common_questions:
+      - "GNN的归纳偏置是什么？"
+      - "过平滑问题如何解决？"
+      - "图采样的策略有哪些？"
+      - "如何处理大规模图数据？"
+      - "异构图的建模方法？"
+    recommended_reading:
+      - "《Graph Representation Learning》"
+      - "PyTorch Geometric文档"
+      - "Stanford CS224W课程"
+
+  time_series:
+    display_name: "时间序列分析"
+    description: "时序预测、异常检测、因果推断"
+    keywords:
+      - 时序预测
+      - 异常检测
+      - 因果推断
+      - 时序分类
+      - 趋势分析
+      - Transformer
+      - 长序列建模
+      - 多变量时序
+    canonical_papers:
+      - "Informer (AAAI 2021)"
+      - "Autoformer (NeurIPS 2021)"
+      - "TimesNet (ICLR 2023)"
+      - "N-BEATS (ICLR 2020)"
+      - "DeepAR (ISF 2020)"
+    conferences:
+      - NeurIPS
+      - ICML
+      - ICLR
+      - KDD
+      - AAAI
+    typical_venues:
+      - JMLR
+      - TSA
+    common_questions:
+      - "如何处理长序列依赖？"
+      - "时序异常检测的评估指标？"
+      - "因果推断和相关性的区别？"
+      - "如何处理多变量时序？"
+      - "Transformer在时序中的优势？"
+    recommended_reading:
+      - "《Time Series Analysis and Forecasting》"
+      - "《Forecasting: Principles and Practice》"
+
+  federated_learning:
+    display_name: "联邦学习/隐私计算"
+    description: "联邦学习、差分隐私、安全多方计算"
+    keywords:
+      - 联邦学习
+      - 差分隐私
+      - 安全多方计算
+      - 同态加密
+      - 隐私保护
+      - 非IID数据
+      - 模型聚合
+      - 通信效率
+    canonical_papers:
+      - "Federated Learning (AISTATS 2017)"
+      - "FedAvg (ICML 2017)"
+      - "Differential Privacy (FOCS 2006)"
+      - "PATE (ICLR 2017)"
+      - "FedProx (MLSys 2020)"
+    conferences:
+      - NeurIPS
+      - ICML
+      - ICLR
+      - CCS
+      - USENIX Security
+    typical_venues:
+      - TIFS
+      - TDSC
+    common_questions:
+      - "联邦学习的核心挑战是什么？"
+      - "如何处理非IID数据？"
+      - "差分隐私的隐私预算如何设置？"
+      - "如何平衡隐私和效用？"
+      - "联邦学习的通信优化方法？"
+    recommended_reading:
+      - "《Federated Learning》"
+      - "《The Algorithmic Foundations of Differential Privacy》"
+
+  ai_safety:
+    display_name: "AI安全与对齐"
+    description: "AI安全、模型对齐、可解释性"
+    keywords:
+      - AI对齐
+      - RLHF
+      - 对抗样本
+      - 模型可解释性
+      - 鲁棒性
+      - 后门攻击
+      - 公平性
+      - AI伦理
+    canonical_papers:
+      - "InstructGPT (NeurIPS 2022)"
+      - "Constitutional AI (arXiv 2022)"
+      - "LIME (KDD 2016)"
+      - "SHAP (NeurIPS 2017)"
+      - "Certified Robustness (ICML 2018)"
+    conferences:
+      - NeurIPS
+      - ICML
+      - ICLR
+      - FAccT
+      - AIES
+    typical_venues:
+      - JMLR
+      - AI Magazine
+    common_questions:
+      - "RLHF的核心思想是什么？"
+      - "如何评估AI系统的对齐性？"
+      - "对抗样本的防御方法？"
+      - "模型可解释性的评估指标？"
+      - "AI公平性的定义和权衡？"
+    recommended_reading:
+      - "《Human Compatible》"
+      - "《Interpretable Machine Learning》"
+      - "Alignment Research Center论文集"

@@ -7,6 +7,7 @@ from typing import Dict, Any, Optional
 from app.models.user_config import UserConfig
 from app.config.settings import settings
 from app.sources.external_info_service import external_info_service
+from app.config.config_manager import config_manager
 
 logger = logging.getLogger(__name__)
 
@@ -15,14 +16,9 @@ class PromptBuilder:
     """构建虚拟委员会的System Prompt"""
 
     def __init__(self):
-        """初始化，加载配置文件"""
-        # 加载domains.yaml
-        with open(settings.DOMAINS_CONFIG, 'r', encoding='utf-8') as f:
-            self.domains = yaml.safe_load(f)
-
-        # 加载modes.yaml
-        with open(settings.MODES_CONFIG, 'r', encoding='utf-8') as f:
-            self.modes = yaml.safe_load(f)
+        """初始化，使用配置管理器（缓存）"""
+        # Use singleton config manager instead of loading files
+        self.config_manager = config_manager
 
     def build(self, user_config: UserConfig) -> str:
         """
@@ -34,8 +30,8 @@ class PromptBuilder:
         Returns:
             完整的System Prompt字符串
         """
-        # 获取模式配置
-        mode_config = self.modes.get(user_config.mode, {})
+        # 获取模式配置（使用缓存的配置管理器）
+        mode_config = self.config_manager.modes.get(user_config.mode, {})
 
         # 获取领域知识（如果指定了domain）
         domain_knowledge = self._get_domain_knowledge(user_config.domain)
@@ -179,10 +175,10 @@ class PromptBuilder:
         if not domain:
             return "未指定领域，请基于简历内容和目标岗位进行推断。"
 
-        # 尝试从engineering或research中查找
+        # 尝试从engineering或research中查找（使用缓存的配置管理器）
         for category in ['engineering', 'research']:
-            if category in self.domains and domain in self.domains[category]:
-                domain_data = self.domains[category][domain]
+            if category in self.config_manager.domains and domain in self.config_manager.domains[category]:
+                domain_data = self.config_manager.domains[category][domain]
 
                 # 构建领域知识字符串
                 knowledge_parts = []

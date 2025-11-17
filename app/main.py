@@ -13,6 +13,8 @@ from fastapi.responses import HTMLResponse
 
 from app.api.report import router as report_router
 from app.config.settings import settings
+from app.config.validator import ConfigValidator
+from app.exceptions import ConfigurationError
 
 # 配置日志
 logging.basicConfig(
@@ -45,6 +47,17 @@ else:
 
 # 注册路由
 app.include_router(report_router)
+
+
+@app.on_event("startup")
+async def validate_configuration():
+    """Validate all configuration files at startup"""
+    try:
+        ConfigValidator.validate_all()
+        logger.info("✅ Application configuration validated successfully")
+    except ConfigurationError as e:
+        logger.error(f"❌ Configuration validation failed: {e}")
+        raise  # Stop application startup
 
 
 @app.get("/", response_class=HTMLResponse)

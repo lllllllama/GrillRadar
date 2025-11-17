@@ -1,0 +1,41 @@
+姓名：王明
+联系方式：wangming@example.com | 138-1234-5678
+目标岗位：后端开发工程师（Go/Python方向）
+
+教育背景：
+- 华东师范大学，软件工程本科，2019-2023，GPA 3.5/4.0
+- 核心课程：数据结构、操作系统、计算机网络、数据库系统
+
+工作经历：
+
+小米科技，后端开发实习生（2022.6-2022.12）
+- 参与小米账号系统的微服务重构，使用Go语言编写用户认证服务
+- 实现基于Redis的分布式Session管理，支持日均1000万+的登录请求
+- 优化数据库查询性能，通过添加索引和查询重写，将P99延迟从500ms降至80ms
+- 参与code review和单元测试编写，测试覆盖率达到85%
+
+项目经验：
+
+1. 在线电商API网关（个人项目，GitHub 600+ stars）
+   - 使用Go + Gin框架开发高性能API网关，支持限流、熔断、负载均衡
+   - 集成Prometheus监控和Grafana可视化，实时监控QPS、错误率、延迟
+   - 使用Consul做服务发现，支持动态服务注册与健康检查
+   - 技术栈：Go, Gin, Redis, Consul, Prometheus, Docker
+
+2. 分布式任务调度系统（校内项目）
+   - 使用Python + Celery构建分布式任务队列系统
+   - 实现任务优先级调度、失败重试、定时任务等功能
+   - 使用RabbitMQ作为消息队列，MySQL存储任务元数据
+   - 技术栈：Python, Celery, RabbitMQ, MySQL, Flask
+
+技术栈：
+- 编程语言：Go（熟练）、Python（熟练）、Java（了解）
+- 后端框架：Gin, FastAPI, Flask, Spring Boot
+- 数据库：MySQL, PostgreSQL, Redis, MongoDB
+- 中间件：RabbitMQ, Kafka, Consul
+- 工具链：Git, Docker, Kubernetes（基础）, Linux
+
+求职期望：
+- 期望薪资：15k-20k
+- 期望城市：北京、上海、杭州
+- 期望行业：互联网大厂或创业公司

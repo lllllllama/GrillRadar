@@ -36,8 +36,50 @@ GrillRadar通过虚拟面试/导师委员会生成全面的"深度拷问+辅导�
 
 ---
 
+## 🧪 快速演示
+
+**3步体验完整报告生成流程：**
+
+我们提供了两个开箱即用的演示案例，无需准备简历即可体验完整功能：
+
+### 演示1：LLM应用工程师岗位
+
+```bash
+# 1. 配置API密钥（首次使用）
+cp .env.example .env
+# 编辑 .env 文件，填入 ANTHROPIC_API_KEY 或 OPENAI_API_KEY
+
+# 2. 安装依赖
+pip install -r requirements.txt
+
+# 3. 运行演示
+python examples/run_demo_llm.py
+```
+
+**输出文件：** `examples/demo_report_llm.md`
+**演示简历：** 2年经验的字节跳动LLM工程师，包含RAG系统、文档处理、提示词工程经验
+
+### 演示2：计算机视觉PhD申请
+
+```bash
+# 运行演示
+python examples/run_demo_cv.py
+```
+
+**输出文件：** `examples/demo_report_cv.md`
+**演示简历：** 清华大学本科生，医疗影像分割方向，MICCAI竞赛第3名，申请Stanford/MIT PhD
+
+### 演示特点
+
+✅ **真实案例** - 基于实际求职/申请场景构建的虚拟简历
+✅ **完整流程** - 自动加载简历→调用AI→生成Markdown报告
+✅ **即开即用** - 一行命令体验多智能体协作生成高质量问题
+
+---
+
 ## 📋 目录
 
+- [快速演示](#-快速演示)
 - [快速开始](#-快速开始)
 - [简历格式支持](#-简历格式支持)
 - [配置方法](#-配置方法)
@@ -444,6 +486,30 @@ pytest tests/test_domain_helper.py -v
 # 查看测试覆盖率
 pytest --cov=app tests/
 ```
+
+### 质量控制
+
+评估生成问题的质量：
+
+```bash
+# 运行质量评估（所有测试用例）
+python scripts/evaluate_question_quality.py
+
+# 运行特定场景
+python scripts/evaluate_question_quality.py --case job_backend
+
+# 查看详细建议
+python scripts/evaluate_question_quality.py --verbose
+```
+
+质量检查维度：
+- ✓ 问题清晰度和长度
+- ✓ 提问理由的上下文相关性
+- ✓ 基准答案的结构和深度
+- ✓ 支持资料的具体性
+- ✓ 练习模板的有效性
+
+详细文档：[docs/QUALITY_CONTROL.md](./docs/QUALITY_CONTROL.md)
 
 ### 代码风格
 

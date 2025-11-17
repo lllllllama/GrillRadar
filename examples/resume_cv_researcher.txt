@@ -1,0 +1,115 @@
+李晓婷 | 计算机视觉研究生申请
+联系方式: lixiaoting@email.edu.cn | GitHub: github.com/lixiaoting-cv | Scholar: scholar.google.com/lixiaoting
+
+教育背景
+--------
+清华大学 | 计算机科学与技术 | 本科 | 2020.09 - 2024.06
+- GPA: 3.8/4.0 (专业排名: 8/120)
+- 核心课程: 计算机视觉 (95), 深度学习 (98), 模式识别 (92), 数字图像处理 (96)
+- 毕业设计: 基于Transformer的医疗影像分割系统（优秀毕业设计，导师: 张教授）
+
+研究经历
+--------
+清华大学媒体与网络技术实验室 | 本科科研 | 2022.03 - 2024.06
+
+1. 医疗影像分割项目 (2023.01 - 2024.06)
+   研究方向: 基于Transformer的多器官分割
+   - 提出一种新的注意力机制，融合局部和全局特征
+   - 在MICCAI 2023 FLARE数据集上取得竞赛第3名（123支队伍）
+   - 方法相比基线模型(nnU-Net)，Dice系数提升4.2%
+   - 实现代码已开源，GitHub 200+ Stars
+   - 论文状态: 已投稿MICCAI 2024（under review）
+
+2. 少样本语义分割研究 (2022.06 - 2022.12)
+   - 复现经典论文PANet, HSNet, 深入理解meta-learning范式
+   - 实验不同的特征提取器（ResNet, ViT）对性能的影响
+   - 在Pascal-5i数据集上达到与论文一致的性能
+   - 产出课程报告和实验博客，被导师评为优秀
+
+3. 图像分割数据标注平台开发 (2022.03 - 2022.05)
+   - 使用SAM (Segment Anything Model)辅助医疗影像标注
+   - 开发交互式标注工具，标注效率提升5倍
+   - 技术栈: Python, PyQt5, SAM, OpenCV
+   - 实验室内部使用，标注数据集3000+张
+
+科研成果
+--------
+论文发表:
+- [Under Review] X. Li, et al. "Hybrid Transformer for Multi-Organ Segmentation", MICCAI 2024
+- [会议论文] 李晓婷, 张教授. "基于注意力机制的医疗影像分割研究", 中国图象图形学学术会议 (CSIG) 2023
+
+竞赛获奖:
+- MICCAI 2023 FLARE Challenge - 第3名/123队 (2023.10)
+- 清华大学"挑战杯"学术竞赛 - 二等奖 (2023.05)
+
+开源项目:
+- MedSegFormer (GitHub 200+ stars): 医疗影像分割工具箱
+- 实现多个SOTA分割模型 (U-Net, nnU-Net, TransUNet, Swin-UNet)
+- 提供预训练模型和训练脚本
+
+技术能力
+--------
+编程语言: Python (精通), C++ (熟练), MATLAB (了解)
+深度学习:
+  - 框架: PyTorch (精通), TensorFlow (熟练)
+  - 视觉模型: U-Net, nnU-Net, Mask R-CNN, SAM, Swin Transformer
+  - 训练技巧: 数据增强, 损失函数设计, 模型ensemble, TTA
+工具库: OpenCV, scikit-image, SimpleITK, MONAI
+开发工具: Git, Linux, Docker, Weights & Biases, Jupyter
+数学基础: 线性代数, 概率论, 最优化理论
+
+论文阅读
+--------
+精读论文 (30+篇):
+- 经典分割: FCN, U-Net, DeepLab系列, Mask R-CNN
+- Transformer: ViT, Swin Transformer, SegFormer, Mask2Former
+- 医疗分割: nnU-Net, TransUNet, MedSAM, UNETR
+- 少样本学习: Prototypical Networks, MAML, PANet
+
+跟进顶会:
+- CVPR, ICCV, ECCV (计算机视觉三大顶会)
+- MICCAI (医疗影像顶会)
+- NeurIPS, ICLR (机器学习)
+
+实习经历
+--------
+商汤科技 | 医疗AI研发实习生 | 2023.07 - 2023.10 (3个月)
+- 参与肺结节检测算法优化，提升召回率3%
+- 学习工业界模型部署流程（TensorRT优化、C++推理）
+- 了解医疗AI产品从研发到临床应用的完整链路
+
+课程项目
+--------
+1. 实时语义分割系统 (计算机视觉课程)
+   - 实现轻量级分割网络，在Jetson Nano上达到15 FPS
+   - 应用场景: 自动驾驶、机器人导航
+   - 成绩: 课程最高分 (95/100)
+
+2. 3D点云分割 (深度学习课程)
+   - 复现PointNet++，在ScanNet数据集上训练
+   - 探索PointTransformer架构
+   - 产出详细实验报告和代码
+
+英语能力
+--------
+TOEFL: 105 (Reading: 29, Listening: 27, Speaking: 24, Writing: 25)
+GRE: 325 (Verbal: 155, Quantitative: 170, AW: 4.0)
+能够流利阅读英文论文，撰写学术论文，进行学术交流
+
+研究兴趣
+--------
+- 医疗影像分析 (CT/MRI分割、病灶检测)
+- 高效视觉Transformer设计
+- 少样本学习和领域自适应
+- 多模态学习 (医疗报告生成)
+
+申请目标
+--------
+申请项目: 美国/英国/香港 计算机视觉/医疗AI方向 PhD
+目标学校: Stanford, MIT, CMU, UCB, UCSD, JHU, 港大, 港中文
+研究方向: Medical Image Analysis, Computer Vision, Deep Learning
+期望导师: 在医疗影像、视觉Transformer、多模态学习方向有深入研究的教授
+
+个人陈述
+--------
+我对计算机视觉尤其是医疗影像分析充满热情。本科期间通过科研项目和竞赛，我深入学习了图像分割的理论和实践，并在MICCAI竞赛中取得了不错的成绩。我希望在PhD阶段继续深耕医疗AI，开发更加准确、高效、可解释的医疗影像分析算法，推动AI技术在临床中的应用。我有较强的编程能力和科研素养，能够独立完成从idea到实验再到论文撰写的完整科研流程。期待能够加入贵实验室，在导师的指导下取得更多研究成果。

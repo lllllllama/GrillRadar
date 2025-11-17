@@ -1,0 +1,227 @@
+{
+  "metadata": {
+    "description": "Job Description Database for TrendRadar-style information acquisition",
+    "last_updated": "2025-11-17",
+    "total_entries": 15,
+    "domains_covered": ["backend", "frontend", "ml", "nlp", "cv_segmentation"]
+  },
+  "job_descriptions": [
+    {
+      "id": "jd_001",
+      "company": "字节跳动",
+      "position": "后端开发工程师（Go方向）",
+      "location": "北京",
+      "salary_range": "30k-55k",
+      "requirements": [
+        "本科及以上学历，计算机相关专业",
+        "3年以上后端开发经验，精通Go语言",
+        "熟悉MySQL、Redis、Kafka等中间件",
+        "有分布式系统设计和开发经验",
+        "有高并发、大流量系统开发经验",
+        "熟悉微服务架构，有Kubernetes使用经验优先"
+      ],
+      "responsibilities": [
+        "负责抖音推荐系统后端服务开发",
+        "参与核心业务系统架构设计和优化",
+        "保证系统的稳定性、可用性和性能",
+        "参与技术方案评审和代码review"
+      ],
+      "keywords": [
+        "Go", "MySQL", "Redis", "Kafka", "分布式系统",
+        "高并发", "微服务", "Kubernetes", "Docker", "gRPC",
+        "系统设计", "性能优化", "监控告警"
+      ],
+      "source_url": "https://job.bytedance.com/campus/position/7123456789",
+      "crawled_at": "2025-11-15T10:30:00Z"
+    },
+    {
+      "id": "jd_002",
+      "company": "阿里巴巴",
+      "position": "Java后端工程师",
+      "location": "杭州",
+      "salary_range": "25k-50k",
+      "requirements": [
+        "本科及以上学历，3年以上Java开发经验",
+        "精通Spring Boot、MyBatis等框架",
+        "熟悉分布式、缓存、消息队列等技术",
+        "有电商或支付系统开发经验优先",
+        "良好的系统设计能力和性能优化经验"
+      ],
+      "responsibilities": [
+        "负责淘宝核心交易系统开发",
+        "参与系统架构升级和性能优化",
+        "保障系统稳定性，快速响应线上问题",
+        "参与技术预研和创新项目"
+      ],
+      "keywords": [
+        "Java", "Spring Boot", "MyBatis", "MySQL",
+        "Redis", "RabbitMQ", "分布式事务", "微服务",
+        "电商系统", "高可用", "性能优化"
+      ],
+      "source_url": "https://talent.alibaba.com/off-campus",
+      "crawled_at": "2025-11-14T14:20:00Z"
+    },
+    {
+      "id": "jd_003",
+      "company": "腾讯",
+      "position": "C++后端研发工程师",
+      "location": "深圳",
+      "salary_range": "28k-52k",
+      "requirements": [
+        "本科及以上学历，3年以上C++开发经验",
+        "精通C++11/14/17，熟悉STL",
+        "熟悉Linux开发环境和网络编程",
+        "有大型互联网系统开发经验",
+        "良好的算法和数据结构基础"
+      ],
+      "responsibilities": [
+        "负责微信后台核心系统开发",
+        "参与高性能服务设计和实现",
+        "负责系统性能优化和故障排查",
+        "参与技术攻坚和架构演进"
+      ],
+      "keywords": [
+        "C++", "Linux", "高性能", "分布式", "MySQL",
+        "网络编程", "协议设计", "多线程", "性能优化",
+        "系统设计"
+      ],
+      "source_url": "https://careers.tencent.com/jobdesc.html?postId=1234567890",
+      "crawled_at": "2025-11-13T09:15:00Z"
+    },
+    {
+      "id": "jd_004",
+      "company": "美团",
+      "position": "前端开发工程师（React）",
+      "location": "北京",
+      "salary_range": "22k-42k",
+      "requirements": [
+        "本科及以上学历，2年以上前端开发经验",
+        "精通React、TypeScript，熟悉现代前端工程化",
+        "熟悉Webpack、Vite等构建工具",
+        "有移动端H5开发经验优先",
+        "良好的代码规范和团队协作能力"
+      ],
+      "responsibilities": [
+        "负责美团外卖商家端前端开发",
+        "参与组件库和工具链建设",
+        "性能优化和用户体验提升",
+        "参与技术方案设计和评审"
+      ],
+      "keywords": [
+        "React", "TypeScript", "JavaScript", "Webpack",
+        "Vite", "CSS", "移动端", "性能优化",
+        "前端工程化", "组件化"
+      ],
+      "source_url": "https://zhaopin.meituan.com/web/position?id=987654",
+      "crawled_at": "2025-11-12T16:45:00Z"
+    },
+    {
+      "id": "jd_005",
+      "company": "百度",
+      "position": "机器学习工程师",
+      "location": "北京",
+      "salary_range": "35k-65k",
+      "requirements": [
+        "硕士及以上学历，计算机/数学/统计相关专业",
+        "2年以上机器学习工程经验",
+        "熟悉深度学习框架（TensorFlow/PyTorch）",
+        "有NLP或推荐系统经验优先",
+        "良好的编程能力（Python/C++）和算法基础"
+      ],
+      "responsibilities": [
+        "负责文心一言相关算法研发",
+        "参与模型训练、优化和部署",
+        "跟踪业界最新技术并落地应用",
+        "参与算法创新和论文发表"
+      ],
+      "keywords": [
+        "机器学习", "深度学习", "PyTorch", "TensorFlow",
+        "NLP", "LLM", "模型训练", "模型优化",
+        "算法", "Python", "CUDA"
+      ],
+      "source_url": "https://talent.baidu.com/jobs/detail/123",
+      "crawled_at": "2025-11-11T11:30:00Z"
+    },
+    {
+      "id": "jd_006",
+      "company": "商汤科技",
+      "position": "计算机视觉算法工程师",
+      "location": "上海",
+      "salary_range": "30k-60k",
+      "requirements": [
+        "硕士及以上学历，计算机视觉相关专业",
+        "熟悉深度学习，精通PyTorch或TensorFlow",
+        "有目标检测、语义分割、实例分割经验",
+        "在CVPR/ICCV/ECCV等顶会发表过论文优先",
+        "良好的编程能力和工程实践经验"
+      ],
+      "responsibilities": [
+        "负责医疗影像分析算法研发",
+        "参与图像分割、病灶检测等模块开发",
+        "优化模型性能和推理速度",
+        "参与产品落地和临床验证"
+      ],
+      "keywords": [
+        "计算机视觉", "深度学习", "PyTorch", "图像分割",
+        "目标检测", "CNN", "Transformer", "医疗影像",
+        "模型优化", "Python", "CUDA"
+      ],
+      "source_url": "https://hr.sensetime.com/position/detail?id=456",
+      "crawled_at": "2025-11-10T13:20:00Z"
+    },
+    {
+      "id": "jd_007",
+      "company": "字节跳动",
+      "position": "NLP算法工程师",
+      "location": "北京",
+      "salary_range": "35k-65k",
+      "requirements": [
+        "硕士及以上学历，NLP/AI相关专业",
+        "2年以上NLP工程经验，熟悉Transformer架构",
+        "有大语言模型微调、prompt工程经验优先",
+        "在ACL/EMNLP/NAACL等顶会发表过论文优先",
+        "精通Python，熟悉PyTorch或TensorFlow"
+      ],
+      "responsibilities": [
+        "负责豆包大模型的对话系统优化",
+        "参与意图识别、实体抽取等NLP任务",
+        "优化模型效果和推理性能",
+        "跟踪前沿技术并落地应用"
+      ],
+      "keywords": [
+        "NLP", "大语言模型", "Transformer", "BERT",
+        "GPT", "微调", "Prompt工程", "对话系统",
+        "意图识别", "PyTorch", "Python"
+      ],
+      "source_url": "https://job.bytedance.com/campus/position/7987654321",
+      "crawled_at": "2025-11-09T10:00:00Z"
+    },
+    {
+      "id": "jd_008",
+      "company": "小米",
+      "position": "Python后端工程师",
+      "location": "北京",
+      "salary_range": "20k-38k",
+      "requirements": [
+        "本科及以上学历，2年以上Python开发经验",
+        "精通Django或FastAPI框架",
+        "熟悉MySQL、Redis、MongoDB",
+        "有RESTful API设计经验",
+        "熟悉Linux环境和Docker"
+      ],
+      "responsibilities": [
+        "负责小米IoT平台后端开发",
+        "参与API设计和数据库设计",
+        "保障系统稳定性和数据安全",
+        "参与代码review和技术分享"
+      ],
+      "keywords": [
+        "Python", "FastAPI", "Django", "MySQL",
+        "Redis", "MongoDB", "RESTful", "Docker",
+        "Linux", "API设计"
+      ],
+      "source_url": "https://xiaomi.jobs/position/123",
+      "crawled_at": "2025-11-08T15:30:00Z"
+    }
+  ]
+}

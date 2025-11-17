@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from app.models.user_config import UserConfig
 from app.core.report_generator import ReportGenerator
 from app.utils.markdown import report_to_markdown
+from app.utils.document_parser import parse_resume, is_supported_format, DocumentParseError
 
 # 配置日志
 logging.basicConfig(
@@ -41,10 +42,48 @@ def load_config(config_path: str) -> dict:
 
 
 def load_resume(resume_path: str) -> str:
-    """加载简历文件"""
+    """
+    加载简历文件（支持多种格式）
+
+    支持的格式:
+    - PDF (.pdf)
+    - Word (.docx)
+    - Text (.txt)
+    - Markdown (.md)
+    """
     try:
-        with open(resume_path, 'r', encoding='utf-8') as f:
-            return f.read()
+        # Check if file exists
+        resume_path_obj = Path(resume_path)
+        if not resume_path_obj.exists():
+            logger.error(f"简历文件不存在: {resume_path}")
+            sys.exit(1)
+
+        # Check if format is supported
+        if not is_supported_format(resume_path):
+            logger.error(
+                f"不支持的文件格式: {resume_path_obj.suffix}\n"
+                f"支持的格式: .pdf, .docx, .txt, .md"
+            )
+            sys.exit(1)
+
+        # Parse document
+        logger.info(f"正在解析简历文件: {resume_path_obj.name}")
+        text = parse_resume(resume_path)
+
+        # Validate extracted text
+        if not text or len(text.strip()) < 50:
+            logger.error(
+                f"简历内容过短或为空（{len(text.strip())} 字符）\n"
+                f"请确保文件包含有效的简历内容"
+            )
+            sys.exit(1)
+
+        logger.info(f"✓ 成功解析简历: {len(text)} 字符")
+        return text
+
+    except DocumentParseError as e:
+        logger.error(f"简历文件解析失败: {e}")
+        sys.exit(1)
     except Exception as e:
         logger.error(f"加载简历文件失败: {e}")
         sys.exit(1)
@@ -89,7 +128,7 @@ config.json格式:
     parser.add_argument(
         '--resume',
         required=True,
-        help='简历文件路径 (纯文本或Markdown)'
+        help='简历文件路径 (支持: .pdf, .docx, .txt, .md)'
     )
 
     parser.add_argument(

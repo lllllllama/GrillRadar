@@ -12,6 +12,7 @@ from app.utils.markdown import report_to_markdown
 from app.utils.domain_helper import domain_helper
 from app.config.config_manager import config_manager
 from app.config.settings import settings
+from app.utils.document_parser import parse_resume_bytes, is_supported_format, DocumentParseError
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +113,93 @@ async def generate_report_form(
         return JSONResponse(
             status_code=400,
             content={"success": False, "error": f"表单数据验证失败: {str(e)}"}
+        )
+
+
+@router.post("/generate-report-upload")
+async def generate_report_upload(
+    mode: str = Form(...),
+    target_desc: str = Form(...),
+    domain: Optional[str] = Form(None),
+    resume_file: UploadFile = File(...),
+    enable_external_info: bool = Form(False),
+    target_company: Optional[str] = Form(None)
+):
+    """
+    生成面试准备报告（文件上传版本）
+
+    支持上传简历文件（PDF、Word、TXT、Markdown）
+
+    Args:
+        mode: 模式（job/grad/mixed）
+        target_desc: 目标岗位描述
+        domain: 领域（可选）
+        resume_file: 简历文件（支持 .pdf, .docx, .txt, .md）
+        enable_external_info: 是否启用外部信息源
+        target_company: 目标公司名称（可选）
+
+    Returns:
+        生成的报告
+    """
+    try:
+        # Validate file format
+        if not is_supported_format(resume_file.filename):
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "success": False,
+                    "error": f"不支持的文件格式。支持的格式: .pdf, .docx, .txt, .md"
+                }
+            )
+
+        # Read file content
+        logger.info(f"Uploading resume file: {resume_file.filename}")
+        file_bytes = await resume_file.read()
+
+        # Parse document
+        try:
+            resume_text = parse_resume_bytes(file_bytes, resume_file.filename)
+            logger.info(f"Successfully parsed resume: {len(resume_text)} characters")
+        except DocumentParseError as e:
+            logger.error(f"Document parsing failed: {e}")
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "error": f"简历文件解析失败: {str(e)}"}
+            )
+
+        # Validate resume length
+        if len(resume_text.strip()) < 50:
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "success": False,
+                    "error": f"简历内容过短（{len(resume_text.strip())} 字符），请确保文件包含有效的简历内容"
+                }
+            )
+
+        # Create request
+        request = GenerateReportRequest(
+            mode=mode,
+            target_desc=target_desc,
+            domain=domain,
+            resume_text=resume_text,
+            enable_external_info=enable_external_info,
+            target_company=target_company
+        )
+
+        return await generate_report(request)
+
+    except ValidationError as e:
+        logger.error(f"Validation error: {e}")
+        return JSONResponse(
+            status_code=400,
+            content={"success": False, "error": f"数据验证失败: {str(e)}"}
+        )
+    except Exception as e:
+        logger.error(f"File upload error: {e}", exc_info=True)
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "error": f"文件处理失败: {str(e)}"}
         )
 
 

@@ -1,699 +1,545 @@
-# GrillRadar
+<div align="center">
 
-> **AI-powered interview preparation platform for Chinese programmers and graduate school applicants**
+# GrillRadar | 烤网雷达
 
-GrillRadar generates comprehensive "deep grilling + guidance reports" through a virtual interview/advisor committee, helping you identify risks in your resume and providing targeted preparation advice.
+**[中文](#chinese) | [English](./README.en.md)**
+
+> **AI驱动的程序员与研究生面试准备平台**
+> *AI-powered interview preparation platform for programmers and graduate applicants*
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Test Coverage](https://img.shields.io/badge/coverage-91%25+-brightgreen.svg)]()
 
-## ✨ Core Features
-
-- **🎯 Precision Customization** - Generate 10-20 highly relevant questions based on your resume and target position
-- **🔍 Deep Grilling** - Each question includes rationale, baseline answer, and reference materials
-- **💡 Reusable Prompts** - Practice prompts for each question, ready to use with AI for deep practice
-- **🎭 Multi-role Perspectives** - Comprehensive evaluation from 6 roles: tech interviewers, HR, mentors/PIs, etc.
-- **📊 Three Modes** - Support for job hunting (job), academic applications (grad), dual perspective (mixed)
-- **🌐 External Information Sources** - Integrate real JD and interview experience data for more realistic questions
-- **📄 Multi-format Resume Support** - Upload PDF, Word, TXT, or Markdown resumes
-- **🔧 Multi-API Compatibility** - Support for Anthropic, OpenAI, Kimi, and third-party compatible endpoints
-- **⚙️ Flexible Configuration** - 5 configuration methods from interactive wizard to manual editing
-- **🤖 Multi-Agent Decision Making** - **NEW!** 6 specialized agents collaborate to generate high-quality questions
+</div>
 
 ---
 
-## 📋 Table of Contents
+<a name="chinese"></a>
 
-- [Quick Start](#-quick-start)
-- [Resume Format Support](#-resume-format-support)
-- [Configuration Methods](#-configuration-methods)
-- [API Compatibility](#-api-compatibility)
-- [Usage Examples](#-usage-examples)
-- [Supported Domains](#-supported-domains)
-- [Project Structure](#-project-structure)
-- [Development](#️-development)
-- [Roadmap](#-roadmap)
+## 📖 关于项目
+
+GrillRadar通过虚拟面试/导师委员会生成全面的"深度拷问+辅导报告"，帮助您识别简历中的风险点并提供针对性的准备建议。
+
+## ✨ 核心功能
+
+- **🎯 精准定制** - 基于简历和目标岗位生成10-20个高度相关的问题
+- **🔍 深度拷问** - 每个问题包含提问理由、基准答案和参考资料
+- **💡 可复用提示词** - 每个问题附带练习提示词，随时与AI深度练习
+- **🎭 多角色视角** - 6个专业角色全方位评估：技术面试官、HR、导师/PI等
+- **📊 三种模式** - 支持求职(job)、学术申请(grad)、双视角(mixed)
+- **🌐 外部信息源** - 集成真实JD和面经数据，生成更贴近实际的问题
+- **📄 多格式简历支持** - 支持上传PDF、Word、TXT或Markdown格式简历
+- **🔧 多API兼容** - 支持Anthropic、OpenAI、Kimi及第三方兼容端点
+- **⚙️ 灵活配置** - 5种配置方式，从交互式向导到手动编辑
+- **🤖 多智能体决策** - **NEW!** 6个专业智能体协作生成高质量问题
 
 ---
 
-## 🚀 Quick Start
+## 📋 目录
 
-### 1. Environment Preparation
+- [快速开始](#-快速开始)
+- [简历格式支持](#-简历格式支持)
+- [配置方法](#-配置方法)
+- [API兼容性](#-api兼容性)
+- [使用示例](#-使用示例)
+- [支持的领域](#-支持的领域)
+- [项目结构](#-项目结构)
+- [开发指南](#️-开发指南)
+- [路线图](#-路线图)
 
-**System Requirements:**
+---
+
+## 🚀 快速开始
+
+### 1. 环境准备
+
+**系统要求：**
 - Python 3.8+
 - pip
 
-**Clone the project:**
+**克隆项目：**
 ```bash
 git clone https://github.com/lllllllama/GrillRadar.git
 cd GrillRadar
 ```
 
-### 2. Install Dependencies
+### 2. 安装依赖
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configure API Keys
+### 3. 配置API密钥
 
-**Option 1: Interactive Configuration Wizard (Recommended for beginners)**
+**选项1：交互式配置向导（推荐新手）**
 
 ```bash
-# Python wizard with colored output and step-by-step guidance
+# Python向导，带彩色输出和逐步引导
 python setup_config.py
 
-# Bash script for Linux/macOS
+# Bash脚本（Linux/macOS）
 bash setup_config.sh
 ```
 
-**Option 2: Manual Configuration**
+**选项2：手动配置**
 
-Copy the environment template and configure your API key:
+复制环境模板并配置API密钥：
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and fill in at least one API key:
+编辑`.env`并填入至少一个API密钥：
 
 ```bash
-# Use Claude (Recommended for GrillRadar)
+# 使用Claude（推荐）
 ANTHROPIC_API_KEY=sk-ant-...
 
-# Or use OpenAI
+# 或使用OpenAI
 OPENAI_API_KEY=sk-...
 
-# Or use third-party Anthropic-compatible service (e.g., BigModel in China)
+# 或使用Kimi（Moonshot AI，适合国内用户）
+OPENAI_API_KEY=sk-...  # Kimi使用OpenAI兼容API
+OPENAI_BASE_URL=https://api.moonshot.cn/v1
+
+# 或使用第三方Anthropic兼容服务（如国内的BigModel）
 ANTHROPIC_AUTH_TOKEN=your_token_here
 ANTHROPIC_BASE_URL=https://open.bigmodel.cn/api/anthropic
 ```
 
-**For detailed configuration instructions**, see [CONFIGURATION.md](./CONFIGURATION.md)
+**详细配置说明**请参阅 [CONFIGURATION.md](./CONFIGURATION.md)
 
-### 4. Prepare Configuration File
+### 4. 准备配置文件
 
-Create `config.json`:
+创建`config.json`：
 
 ```json
 {
+  "target_desc": "字节跳动后端开发工程师",
   "mode": "job",
-  "target_desc": "ByteDance - Backend Engineer (Campus Recruitment)",
   "domain": "backend",
-  "level": "junior"
+  "level": "mid",
+  "enable_external_info": false
 }
 ```
 
-**Field Descriptions:**
-- `mode`: Mode - `job` (job hunting), `grad` (academic), `mixed` (dual perspective)
-- `target_desc`: Detailed description of target position or direction
-- `domain`: Domain (optional), e.g., `backend`, `llm_application`, `cv_segmentation`
-- `level`: Candidate level (optional), e.g., `intern`, `junior`, `senior`, `master`, `phd`
-- `enable_external_info`: Enable external information sources (optional, default false)
-- `target_company`: Target company name (optional, for external info retrieval)
+**字段说明：**
+- `target_desc`: 目标岗位/方向描述（必填）
+- `mode`: 模式选择（必填）
+  - `job` - 求职模式
+  - `grad` - 研究生申请模式
+  - `mixed` - 混合模式（同时准备工程岗位和学术申请）
+- `domain`: 领域选择（可选，见下方支持的领域）
+- `level`: 候选人级别（可选）
+  - `junior` - 初级/本科生
+  - `mid` - 中级/硕士
+  - `senior` - 高级/博士
+- `enable_external_info`: 是否启用外部信息源（可选，默认false）
 
-### 5. Prepare Your Resume
-
-**Supported formats:** `.pdf`, `.docx`, `.txt`, `.md`
-
-Create `resume.txt` (or use your existing resume file):
-
-```
-Name: Zhang San
-Education: XX University - Computer Science - Bachelor's Degree
-
-Project Experience:
-1. Distributed Web Crawler System
-   - Developed in Python, based on Redis and RabbitMQ
-   - Implemented deduplication and fault tolerance
-   - Daily crawl volume: 1 million records
-
-2. Microservice Backend System
-   - Developed RESTful API in Go
-   - Integrated with MySQL and Redis
-   ...
-```
-
-### 6. Generate Report
+### 5. 运行生成报告
 
 ```bash
-# Using text resume
-python cli.py --config config.json --resume resume.txt --output report.md
+# 使用文本简历
+python main.py --config config.json --resume resume.txt
 
-# Using PDF resume
-python cli.py --config config.json --resume resume.pdf --output report.md
+# 使用PDF简历
+python main.py --config config.json --resume resume.pdf
 
-# Using Word resume
-python cli.py --config config.json --resume resume.docx --output report.md
+# 使用Word简历
+python main.py --config config.json --resume resume.docx
 ```
 
-The report will be saved as `report.md` and can be opened directly in any Markdown editor.
+生成的报告将保存为`report.json`。
 
 ---
 
-## 📄 Resume Format Support
+## 📄 简历格式支持
 
-GrillRadar supports multiple resume formats for maximum flexibility:
+GrillRadar支持多种简历格式，自动检测编码并提取内容：
 
-| Format | Extension | Description | Features |
-|--------|-----------|-------------|----------|
-| **PDF** | `.pdf` | Portable Document Format | ✅ Preserves formatting<br>✅ Multi-page support<br>✅ Table extraction |
-| **Word** | `.docx` | Microsoft Word Document | ✅ Paragraphs and tables<br>✅ Rich text support |
-| **Text** | `.txt` | Plain Text | ✅ Simple and reliable<br>✅ Multiple encodings (UTF-8, GBK, etc.) |
-| **Markdown** | `.md` | Markdown Format | ✅ Structured content<br>✅ Easy to edit |
+| 格式 | 扩展名 | 特性 |
+|------|--------|------|
+| **纯文本** | `.txt` | 自动编码检测（UTF-8/GBK/GB2312） |
+| **Markdown** | `.md` | 保留格式结构 |
+| **PDF** | `.pdf` | 提取文本和表格内容 |
+| **Word** | `.docx`, `.doc` | 提取文本、表格和格式 |
 
-### Using Different Formats
+**使用示例：**
 
-**CLI:**
 ```bash
-# PDF
-python cli.py --config config.json --resume resume.pdf --output report.md
+# PDF简历
+python main.py --config config.json --resume my_resume.pdf
 
-# Word
-python cli.py --config config.json --resume resume.docx --output report.md
+# Word简历
+python main.py --config config.json --resume my_resume.docx
 
-# Text (supports UTF-8, GBK, GB2312, etc.)
-python cli.py --config config.json --resume resume.txt --output report.md
-
-# Markdown
-python cli.py --config config.json --resume resume.md --output report.md
+# 纯文本简历
+python main.py --config config.json --resume my_resume.txt
 ```
-
-**Web API:**
-```bash
-# Upload file endpoint
-curl -X POST "http://localhost:8000/api/generate-report-upload" \
-  -F "mode=job" \
-  -F "target_desc=Backend Engineer" \
-  -F "domain=backend" \
-  -F "resume_file=@resume.pdf"
-```
-
-### Encoding Support
-
-For text files, GrillRadar automatically detects encoding:
-- UTF-8 (default and recommended)
-- GBK, GB2312 (common in China)
-- ISO-8859-1, and other encodings
-
-**Best Practice:** Use UTF-8 encoding for best compatibility.
 
 ---
 
-## ⚙️ Configuration Methods
+## ⚙️ 配置方法
 
-GrillRadar provides **5 flexible configuration methods** to suit different user needs:
+GrillRadar提供5种灵活的配置方法，满足不同用户需求：
 
-### 1. 🎨 Interactive Configuration Wizard (Easiest)
+### 方法1：交互式向导（最简单）
 
 ```bash
-# Python wizard - Recommended for all users
 python setup_config.py
-
-# Features:
-# ✅ Colored terminal output with emojis
-# ✅ Step-by-step guidance
-# ✅ Auto-validation of API keys
-# ✅ Support for official and third-party services
-# ✅ Built-in testing: python setup_config.py --test
 ```
 
-### 2. 📝 Bash Configuration Script (Linux/macOS)
+向导将引导您：
+1. 选择API提供商（Anthropic/OpenAI/Kimi/第三方）
+2. 输入API密钥
+3. 配置基础URL（可选）
+4. 验证配置
+5. 自动生成`.env`文件
+
+### 方法2：命令行参数
 
 ```bash
-bash setup_config.sh
-
-# Features:
-# ✅ Menu-driven interface
-# ✅ Quick template selection
-# ✅ Editor integration
+python main.py \
+  --resume resume.txt \
+  --target "字节跳动后端工程师" \
+  --mode job \
+  --domain backend \
+  --level mid
 ```
 
-### 3. 📋 Template Files
+### 方法3：JSON配置文件
+
+创建`config.json`（见快速开始第4步）
+
+### 方法4：环境变量
 
 ```bash
-# Basic template
-cp .env.example .env
-
-# Detailed template with annotations
-cp .env.example.detailed .env
+export GRILLRADAR_TARGET_DESC="字节跳动后端工程师"
+export GRILLRADAR_MODE="job"
+export GRILLRADAR_DOMAIN="backend"
+python main.py --resume resume.txt
 ```
 
-### 4. 🔧 Environment Variables (Production)
+### 方法5：Web API（开发中）
 
 ```bash
-export ANTHROPIC_API_KEY="sk-ant-..."
-export DEFAULT_LLM_PROVIDER="anthropic"
-python cli.py ...
+# 启动FastAPI服务器
+uvicorn app.api.main:app --reload --port 8000
+
+# 使用API
+curl -X POST "http://localhost:8000/api/report/generate" \
+  -H "Content-Type: multipart/form-data" \
+  -F "resume=@resume.pdf" \
+  -F "target_desc=字节跳动后端工程师" \
+  -F "mode=job"
 ```
 
-### 5. ✏️ Direct Editing
-
-Edit `.env` file directly with comprehensive documentation:
-
-```bash
-# See CONFIGURATION.md for detailed explanations
-# See .env.example.detailed for annotated template
-```
-
-**For complete configuration guide**, see [CONFIGURATION.md](./CONFIGURATION.md)
-
-**For quick 5-minute setup**, see [docs/QUICK_START.md](./docs/QUICK_START.md)
+详细配置说明请参阅 [CONFIGURATION.md](./CONFIGURATION.md)
 
 ---
 
-## 🔧 API Compatibility
+## 🔧 API兼容性
 
-GrillRadar supports multiple LLM providers with seamless switching:
+GrillRadar支持多个LLM API提供商，并提供自动检测和健康检查：
 
-### Supported Providers
+### 支持的提供商
 
-| Provider | Type | Context Window | Best For | Cost |
-|----------|------|----------------|----------|------|
-| **Anthropic Claude** (Official) | Direct | 200K tokens | Complex analysis, long resumes | $ |
-| **OpenAI GPT** | Direct | 128K tokens | Standard text generation | $-$$ |
-| **BigModel** (智谱AI) | Third-party | 200K tokens | Users in China | $ |
-| **Custom Endpoint** | Third-party | Varies | Enterprise deployments | Varies |
+| 提供商 | 模型示例 | 适用场景 |
+|--------|----------|----------|
+| **Anthropic Claude** | claude-sonnet-4, claude-opus-4 | 推荐，最佳效果 |
+| **OpenAI** | gpt-4, gpt-4-turbo | 通用选择 |
+| **Kimi (Moonshot)** | moonshot-v1-8k/32k/128k | 国内用户友好 |
+| **第三方兼容** | 任何Anthropic兼容端点 | 灵活部署 |
 
-### Provider Configuration
+### 自动检测
 
-**Anthropic (Official) - Recommended:**
+系统会自动检测您的配置并选择合适的API提供商：
+
 ```bash
-ANTHROPIC_API_KEY=sk-ant-your-key-here
-DEFAULT_LLM_PROVIDER=anthropic
-DEFAULT_MODEL=claude-sonnet-4
+# 检查当前配置
+python -m app.utils.api_compatibility check
+
+# 比较不同提供商
+python -m app.utils.api_compatibility compare
 ```
 
-**OpenAI:**
+### 健康检查
+
 ```bash
-OPENAI_API_KEY=sk-your-key-here
-DEFAULT_LLM_PROVIDER=openai
-DEFAULT_MODEL=gpt-4
+# 验证API连接
+python -m app.utils.api_compatibility health
+
+# 输出示例
+✓ Provider: Anthropic
+✓ Model: claude-sonnet-4
+✓ API Key: Valid
+✓ Connection: Healthy
 ```
 
-**BigModel (Third-party Anthropic-compatible):**
-```bash
-ANTHROPIC_AUTH_TOKEN=your-token-here
-ANTHROPIC_BASE_URL=https://open.bigmodel.cn/api/anthropic
-DEFAULT_LLM_PROVIDER=anthropic
-```
-
-**Custom Endpoint:**
-```bash
-ANTHROPIC_API_KEY=your-key
-ANTHROPIC_BASE_URL=https://your-custom-endpoint.com
-```
-
-### API Health Monitoring
-
-**Check API status:**
-```bash
-curl http://localhost:8000/api/api-health
-```
-
-**Validate configuration:**
-```bash
-curl http://localhost:8000/api/api-validate
-```
-
-**Compare providers:**
-```bash
-curl http://localhost:8000/api/api-compare
-```
-
-**For detailed API compatibility guide**, see [CONFIGURATION.md#api-providers](./CONFIGURATION.md#api-providers)
+详细API配置请参阅 [CONFIGURATION.md](./CONFIGURATION.md#api-compatibility)
 
 ---
 
-## 📖 Usage Examples
+## 📚 使用示例
 
-### CLI Examples
+### 示例1：求职模式 - 后端工程师
 
-**Job Hunting Scenario:**
 ```bash
-python cli.py \
-  --config examples/job_backend.json \
-  --resume examples/resume_backend.pdf \
-  --output reports/backend_report.md
+python main.py \
+  --resume backend_resume.pdf \
+  --target "字节跳动后端开发工程师" \
+  --mode job \
+  --domain backend \
+  --level mid
 ```
 
-**Academic Application Scenario:**
+**生成报告包含：**
+- 10-20个针对性面试问题
+- 技术深度、系统设计、项目经验评估
+- 软技能和文化契合度分析
+- 每个问题的提问理由和准备建议
+
+### 示例2：研究生申请 - 计算机视觉
+
 ```bash
-python cli.py \
-  --config examples/grad_cv.json \
-  --resume examples/resume_cv.docx \
-  --output reports/grad_report.md
+python main.py \
+  --resume cv_resume.pdf \
+  --target "Stanford PhD in Computer Vision" \
+  --mode grad \
+  --domain cv_segmentation \
+  --level mid
 ```
 
-**Dual Perspective Scenario:**
+**生成报告包含：**
+- 研究方法论和论文阅读能力评估
+- 学术潜力和科研经历分析
+- 导师契合度评估
+- 推荐阅读论文和学习资源
+
+### 示例3：混合模式 - 工程+学术
+
 ```bash
-python cli.py \
-  --config examples/mixed.json \
-  --resume examples/resume_full.txt \
-  --output reports/mixed_report.md \
-  --format markdown
+python main.py \
+  --resume mixed_resume.pdf \
+  --target "AI Research Engineer at OpenAI" \
+  --mode mixed \
+  --domain llm_application \
+  --level senior
 ```
 
-**With External Information (Company-specific):**
+**生成报告包含：**
+- 双视角评估（工程能力+研究潜力）
+- 平衡的问题分布（工程实践+学术深度）
+- 综合建议
+
+---
+
+## 🗂️ 支持的领域
+
+GrillRadar现支持**23个专业领域**（工程12个 + 研究11个）：
+
+### 工程领域（12个）
+
+| 领域ID | 领域名称 | 关键词示例 |
+|--------|----------|------------|
+| `backend` | 后端开发 | 分布式系统、微服务、数据库优化 |
+| `frontend` | 前端开发 | React/Vue、前端工程化、性能优化 |
+| `llm_application` | 大模型应用开发 | RAG、Prompt工程、Agent |
+| `algorithm` | 算法工程 | 推荐系统、搜索排序、机器学习 |
+| `data_engineering` | 数据工程 | 数据仓库、ETL、大数据处理 |
+| `mobile` | 移动开发 | iOS/Android、跨平台开发 |
+| `cloud_native` | 云原生 | Kubernetes、Docker、DevOps |
+| `embedded` | 嵌入式开发 | 物联网、RTOS、驱动开发 |
+| `game_dev` | 游戏开发 | 游戏引擎、图形渲染、物理引擎 |
+| `blockchain` | 区块链/Web3 | 智能合约、DeFi、NFT |
+| `security` | 网络安全 | 渗透测试、安全架构、漏洞挖掘 |
+| `test_qa` | 测试/质量保障 | 自动化测试、性能测试 |
+
+### 研究领域（11个）
+
+| 领域ID | 领域名称 | 关键领域 |
+|--------|----------|----------|
+| `cv_segmentation` | 计算机视觉-图像分割 | 语义分割、实例分割、医疗影像 |
+| `cv_detection` | 计算机视觉-目标检测 | 实时检测、小目标检测、3D检测 |
+| `nlp` | 自然语言处理 | 大语言模型、文本生成、信息抽取 |
+| `multimodal` | 多模态学习 | 视觉-语言、跨模态检索 |
+| `general_ml` | 机器学习（通用） | 优化理论、模型压缩、迁移学习 |
+| `reinforcement_learning` | 强化学习 | RLHF、Multi-agent、决策智能 |
+| `robotics` | 机器人学 | SLAM、运动规划、机器人控制 |
+| `graph_learning` | 图学习 | 图神经网络、知识图谱 |
+| `time_series` | 时间序列分析 | 时序预测、异常检测、因果推断 |
+| `federated_learning` | 联邦学习/隐私计算 | 差分隐私、安全多方计算 |
+| `ai_safety` | AI安全与对齐 | RLHF、模型可解释性、对抗样本 |
+
+**使用示例：**
 ```bash
-# config.json with external info enabled
-{
-  "mode": "job",
-  "target_desc": "ByteDance Backend Engineer",
-  "domain": "backend",
-  "enable_external_info": true,
-  "target_company": "ByteDance"
-}
+# 工程领域
+python main.py --domain backend ...
+python main.py --domain blockchain ...
 
-python cli.py --config config.json --resume resume.pdf --output report.md
-```
-
-### CLI Parameters
-
-```bash
-python cli.py [options]
-
-Required:
-  --config CONFIG    Configuration file path (JSON format)
-  --resume RESUME    Resume file path (supports: .pdf, .docx, .txt, .md)
-
-Optional:
-  --output OUTPUT    Output file path (default: report.md)
-  --format FORMAT    Output format: markdown | json (default: markdown)
-  --provider PROVIDER  LLM provider: anthropic | openai
-  --model MODEL      LLM model name
-```
-
-### Web Interface
-
-Start the web server:
-
-```bash
-# Method 1: Using Python module
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
-
-# Method 2: Using uvicorn command
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-Visit `http://localhost:8000` to use the web interface.
-
-**Web Features:**
-- ✅ Simple and friendly form interface
-- ✅ Real-time report generation
-- ✅ Report download (Markdown and HTML formats)
-- ✅ File upload support (PDF, Word, TXT, MD)
-- ✅ Loading animations during generation
-- ✅ Responsive design for mobile access
-
-### API Endpoints
-
-**Generate Report (JSON):**
-```bash
-curl -X POST "http://localhost:8000/api/generate-report" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "mode": "job",
-    "target_desc": "Backend Engineer",
-    "domain": "backend",
-    "resume_text": "Your resume content here..."
-  }'
-```
-
-**Generate Report (File Upload):**
-```bash
-curl -X POST "http://localhost:8000/api/generate-report-upload" \
-  -F "mode=job" \
-  -F "target_desc=Backend Engineer" \
-  -F "domain=backend" \
-  -F "resume_file=@resume.pdf"
-```
-
-**Health Check:**
-```bash
-curl http://localhost:8000/api/health
-```
-
-**List Domains:**
-```bash
-curl http://localhost:8000/api/domains
+# 研究领域
+python main.py --domain cv_segmentation ...
+python main.py --domain robotics ...
 ```
 
 ---
 
-## 🎯 Supported Domains
-
-> **Milestone 3 Enhancement**: Each domain now includes detailed keywords, tech stacks, classic papers, and recommended readings!
-
-### Engineering Domains (7)
-
-| Domain | Description | Key Technologies |
-|--------|-------------|------------------|
-| `backend` | Backend Development | Distributed systems, microservices, database optimization |
-| `frontend` | Frontend Development | React/Vue, TypeScript, frontend engineering |
-| `llm_application` | LLM Application Development | RAG, Prompt engineering, Agent development |
-| `algorithm` | Algorithm Engineering | Recommendation systems, search ranking, ML |
-| `data_engineering` | Data Engineering | Data warehousing, ETL, big data processing |
-| `mobile` | Mobile Development | iOS/Android, cross-platform development |
-| `cloud_native` | Cloud Native | Kubernetes, DevOps, microservices |
-
-### Research Domains (6)
-
-| Domain | Description | Focus Areas |
-|--------|-------------|-------------|
-| `cv_segmentation` | Computer Vision - Image Segmentation | Semantic segmentation, instance segmentation |
-| `nlp` | Natural Language Processing | Language models, text analysis |
-| `multimodal` | Multimodal Learning | Vision-language models, cross-modal learning |
-| `cv_detection` | Computer Vision - Object Detection | Detection algorithms, real-time systems |
-| `general_ml` | Machine Learning (General) | ML theory, optimization |
-| `reinforcement_learning` | Reinforcement Learning | RL algorithms, decision making |
-
-**For detailed domain information**, see [DOMAINS.md](./DOMAINS.md)
-
-**Configuration file:** `app/config/domains.yaml`
-
-### Domain Benefits
-
-When you specify a domain, GrillRadar will:
-- ✅ **Inject domain knowledge** - Add domain keywords, tech stacks, classic papers to prompts
-- ✅ **Focus question scope** - Generate questions focused on core competencies
-- ✅ **Provide professional references** - Include recommended readings in support_notes
-- ✅ **Match typical positions** - Adjust question difficulty based on typical job requirements
-
----
-
-## 📁 Project Structure
+## 🏗️ 项目结构
 
 ```
 GrillRadar/
 ├── app/
-│   ├── models/              # Pydantic data models
-│   │   ├── user_config.py        # User configuration
-│   │   ├── question_item.py      # Question model
-│   │   ├── report.py             # Report model
-│   │   └── external_info.py      # External info model
-│   ├── core/                # Core business logic
-│   │   ├── prompt_builder.py     # Prompt construction
-│   │   ├── llm_client.py         # LLM client
-│   │   └── report_generator.py   # Report generation
-│   ├── sources/             # External information sources
-│   │   ├── mock_provider.py      # Mock data provider
-│   │   └── external_info_service.py  # External info service
-│   ├── retrieval/           # Information retrieval
-│   │   └── info_aggregator.py    # Info aggregator
-│   ├── api/                 # FastAPI routes
-│   │   └── report.py             # Report generation API
-│   ├── config/              # Configuration files
-│   │   ├── domains.yaml          # Domain knowledge (13 domains)
-│   │   ├── modes.yaml            # Mode configuration
-│   │   └── settings.py           # Settings
-│   ├── utils/               # Utility functions
-│   │   ├── markdown.py           # Markdown utilities
-│   │   ├── domain_helper.py      # Domain management
-│   │   ├── document_parser.py    # **NEW** Multi-format parser
-│   │   └── api_compatibility.py  # **NEW** Multi-API support
-│   └── main.py              # FastAPI app entry
-├── frontend/                # Web frontend
-│   ├── templates/           # Jinja2 templates
-│   │   └── index.html
-│   └── static/              # Static assets
-│       ├── css/
-│       └── js/
-├── tests/                   # Tests (238 tests, 94% coverage)
-├── examples/                # Example files
-├── docs/                    # Documentation
-│   ├── QUICK_START.md       # Quick start guide
-│   └── ...
-├── setup_config.py          # **NEW** Interactive config wizard
-├── setup_config.sh          # **NEW** Bash config script
-├── cli.py                   # CLI entry point
-├── requirements.txt         # Dependencies
-├── .env.example             # Environment template
-├── .env.example.detailed    # **NEW** Detailed template
-├── CONFIGURATION.md         # **NEW** Configuration guide
-├── DOMAINS.md               # Domain configuration guide
-├── EXTERNAL_INFO.md         # External info guide
-└── README.md                # This file
+│   ├── agents/                # 多智能体系统（Milestone 5）
+│   │   ├── base_agent.py      # 智能体基类
+│   │   ├── models.py          # 智能体数据模型
+│   │   ├── technical_interviewer.py   # 技术面试官
+│   │   ├── hiring_manager.py          # 招聘经理
+│   │   ├── hr_agent.py                # HR专员
+│   │   ├── advisor_agent.py           # 学术导师
+│   │   ├── reviewer_agent.py          # 学术评审
+│   │   └── advocate_agent.py          # 候选人倡导者
+│   ├── api/                   # FastAPI接口
+│   ├── config/                # 配置管理
+│   │   ├── domains.yaml       # 领域知识库（23个领域）
+│   │   ├── modes.yaml         # 模式配置
+│   │   └── settings.py        # 系统设置
+│   ├── core/                  # 核心逻辑
+│   │   ├── agent_orchestrator.py  # 智能体编排器
+│   │   ├── forum_engine.py        # ForumEngine协调层
+│   │   ├── prompt_builder.py      # Prompt构建器
+│   │   └── report_generator.py    # 报告生成器
+│   ├── models/                # 数据模型
+│   ├── parsers/               # 简历解析器（PDF/Word/TXT）
+│   ├── sources/               # 外部信息源
+│   └── utils/                 # 工具函数
+│       ├── api_compatibility.py   # API兼容层
+│       └── domain_helper.py       # 领域辅助工具
+├── tests/                     # 测试文件
+├── main.py                    # CLI入口
+├── setup_config.py            # 配置向导
+└── requirements.txt           # 依赖列表
 ```
 
 ---
 
-## 📊 Report Example
+## 🧑‍💻 开发指南
 
-Generated reports include the following sections:
-
-1. **Overall Assessment** - Strengths, risks, preparation advice
-2. **Candidate Highlights** - Inferred advantages from resume
-3. **Key Risk Points** - Weaknesses exposed in resume
-4. **Question List** (10-20 questions) - Each question includes:
-   - Question content
-   - Rationale for asking
-   - How to answer (baseline answer structure)
-   - Reference materials
-   - Practice prompt
-
----
-
-## 🔧 Configuration Reference
-
-### Environment Variables (.env)
-
-| Variable | Description | Default | Example |
-|----------|-------------|---------|---------|
-| `ANTHROPIC_API_KEY` | Claude API key | - | sk-ant-... |
-| `ANTHROPIC_AUTH_TOKEN` | Third-party auth token | - | your_token |
-| `ANTHROPIC_BASE_URL` | Custom/third-party base URL | - | https://... |
-| `OPENAI_API_KEY` | OpenAI API key | - | sk-... |
-| `DEFAULT_LLM_PROVIDER` | Default LLM provider | anthropic | anthropic/openai |
-| `DEFAULT_MODEL` | Default model | claude-sonnet-4 | claude-sonnet-4 |
-| `LLM_TEMPERATURE` | Temperature parameter | 0.7 | 0.0-1.0 |
-| `LLM_MAX_TOKENS` | Max token count | 16000 | 1000-200000 |
-
-### Mode Descriptions
-
-#### job Mode (Job Hunting)
-- **Suitable for:** Campus recruitment, job hunting, internship interview preparation
-- **Focus:** Engineering skills, project depth, position matching, soft skills
-- **Role weights:** Tech interviewer 40%, Hiring manager 30%, HR 20%
-
-#### grad Mode (Academic Application)
-- **Suitable for:** Master's recommendation, postgraduate interview, PhD application, research positions
-- **Focus:** Research literacy, paper reading, experimental design, academic standards
-- **Role weights:** Advisor/PI 40%, Academic reviewer 30%, Tech interviewer 15%
-
-#### mixed Mode (Dual Perspective)
-- **Suitable for:** Preparing for both job and graduate school, industry research positions
-- **Features:** Each question tagged with [Engineering] or [Academic] perspective
-- **Report includes:** Dual-track evaluation
-
----
-
-## 🛠️ Development
-
-### Install Development Dependencies
+### 安装开发依赖
 
 ```bash
 pip install -r requirements.txt
+pip install -r requirements-dev.txt  # 如果有
 ```
 
-### Run Tests
+### 运行测试
 
 ```bash
-# Run all tests
-pytest tests/
+# 运行所有测试
+pytest
 
-# Run with coverage
-pytest tests/ --cov=app --cov-report=term-missing
+# 运行特定测试
+pytest tests/test_domain_helper.py -v
 
-# Run specific test file
-pytest tests/test_document_parser.py -v
+# 查看测试覆盖率
+pytest --cov=app tests/
 ```
 
-### Code Formatting
+### 代码风格
 
 ```bash
-black app/ tests/ cli.py
+# 使用black格式化代码
+black app/ tests/
+
+# 使用flake8检查
+flake8 app/ tests/
 ```
 
-### Current Test Coverage
+### 添加新领域
 
-- **238 tests** passing
-- **94% overall coverage**
-- Key modules at 95%+ coverage
+1. 编辑`app/config/domains.yaml`
+2. 在`engineering`或`research`部分添加新领域
+3. 运行测试验证：`pytest tests/test_domain_helper.py`
 
----
+### 添加新智能体
 
-## 📝 Roadmap
-
-- [x] **Milestone 1**: CLI prototype ✅
-- [x] **Milestone 2**: Web version (FastAPI + frontend) ✅
-- [x] **Milestone 3**: Configuration-driven domain management ✅
-  - 13 domains (7 engineering + 6 research)
-  - Detailed domain configuration (keywords, tech stacks, papers, readings)
-  - Enhanced prompt injection
-  - Domain management API and tools
-- [x] **Milestone 4**: External information source integration (JD, interviews) ✅
-  - Mock data provider (demo mode)
-  - JD and interview experience data models
-  - Info aggregation and keyword extraction
-  - Automatic prompt injection of external info
-  - External info query API
-- [x] **Milestone 4.5**: Multi-format resume support ✅
-  - PDF, Word, Text, Markdown parsers
-  - Encoding detection and handling
-  - File upload API endpoint
-  - Comprehensive testing
-- [x] **Milestone 4.6**: Multi-API compatibility ✅
-  - Support for Anthropic, OpenAI, Kimi, third-party services
-  - Auto-detection and validation
-  - Health checking and monitoring
-  - Interactive configuration wizard
-- [x] **Milestone 5**: Multi-agent architecture evolution (BettaFish-style) ✅
-  - 6 specialized agents: Technical Interviewer, Hiring Manager, HR, Advisor, Reviewer, Advocate
-  - ForumEngine for agent coordination and consensus
-  - Parallel agent execution with graceful fallback
-  - Deduplication, quality filtering, and question enhancement
-  - Comprehensive test coverage (91%+ passing)
-- [ ] **Milestone 6**: Multi-round training system
-
-See `Claude.md` for detailed development roadmap.
+1. 在`app/agents/`创建新智能体类（继承`BaseAgent`）
+2. 在`app/core/agent_orchestrator.py`中注册
+3. 添加测试：`tests/test_agents.py`
 
 ---
 
-## 🤝 Contributing
+## 📝 路线图
 
-Contributions are welcome! Please submit Issues and Pull Requests.
+- [x] **Milestone 1**: CLI原型 ✅
+- [x] **Milestone 2**: Web版本（FastAPI + 前端） ✅
+- [x] **Milestone 3**: 配置驱动的领域管理 ✅
+  - 23个领域（12工程 + 11研究）
+  - 详细领域配置（关键词、技术栈、论文、阅读材料）
+  - 增强的Prompt注入
+  - 领域管理API和工具
+- [x] **Milestone 4**: 外部信息源集成（JD、面经） ✅
+  - Mock数据提供者（演示模式）
+  - JD和面经数据模型
+  - 信息聚合和关键词提取
+  - 外部信息自动注入Prompt
+  - 外部信息查询API
+- [x] **Milestone 4.5**: 多格式简历支持 ✅
+  - PDF、Word、文本、Markdown解析器
+  - 编码检测和处理
+  - 文件上传API端点
+  - 全面测试
+- [x] **Milestone 4.6**: 多API兼容性 ✅
+  - 支持Anthropic、OpenAI、Kimi、第三方服务
+  - 自动检测和验证
+  - 健康检查和监控
+  - 交互式配置向导
+- [x] **Milestone 5**: 多智能体架构演进（BettaFish风格） ✅
+  - 6个专业智能体：技术面试官、招聘经理、HR、导师、评审、倡导者
+  - ForumEngine协调和共识机制
+  - 并行智能体执行与优雅降级
+  - 去重、质量过滤和问题增强
+  - 全面测试覆盖（91%+通过率）
+- [ ] **Milestone 6**: 多轮训练系统
+
+详细开发路线图请参阅`Claude.md`。
 
 ---
 
-## 📄 License
+## 🤝 贡献
 
-MIT License - see [LICENSE](LICENSE) file for details.
+欢迎贡献！请查看[贡献指南](CONTRIBUTING.md)。
 
----
-
-## 🙏 Acknowledgments
-
-This project draws inspiration from:
-- [TrendRadar](https://github.com/sansan0/TrendRadar) - Configuration-driven information aggregation
-- [BettaFish](https://github.com/666ghj/BettaFish) - Multi-agent collaborative architecture
-
----
-
-## 📮 Contact
-
-- **Project:** https://github.com/lllllllama/GrillRadar
-- **Issues:** https://github.com/lllllllama/GrillRadar/issues
-- **Discussions:** https://github.com/lllllllama/GrillRadar/discussions
+主要贡献方向：
+- 添加新的专业领域到`domains.yaml`
+- 改进多智能体协作策略
+- 优化Prompt模板
+- 添加新的简历解析器
+- 改进测试覆盖率
 
 ---
 
-## 🌟 Star History
+## 📄 许可证
 
-If GrillRadar helps you prepare for interviews, please give us a ⭐ star!
+本项目采用[MIT许可证](LICENSE)。
 
 ---
 
-**Last Updated:** 2025-11-17 | **Version:** 0.5.0 | **Test Coverage:** 94%
+## 🙏 致谢
+
+- Claude API提供强大的AI能力
+- BettaFish项目启发了多智能体架构设计
+- 感谢所有贡献者和用户的反馈
+
+---
+
+## 📮 联系方式
+
+- Issues: [GitHub Issues](https://github.com/lllllllama/GrillRadar/issues)
+- Discussions: [GitHub Discussions](https://github.com/lllllllama/GrillRadar/discussions)
+
+---
+
+**Happy Grilling! 🔥**
+
+*Built with ❤️ for Chinese programmers and researchers*

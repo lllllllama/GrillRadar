@@ -31,8 +31,8 @@ class TestDomainHelper:
         assert 'engineering' in domains
         assert 'research' in domains
         assert isinstance(domains['engineering'], list)
-        assert len(domains['engineering']) == 7  # 7 engineering domains
-        assert len(domains['research']) == 6     # 6 research domains
+        assert len(domains['engineering']) == 12  # 12 engineering domains (added 5 new: embedded, game_dev, blockchain, security, test_qa)
+        assert len(domains['research']) == 11     # 11 research domains (added 5 new: robotics, graph_learning, time_series, federated_learning, ai_safety)
 
         # Check first engineering domain structure
         first_eng = domains['engineering'][0]
@@ -44,9 +44,9 @@ class TestDomainHelper:
         """Test domain summary statistics"""
         summary = helper.get_domain_summary()
 
-        assert summary['total'] == 13
-        assert summary['engineering'] == 7
-        assert summary['research'] == 6
+        assert summary['total'] == 23  # Total 23 domains (12 engineering + 11 research)
+        assert summary['engineering'] == 12
+        assert summary['research'] == 11
 
     def test_get_all_domains(self, helper):
         """Test getting all domains with complete information"""
@@ -58,7 +58,7 @@ class TestDomainHelper:
 
         # Check that domains have complete structure
         eng_domains = all_domains['engineering']
-        assert len(eng_domains) == 7
+        assert len(eng_domains) == 12  # 12 engineering domains
 
         # Verify a specific domain has all fields
         assert 'backend' in eng_domains

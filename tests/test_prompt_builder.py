@@ -42,10 +42,10 @@ class TestPromptBuilding:
         assert isinstance(prompt, str)
         assert len(prompt) > 100
 
-        # Check key sections are included
-        assert "GrillRadar 虚拟面试委员会" in prompt
-        assert "你的角色" in prompt
-        assert "当前任务" in prompt
+        # Check key sections are included (now in English)
+        assert "GrillRadar" in prompt
+        assert "Your Role" in prompt or "Virtual Interview Committee" in prompt
+        assert "Current Task" in prompt
         assert sample_user_config.mode in prompt
         assert sample_user_config.target_desc in prompt
         assert sample_user_config.resume_text in prompt
@@ -181,7 +181,7 @@ class TestRoleWeightsFormatting:
 
         formatted = builder._format_role_weights({})
 
-        assert "未配置" in formatted
+        assert "not configured" in formatted
 
     def test_format_role_weights_sorted(self):
         """Test that role weights are sorted by weight"""
@@ -228,7 +228,7 @@ class TestQuestionDistribution:
 
         formatted = builder._format_question_distribution('job', {})
 
-        assert "未配置" in formatted
+        assert "not configured" in formatted
 
 
 class TestModeSpecificRequirements:
@@ -239,7 +239,7 @@ class TestModeSpecificRequirements:
         requirements = builder._get_mode_specific_requirements('mixed')
 
         assert isinstance(requirements, str)
-        assert "mixed" in requirements or "双视角" in requirements
+        assert "mixed" in requirements.lower() or "dual perspectives" in requirements.lower()
 
     def test_get_mode_requirements_grad(self):
         """Test mode-specific requirements for grad mode"""
@@ -248,7 +248,7 @@ class TestModeSpecificRequirements:
         requirements = builder._get_mode_specific_requirements('grad')
 
         assert isinstance(requirements, str)
-        assert "grad" in requirements or "研究" in requirements
+        assert "grad" in requirements.lower() or "research" in requirements.lower()
 
     def test_get_mode_requirements_job(self):
         """Test mode-specific requirements for job mode"""
@@ -257,7 +257,7 @@ class TestModeSpecificRequirements:
         requirements = builder._get_mode_specific_requirements('job')
 
         assert isinstance(requirements, str)
-        assert "CS基础" in requirements or "工程" in requirements
+        assert "fundamentals" in requirements.lower() or "engineering" in requirements.lower()
 
 
 class TestSummaryRequirements:

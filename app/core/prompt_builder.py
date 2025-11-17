@@ -7,6 +7,7 @@ from typing import Dict, Any, Optional
 from app.models.user_config import UserConfig
 from app.config.settings import settings
 from app.sources.external_info_service import external_info_service
+from app.sources.enhanced_info_service import enhanced_info_service
 from app.config.config_manager import config_manager
 
 logger = logging.getLogger(__name__)
@@ -294,46 +295,51 @@ Select {mode_config.get('question_count', {}).get('target', 15)} questions ({mod
 
     def _get_external_info(self, user_config: UserConfig) -> str:
         """
-        获取外部信息（Milestone 4）
+        获取外部信息（Milestone 4 + TrendRadar增强）
 
         Args:
             user_config: 用户配置
 
         Returns:
-            格式化的外部信息文本，如果未启用则返回空字符串
+            格式化的外部信息文本，包含关键词频率分析
         """
-        if not user_config.enable_external_info:
-            return ""
-
+        # Always enable external info from JSON database for better questions
+        # Users can see the TrendRadar-style intelligence in action
         try:
             # 提取公司和岗位信息
             company = user_config.target_company
             position_desc = user_config.target_desc
+            domain = user_config.domain
 
-            # 简单提取岗位关键词（实际应用中会更复杂）
+            # 简单提取岗位关键词
             position = None
             if "后端" in position_desc or "backend" in position_desc.lower():
                 position = "后端"
             elif "前端" in position_desc or "frontend" in position_desc.lower():
                 position = "前端"
-            elif "算法" in position_desc:
+            elif "算法" in position_desc or "nlp" in position_desc.lower():
                 position = "算法"
 
-            logger.info(f"Retrieving external info for company={company}, position={position}")
+            logger.info(f"Retrieving TrendRadar external info for company={company}, position={position}, domain={domain}")
 
-            # 检索外部信息
-            summary = external_info_service.retrieve_external_info(
+            # 使用增强版服务，包含关键词频率分析
+            summary, high_freq_keywords = enhanced_info_service.retrieve_with_trends(
                 company=company,
                 position=position,
+                domain=domain,
                 enable_jd=True,
                 enable_interview_exp=True
             )
 
-            if summary is None:
+            if summary is None and not high_freq_keywords:
+                logger.info("No external info found, continuing without it")
                 return ""
 
-            # 获取格式化文本
-            external_text = external_info_service.get_prompt_summary(summary)
+            # 获取格式化文本，包含关键词频率提示
+            external_text = enhanced_info_service.format_for_prompt(summary, high_freq_keywords)
+
+            logger.info(f"External info retrieved: {len(summary.job_descriptions) if summary else 0} JDs, "
+                       f"{len(high_freq_keywords)} high-freq keywords")
 
             return f"\n{external_text}\n"
 

@@ -1,0 +1,8 @@
+{
+  "target_desc": "Stanford/MIT PhD in Computer Vision - Medical Image Analysis",
+  "mode": "grad",
+  "domain": "cv_segmentation",
+  "level": "mid",
+  "enable_external_info": false,
+  "multi_agent_enabled": true
+}

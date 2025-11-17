@@ -1,0 +1,8 @@
+{
+  "target_desc": "字节跳动 LLM应用工程师岗位",
+  "mode": "job",
+  "domain": "llm_application",
+  "level": "mid",
+  "enable_external_info": false,
+  "multi_agent_enabled": true
+}

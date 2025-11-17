@@ -23,8 +23,50 @@ GrillRadar generates comprehensive "deep grilling + guidance reports" through a 
 
 ---
 
+## 🧪 Quick Demo
+
+**Experience the complete report generation in 3 steps:**
+
+We provide two ready-to-use demo cases that let you experience the full functionality without preparing your own resume:
+
+### Demo 1: LLM Application Engineer Position
+
+```bash
+# 1. Configure API key (first time only)
+cp .env.example .env
+# Edit .env file and add ANTHROPIC_API_KEY or OPENAI_API_KEY
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Run the demo
+python examples/run_demo_llm.py
+```
+
+**Output:** `examples/demo_report_llm.md`
+**Demo Resume:** 2 years of experience as a ByteDance LLM engineer, including RAG systems, document processing, and prompt engineering
+
+### Demo 2: Computer Vision PhD Application
+
+```bash
+# Run the demo
+python examples/run_demo_cv.py
+```
+
+**Output:** `examples/demo_report_cv.md`
+**Demo Resume:** Tsinghua University undergraduate, medical image segmentation, MICCAI competition 3rd place, applying to Stanford/MIT PhD programs
+
+### Demo Features
+
+✅ **Realistic Cases** - Virtual resumes built from actual job hunting/application scenarios
+✅ **Complete Workflow** - Automatically load resume → call AI → generate Markdown report
+✅ **Ready to Use** - One command to experience multi-agent collaboration generating high-quality questions
+
+---
+
 ## 📋 Table of Contents
 
+- [Quick Demo](#-quick-demo)
 - [Quick Start](#-quick-start)
 - [Resume Format Support](#-resume-format-support)
 - [Configuration Methods](#-configuration-methods)

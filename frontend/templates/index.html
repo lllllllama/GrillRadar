@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrillRadar - AI面试准备报告生成器</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔥 GrillRadar</h1>
+            <p class="subtitle">AI驱动的面试准备「拷问+陪练」报告生成系统</p>
+        </header>
+
+        <main>
+            <form id="reportForm" class="report-form">
+                <!-- 模式选择 -->
+                <div class="form-group">
+                    <label class="form-label required">选择模式</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="mode" value="job" checked>
+                            <span class="radio-text">
+                                <strong>求职模式 (Job)</strong>
+                                <small>工程岗面试准备</small>
+                            </span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="mode" value="grad">
+                            <span class="radio-text">
+                                <strong>读研模式 (Grad)</strong>
+                                <small>学术面试准备</small>
+                            </span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="mode" value="mixed">
+                            <span class="radio-text">
+                                <strong>混合模式 (Mixed)</strong>
+                                <small>工程+学术双重视角</small>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 目标描述 -->
+                <div class="form-group">
+                    <label for="target_desc" class="form-label required">目标岗位/方向</label>
+                    <input
+                        type="text"
+                        id="target_desc"
+                        name="target_desc"
+                        class="form-input"
+                        placeholder="例如：字节跳动后端开发工程师 / 清华大学计算机系直博"
+                        required
+                        minlength="5"
+                    >
+                    <small class="form-hint">请描述你的目标岗位或申请方向</small>
+                </div>
+
+                <!-- 领域选择 -->
+                <div class="form-group">
+                    <label for="domain" class="form-label">技术领域（可选）</label>
+                    <select id="domain" name="domain" class="form-select">
+                        <option value="">-- 不指定领域 --</option>
+                        <optgroup label="工程领域">
+                            <option value="backend">后端开发</option>
+                            <option value="frontend">前端开发</option>
+                            <option value="algorithm">算法工程</option>
+                            <option value="llm_application">大模型应用</option>
+                            <option value="data_engineering">数据工程</option>
+                        </optgroup>
+                        <optgroup label="研究领域">
+                            <option value="cv_segmentation">计算机视觉-图像分割</option>
+                            <option value="nlp">自然语言处理</option>
+                            <option value="multimodal">多模态学习</option>
+                            <option value="general_ml">机器学习（通用）</option>
+                        </optgroup>
+                    </select>
+                    <small class="form-hint">选择后将提供更专业的问题</small>
+                </div>
+
+                <!-- 简历输入 -->
+                <div class="form-group">
+                    <label for="resume_text" class="form-label required">简历内容</label>
+                    <textarea
+                        id="resume_text"
+                        name="resume_text"
+                        class="form-textarea"
+                        placeholder="请粘贴你的简历内容...&#10;&#10;建议包含：&#10;- 教育背景&#10;- 项目经历&#10;- 技能清单&#10;- 实习/工作经历（如有）"
+                        required
+                        minlength="50"
+                        maxlength="10000"
+                        rows="12"
+                    ></textarea>
+                    <small class="form-hint">
+                        <span id="charCount">0</span> / 10000 字符
+                    </small>
+                </div>
+
+                <!-- 提交按钮 -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <span class="btn-text">🔥 生成报告</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- 加载动画 -->
+            <div id="loadingIndicator" class="loading-container" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">AI虚拟委员会正在讨论中...</p>
+                <p class="loading-subtext">预计需要 15-30 秒</p>
+            </div>
+
+            <!-- 报告显示区域 -->
+            <div id="reportContainer" class="report-container" style="display: none;">
+                <div class="report-header">
+                    <h2>📋 面试准备报告</h2>
+                    <div class="report-actions">
+                        <button class="btn btn-secondary" id="downloadMd">下载 Markdown</button>
+                        <button class="btn btn-secondary" id="downloadHtml">下载 HTML</button>
+                        <button class="btn btn-outline" id="generateNew">生成新报告</button>
+                    </div>
+                </div>
+                <div id="reportContent" class="report-content"></div>
+            </div>
+
+            <!-- 错误显示 -->
+            <div id="errorContainer" class="error-container" style="display: none;">
+                <div class="error-icon">⚠️</div>
+                <div class="error-message" id="errorMessage"></div>
+                <button class="btn btn-outline" id="tryAgain">重试</button>
+            </div>
+        </main>
+
+        <footer>
+            <p>GrillRadar v1.0.0 | Powered by Claude AI | <a href="https://github.com/lllllllama/GrillRadar" target="_blank">GitHub</a></p>
+        </footer>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

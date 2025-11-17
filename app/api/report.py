@@ -9,6 +9,7 @@ from app.models.user_config import UserConfig
 from app.models.report import Report
 from app.core.report_generator import ReportGenerator
 from app.utils.markdown import report_to_markdown
+from app.utils.domain_helper import domain_helper
 
 logger = logging.getLogger(__name__)
 
@@ -114,20 +115,20 @@ async def health_check():
 
 @router.get("/domains")
 async def get_domains():
-    """获取可用的领域列表"""
-    # 这里可以从domains.yaml读取，暂时硬编码
-    return {
-        "engineering": [
-            {"value": "backend", "label": "后端开发"},
-            {"value": "frontend", "label": "前端开发"},
-            {"value": "algorithm", "label": "算法工程"},
-            {"value": "llm_application", "label": "大模型应用"},
-            {"value": "data_engineering", "label": "数据工程"}
-        ],
-        "research": [
-            {"value": "cv_segmentation", "label": "计算机视觉-图像分割"},
-            {"value": "nlp", "label": "自然语言处理"},
-            {"value": "multimodal", "label": "多模态学习"},
-            {"value": "general_ml", "label": "机器学习（通用）"}
-        ]
-    }
+    """获取可用的领域列表（Milestone 3 增强）"""
+    return domain_helper.get_domains_list()
+
+
+@router.get("/domains/{domain}")
+async def get_domain_detail(domain: str):
+    """获取单个领域的详细信息"""
+    detail = domain_helper.get_domain_detail(domain)
+    if detail is None:
+        raise HTTPException(status_code=404, detail=f"Domain '{domain}' not found")
+    return detail
+
+
+@router.get("/domains-stats")
+async def get_domains_stats():
+    """获取领域统计信息"""
+    return domain_helper.get_domain_summary()

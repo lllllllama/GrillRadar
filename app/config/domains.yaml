@@ -1,8 +1,11 @@
-# 领域知识配置文件
+# 领域知识配置文件（Milestone 3 增强版）
 # 定义常见技术栈和研究领域的关键词、技术栈、经典论文等
+# Version: 2.0 - Enhanced with more fields and domains
 
 engineering:
   backend:
+    display_name: "后端开发"
+    description: "服务端系统开发、高并发架构、分布式系统"
     keywords:
       - 分布式系统
       - 微服务
@@ -11,100 +14,245 @@ engineering:
       - 消息队列
       - 高并发
       - 系统设计
+      - API设计
+      - 负载均衡
+      - 服务治理
     common_stacks:
-      - Java
-      - Go
-      - Python
-      - MySQL
-      - Redis
-      - Kafka
-      - Docker
-      - Kubernetes
+      - Java/Spring Boot
+      - Go/Gin
+      - Python/Django
+      - MySQL/PostgreSQL
+      - Redis/Memcached
+      - Kafka/RabbitMQ
+      - Docker/Kubernetes
+      - Nginx
+      - gRPC/REST
+      - Elasticsearch
+    typical_roles:
+      - 后端开发工程师
+      - 服务端架构师
+      - 系统工程师
+      - 基础架构工程师
+      - SRE工程师
     common_questions:
       - "如何设计一个高并发的分布式系统？"
       - "缓存一致性问题如何解决？"
       - "如何保证分布式事务的一致性？"
       - "数据库索引优化的策略有哪些？"
+      - "微服务拆分的原则是什么？"
+      - "如何设计一个秒杀系统？"
+    recommended_reading:
+      - "《设计数据密集型应用》"
+      - "《深入理解计算机系统》"
+      - "《高并发系统设计40讲》"
 
   frontend:
+    display_name: "前端开发"
+    description: "Web前端开发、用户界面、前端工程化"
     keywords:
-      - React
-      - Vue
+      - React/Vue
+      - TypeScript
       - 前端工程化
       - 性能优化
       - 状态管理
       - 浏览器原理
+      - 响应式设计
+      - 前端安全
     common_stacks:
-      - React
-      - Vue.js
+      - React/Next.js
+      - Vue/Nuxt.js
       - TypeScript
-      - Webpack
-      - Vite
+      - Webpack/Vite
       - Tailwind CSS
+      - Redux/Zustand
+      - Axios/Fetch
+      - Jest/Vitest
+    typical_roles:
+      - 前端开发工程师
+      - 全栈工程师
+      - 前端架构师
+      - Web开发工程师
     common_questions:
       - "React的虚拟DOM工作原理是什么？"
       - "前端性能优化有哪些手段？"
       - "如何实现大文件上传和断点续传？"
+      - "浏览器的事件循环机制是怎样的？"
+      - "如何防范XSS和CSRF攻击？"
+    recommended_reading:
+      - "《JavaScript高级程序设计》"
+      - "《你不知道的JavaScript》"
+      - "《前端性能优化原理与实践》"
 
   llm_application:
+    display_name: "大模型应用开发"
+    description: "LLM应用开发、RAG系统、AI Agent"
     keywords:
-      - prompt工程
+      - Prompt工程
       - RAG
       - 向量数据库
       - LLM微调
       - Agent
       - 上下文管理
+      - Function calling
+      - Embedding
     common_stacks:
-      - OpenAI API
-      - Claude API
-      - LangChain
-      - ChromaDB
-      - FAISS
-      - Pinecone
+      - OpenAI API/Claude API
+      - LangChain/LlamaIndex
+      - ChromaDB/Pinecone/FAISS
+      - Hugging Face
+      - LoRA/QLoRA
+      - vLLM/TGI
+    typical_roles:
+      - LLM应用工程师
+      - AI应用开发工程师
+      - Prompt工程师
+      - AI产品工程师
     common_questions:
       - "RAG系统的核心挑战是什么？"
       - "如何优化LLM应用的响应速度和成本？"
       - "向量检索的评估指标有哪些？"
+      - "如何设计一个稳定的Agent系统？"
+      - "Prompt工程的最佳实践有哪些？"
+    recommended_reading:
+      - "《LangChain官方文档》"
+      - "《Prompt Engineering Guide》"
 
   algorithm:
+    display_name: "算法工程"
+    description: "推荐算法、搜索算法、机器学习工程"
     keywords:
-      - 算法设计
-      - 数据结构
-      - 动态规划
-      - 图算法
-      - 搜索算法
+      - 推荐系统
+      - 搜索排序
       - 机器学习
+      - 特征工程
+      - 召回/排序
+      - A/B测试
+      - 冷启动
     common_stacks:
-      - Python
-      - C++
-      - NumPy
-      - TensorFlow
-      - PyTorch
+      - Python/C++
+      - TensorFlow/PyTorch
+      - Scikit-learn
+      - XGBoost/LightGBM
+      - Spark MLlib
+      - Redis/Elasticsearch
+    typical_roles:
+      - 算法工程师
+      - 推荐算法工程师
+      - 搜索算法工程师
+      - 机器学习工程师
     common_questions:
-      - "如何设计一个高效的推荐算法？"
-      - "深度学习模型如何部署到生产环境？"
-      - "如何处理类别不平衡问题？"
+      - "如何设计一个推荐系统？"
+      - "召回和排序的区别是什么？"
+      - "如何处理冷启动问题？"
+      - "特征工程的方法有哪些？"
+      - "如何评估推荐系统的效果？"
+    recommended_reading:
+      - "《推荐系统实践》"
+      - "《深度学习推荐系统》"
 
   data_engineering:
+    display_name: "数据工程"
+    description: "数据仓库、ETL、大数据处理"
     keywords:
       - 数据仓库
-      - ETL
+      - ETL/ELT
       - 大数据处理
       - 数据管道
       - 流式处理
+      - 数据建模
+      - 数据治理
     common_stacks:
-      - Spark
-      - Flink
-      - Airflow
-      - Hive
-      - ClickHouse
+      - Spark/Flink
+      - Airflow/Prefect
+      - Hive/ClickHouse
+      - Kafka
+      - Presto/Trino
+      - Delta Lake/Iceberg
+      - dbt
+    typical_roles:
+      - 数据工程师
+      - 大数据工程师
+      - 数据平台工程师
+      - ETL工程师
     common_questions:
       - "如何设计一个实时数据管道？"
       - "数据质量如何保证？"
       - "离线和实时数据如何同步？"
+      - "数据仓库的分层架构是什么？"
+      - "如何处理数据倾斜问题？"
+    recommended_reading:
+      - "《数据密集型应用系统设计》"
+      - "《数据仓库工具箱》"
+
+  mobile:
+    display_name: "移动开发"
+    description: "iOS/Android开发、跨平台开发"
+    keywords:
+      - iOS/Android
+      - 跨平台
+      - 移动架构
+      - 性能优化
+      - 组件化
+      - 热更新
+    common_stacks:
+      - Swift/SwiftUI
+      - Kotlin/Jetpack Compose
+      - React Native
+      - Flutter
+      - Xcode/Android Studio
+    typical_roles:
+      - iOS工程师
+      - Android工程师
+      - 移动端开发工程师
+      - 跨平台开发工程师
+    common_questions:
+      - "iOS的内存管理机制是什么？"
+      - "Android的四大组件及其生命周期？"
+      - "跨平台开发的优缺点是什么？"
+      - "如何优化App启动速度？"
+      - "如何处理不同屏幕的适配？"
+    recommended_reading:
+      - "《iOS开发进阶》"
+      - "《Android开发艺术探索》"
+      - "《Flutter实战》"
+
+  cloud_native:
+    display_name: "云原生"
+    description: "容器化、微服务、DevOps、云平台"
+    keywords:
+      - Kubernetes
+      - Docker
+      - 微服务
+      - 服务网格
+      - CI/CD
+      - 可观测性
+      - 自动化运维
+    common_stacks:
+      - Kubernetes/Docker
+      - Istio/Envoy
+      - Prometheus/Grafana
+      - Jenkins/GitLab CI
+      - Terraform/Helm
+      - AWS/阿里云/腾讯云
+    typical_roles:
+      - 云原生工程师
+      - DevOps工程师
+      - SRE工程师
+      - 平台工程师
+    common_questions:
+      - "Kubernetes的核心概念有哪些？"
+      - "如何设计一个CI/CD流程？"
+      - "服务网格解决什么问题？"
+      - "如何实现应用的高可用？"
+      - "容器化和虚拟化的区别？"
+    recommended_reading:
+      - "《Kubernetes权威指南》"
+      - "《SRE: Google运维解密》"
 
 research:
   cv_segmentation:
+    display_name: "计算机视觉-图像分割"
+    description: "语义分割、实例分割、全景分割"
     keywords:
       - 语义分割
       - 实例分割
@@ -112,8 +260,12 @@ research:
       - Transformer
       - 注意力机制
       - 多尺度特征
+      - 医疗影像分割
     canonical_papers:
+      - "FCN (CVPR 2015)"
+      - "U-Net (MICCAI 2015)"
       - "Mask R-CNN (ICCV 2017)"
+      - "DeepLab v3+ (ECCV 2018)"
       - "SegFormer (NeurIPS 2021)"
       - "Swin Transformer (ICCV 2021)"
       - "SAM - Segment Anything (ICCV 2023)"
@@ -121,67 +273,198 @@ research:
       - CVPR
       - ICCV
       - ECCV
+      - NeurIPS
+      - AAAI
+    typical_venues:
+      - TPAMI
+      - IJCV
+      - TIP
     common_questions:
       - "语义分割和实例分割的区别是什么？"
       - "Transformer在视觉任务中的优势是什么？"
-      - "如何评估分割模型的性能？"
+      - "如何评估分割模型的性能？（IoU、mIoU、Dice）"
+      - "U-Net为什么在医疗影像分割中效果好？"
+      - "你的工作相比SOTA的创新点在哪里？"
+    recommended_reading:
+      - "《Computer Vision: Algorithms and Applications》"
+      - "《深度学习计算机视觉实战》"
 
   nlp:
+    display_name: "自然语言处理"
+    description: "文本理解、文本生成、信息抽取"
     keywords:
-      - 自然语言处理
+      - 预训练模型
       - 大语言模型
       - 文本生成
       - 信息抽取
       - 机器翻译
-      - 预训练模型
+      - 问答系统
+      - Few-shot learning
     canonical_papers:
+      - "Attention is All You Need (NeurIPS 2017)"
       - "BERT (NAACL 2019)"
       - "GPT-3 (NeurIPS 2020)"
       - "T5 (JMLR 2020)"
+      - "InstructGPT (NeurIPS 2022)"
+      - "LLaMA (arXiv 2023)"
     conferences:
       - ACL
       - EMNLP
       - NAACL
       - COLING
+      - NeurIPS
+    typical_venues:
+      - TACL
+      - CL
+      - JAIR
     common_questions:
       - "预训练模型的核心思想是什么？"
-      - "如何评估生成式模型的质量？"
+      - "如何评估生成式模型的质量？（BLEU、ROUGE）"
       - "Few-shot learning在NLP中如何应用？"
+      - "Transformer的自注意力机制原理？"
+      - "你的研究与现有工作的区别？"
+    recommended_reading:
+      - "《Speech and Language Processing》"
+      - "《自然语言处理综论》"
 
   multimodal:
+    display_name: "多模态学习"
+    description: "视觉-语言、跨模态检索、图文理解"
     keywords:
       - 多模态学习
       - 视觉-语言
       - 跨模态检索
       - 图文理解
+      - 视频理解
+      - 对比学习
+      - 模态对齐
     canonical_papers:
       - "CLIP (ICML 2021)"
       - "BLIP (ICML 2022)"
       - "Flamingo (NeurIPS 2022)"
+      - "LLaVA (NeurIPS 2023)"
+      - "GPT-4V (Technical Report 2023)"
     conferences:
       - CVPR
       - NeurIPS
       - ICLR
+      - ACL
+      - ICCV
+    typical_venues:
+      - TPAMI
+      - JMLR
     common_questions:
       - "多模态对齐的核心挑战是什么？"
       - "如何评估视觉-语言模型？"
       - "对比学习在多模态中的作用是什么？"
+      - "CLIP的训练策略是什么？"
+      - "你的工作在哪个任务上有提升？"
+    recommended_reading:
+      - "《Multimodal Machine Learning》"
+      - "CLIP/BLIP论文精读"
 
   cv_detection:
+    display_name: "计算机视觉-目标检测"
+    description: "目标检测、实时检测、小目标检测"
     keywords:
       - 目标检测
       - 实时检测
       - 小目标检测
       - 3D检测
+      - Anchor-based/free
+      - NMS
+      - FPN
     canonical_papers:
-      - "YOLO series"
-      - "Faster R-CNN"
+      - "R-CNN (CVPR 2014)"
+      - "Faster R-CNN (NeurIPS 2015)"
+      - "YOLO series (2016-2023)"
+      - "RetinaNet (ICCV 2017)"
       - "DETR (ECCV 2020)"
+      - "Swin Transformer (ICCV 2021)"
     conferences:
       - CVPR
       - ICCV
       - ECCV
+      - NeurIPS
+    typical_venues:
+      - TPAMI
+      - IJCV
     common_questions:
       - "一阶段和二阶段检测器的区别？"
       - "如何提升小目标检测性能？"
       - "实时检测的优化策略有哪些？"
+      - "NMS的作用和改进方法？"
+      - "DETR相比传统检测器的优势？"
+    recommended_reading:
+      - "《Deep Learning for Computer Vision》"
+      - "MMDetection框架文档"
+
+  general_ml:
+    display_name: "机器学习（通用）"
+    description: "机器学习基础、深度学习、优化理论"
+    keywords:
+      - 监督学习
+      - 无监督学习
+      - 深度学习
+      - 优化理论
+      - 正则化
+      - 迁移学习
+      - 模型压缩
+    canonical_papers:
+      - "Adam优化器 (ICLR 2015)"
+      - "Batch Normalization (ICML 2015)"
+      - "ResNet (CVPR 2016)"
+      - "Dropout (JMLR 2014)"
+    conferences:
+      - NeurIPS
+      - ICML
+      - ICLR
+      - AAAI
+    typical_venues:
+      - JMLR
+      - MLJ
+    common_questions:
+      - "过拟合和欠拟合如何理解？"
+      - "正则化的理论基础是什么？"
+      - "SGD为什么能work？"
+      - "深度学习的泛化能力如何解释？"
+      - "迁移学习的原理是什么？"
+    recommended_reading:
+      - "《机器学习》周志华"
+      - "《Deep Learning》Goodfellow"
+      - "《Pattern Recognition and Machine Learning》"
+
+  reinforcement_learning:
+    display_name: "强化学习"
+    description: "强化学习、决策智能、游戏AI"
+    keywords:
+      - Q-learning
+      - Policy Gradient
+      - Actor-Critic
+      - RLHF
+      - Multi-agent
+      - 探索与利用
+      - 奖励设计
+    canonical_papers:
+      - "DQN (Nature 2015)"
+      - "AlphaGo (Nature 2016)"
+      - "PPO (arXiv 2017)"
+      - "AlphaZero (Science 2018)"
+      - "MuZero (Nature 2020)"
+    conferences:
+      - NeurIPS
+      - ICML
+      - ICLR
+      - AAAI
+    typical_venues:
+      - JMLR
+      - AIJ
+    common_questions:
+      - "Q-learning和Policy Gradient的区别？"
+      - "RLHF在大模型中的作用？"
+      - "如何设计奖励函数？"
+      - "探索与利用的trade-off如何平衡？"
+      - "多智能体强化学习的挑战？"
+    recommended_reading:
+      - "《Reinforcement Learning: An Introduction》"
+      - "Spinning Up in Deep RL"

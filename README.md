@@ -155,17 +155,18 @@ GrillRadar/
 │   │   ├── question_item.py
 │   │   └── report.py
 │   ├── core/             # 核心业务逻辑
-│   │   ├── prompt_builder.py  # Prompt构建
+│   │   ├── prompt_builder.py  # Prompt构建（M3增强）
 │   │   ├── llm_client.py      # LLM调用
 │   │   └── report_generator.py # 报告生成
 │   ├── api/              # FastAPI路由
-│   │   └── report.py          # 报告生成API
+│   │   └── report.py          # 报告生成API（M3增强）
 │   ├── config/           # 配置文件
-│   │   ├── domains.yaml       # 领域知识
+│   │   ├── domains.yaml       # 领域知识（M3增强：13个领域）
 │   │   ├── modes.yaml         # 模式配置
 │   │   └── settings.py
 │   ├── utils/            # 工具函数
-│   │   └── markdown.py
+│   │   ├── markdown.py
+│   │   └── domain_helper.py   # 领域管理工具（M3新增）
 │   └── main.py           # FastAPI应用入口
 ├── frontend/             # Web前端
 │   ├── templates/        # Jinja2模板
@@ -181,25 +182,41 @@ GrillRadar/
 ├── requirements.txt      # 依赖
 ├── .env.example          # 环境变量模板
 ├── Claude.md             # 项目规格说明
+├── DOMAINS.md            # 领域配置说明（M3新增）
 └── README.md             # 本文件
 ```
 
 ## 🎯 支持的领域
 
-### 工程领域
-- `backend` - 后端开发
-- `frontend` - 前端开发
-- `llm_application` - LLM应用开发
-- `algorithm` - 算法工程师
-- `data_engineering` - 数据工程
+> **Milestone 3 增强**: 每个领域现在都包含详细的关键词、技术栈、经典论文、推荐阅读等配置！
 
-### 研究领域
-- `cv_segmentation` - 图像分割
+### 工程领域 (7个)
+- `backend` - 后端开发（分布式系统、微服务、数据库优化）
+- `frontend` - 前端开发（React/Vue、TypeScript、前端工程化）
+- `llm_application` - 大模型应用开发（RAG、Prompt工程、Agent）
+- `algorithm` - 算法工程（推荐系统、搜索排序、机器学习）
+- `data_engineering` - 数据工程（数据仓库、ETL、大数据处理）
+- `mobile` - 移动开发（iOS/Android、跨平台开发）
+- `cloud_native` - 云原生（Kubernetes、DevOps、微服务）
+
+### 研究领域 (6个)
+- `cv_segmentation` - 计算机视觉-图像分割
 - `nlp` - 自然语言处理
 - `multimodal` - 多模态学习
-- `cv_detection` - 目标检测
+- `cv_detection` - 计算机视觉-目标检测
+- `general_ml` - 机器学习（通用）
+- `reinforcement_learning` - 强化学习
 
-更多领域配置见 `app/config/domains.yaml`
+**详细信息**: 查看 [DOMAINS.md](./DOMAINS.md) 了解每个领域的完整配置
+**配置文件**: `app/config/domains.yaml`
+
+### 领域配置的作用
+
+指定领域后，GrillRadar会：
+- ✅ **注入领域知识** - 在Prompt中加入该领域的关键词、技术栈、经典论文等
+- ✅ **聚焦问题范围** - 生成的问题会更聚焦于该领域的核心能力
+- ✅ **提供专业参考** - support_notes中会包含该领域的推荐阅读和学习资源
+- ✅ **匹配典型岗位** - 根据领域的典型岗位要求调整问题难度和方向
 
 ## 📊 报告示例
 
@@ -291,12 +308,16 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ## 📝 TODO / 路线图
 
-- [x] Milestone 1: CLI原型
-- [x] Milestone 2: Web版本（FastAPI + 前端）
-- [ ] Milestone 3: 扩展领域配置
-- [ ] Milestone 4: 外部信息源集成（JD、面经）
-- [ ] Milestone 5: 多Agent架构演进
-- [ ] Milestone 6: 多轮训练系统
+- [x] **Milestone 1**: CLI原型 ✅
+- [x] **Milestone 2**: Web版本（FastAPI + 前端） ✅
+- [x] **Milestone 3**: 配置驱动的领域管理（TrendRadar式） ✅
+  - 13个领域（7个工程 + 6个研究）
+  - 详细的领域配置（关键词、技术栈、论文、推荐阅读）
+  - 增强的Prompt注入
+  - 领域管理API和工具
+- [ ] **Milestone 4**: 外部信息源集成（JD、面经）
+- [ ] **Milestone 5**: 多Agent架构演进（BettaFish式）
+- [ ] **Milestone 6**: 多轮训练系统
 
 详见 `Claude.md` 中的开发路线图。
 

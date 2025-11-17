@@ -1,4 +1,4 @@
-"""虚拟委员会Prompt构建器"""
+"""虚拟委员会Prompt构建器（Milestone 3 增强版）"""
 import yaml
 import json
 from pathlib import Path
@@ -61,7 +61,7 @@ class PromptBuilder:
 {user_config.resume_text}
 ```
 
-### 领域知识
+### 领域知识（重点参考）
 {domain_knowledge}
 
 ### 角色权重（当前模式：{user_config.mode}）
@@ -166,7 +166,7 @@ class PromptBuilder:
         return prompt
 
     def _get_domain_knowledge(self, domain: Optional[str]) -> str:
-        """获取领域知识的格式化字符串"""
+        """获取领域知识的格式化字符串（增强版）"""
         if not domain:
             return "未指定领域，请基于简历内容和目标岗位进行推断。"
 
@@ -174,15 +174,53 @@ class PromptBuilder:
         for category in ['engineering', 'research']:
             if category in self.domains and domain in self.domains[category]:
                 domain_data = self.domains[category][domain]
-                knowledge = f"领域：{domain}\n"
+
+                # 构建领域知识字符串
+                knowledge_parts = []
+
+                # 领域基本信息
+                display_name = domain_data.get('display_name', domain)
+                description = domain_data.get('description', '')
+                knowledge_parts.append(f"**领域**: {display_name}")
+                if description:
+                    knowledge_parts.append(f"**描述**: {description}")
+
+                # 关键词
                 if 'keywords' in domain_data:
-                    knowledge += f"- 关键词：{', '.join(domain_data['keywords'])}\n"
+                    keywords_str = '、'.join(domain_data['keywords'][:10])  # 限制数量
+                    knowledge_parts.append(f"**关键词**: {keywords_str}")
+
+                # 常见技术栈（工程领域）
                 if 'common_stacks' in domain_data:
-                    knowledge += f"- 常见技术栈：{', '.join(domain_data['common_stacks'])}\n"
+                    stacks_str = '、'.join(domain_data['common_stacks'][:10])
+                    knowledge_parts.append(f"**常见技术栈**: {stacks_str}")
+
+                # 经典论文（研究领域）
                 if 'canonical_papers' in domain_data:
-                    knowledge += f"- 经典论文：{', '.join(domain_data['canonical_papers'])}\n"
+                    papers_str = '、'.join(domain_data['canonical_papers'][:5])
+                    knowledge_parts.append(f"**经典论文**: {papers_str}")
+
+                # 顶级会议（研究领域）
                 if 'conferences' in domain_data:
-                    knowledge += f"- 顶级会议：{', '.join(domain_data['conferences'])}\n"
+                    conferences_str = '、'.join(domain_data['conferences'])
+                    knowledge_parts.append(f"**顶级会议**: {conferences_str}")
+
+                # 典型岗位
+                if 'typical_roles' in domain_data:
+                    roles_str = '、'.join(domain_data['typical_roles'])
+                    knowledge_parts.append(f"**典型岗位**: {roles_str}")
+
+                # 推荐阅读
+                if 'recommended_reading' in domain_data:
+                    reading_str = '；'.join(domain_data['recommended_reading'][:3])
+                    knowledge_parts.append(f"**推荐阅读**: {reading_str}")
+
+                # 组合成最终字符串
+                knowledge = '\n'.join(knowledge_parts)
+
+                # 添加提示
+                knowledge += "\n\n**重点**: 根据该领域的特点，生成的问题应当聚焦于相关技术栈和核心能力，避免偏离领域范围。"
+
                 return knowledge
 
         return f"领域 '{domain}' 未在配置中找到，请基于简历内容进行推断。"

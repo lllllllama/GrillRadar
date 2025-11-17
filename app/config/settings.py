@@ -10,6 +10,8 @@ class Settings(BaseSettings):
 
     # API Keys
     ANTHROPIC_API_KEY: Optional[str] = None
+    ANTHROPIC_AUTH_TOKEN: Optional[str] = None  # 支持自定义API token (如BigModel)
+    ANTHROPIC_BASE_URL: Optional[str] = None     # 支持自定义base URL
     OPENAI_API_KEY: Optional[str] = None
 
     # LLM配置

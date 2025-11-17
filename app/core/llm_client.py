@@ -26,9 +26,18 @@ class LLMClient:
 
         # 初始化对应的客户端
         if self.provider == "anthropic":
-            if not settings.ANTHROPIC_API_KEY:
-                raise ValueError("ANTHROPIC_API_KEY not set in environment")
-            self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+            # 支持自定义API配置（如BigModel等兼容服务）
+            api_key = settings.ANTHROPIC_AUTH_TOKEN or settings.ANTHROPIC_API_KEY
+            if not api_key:
+                raise ValueError("ANTHROPIC_API_KEY or ANTHROPIC_AUTH_TOKEN not set in environment")
+
+            # 构建客户端参数
+            client_kwargs = {"api_key": api_key}
+            if settings.ANTHROPIC_BASE_URL:
+                client_kwargs["base_url"] = settings.ANTHROPIC_BASE_URL
+                logger.info(f"Using custom Anthropic base URL: {settings.ANTHROPIC_BASE_URL}")
+
+            self.client = Anthropic(**client_kwargs)
         elif self.provider == "openai":
             if not settings.OPENAI_API_KEY:
                 raise ValueError("OPENAI_API_KEY not set in environment")

@@ -183,3 +183,116 @@ class TestInfoAggregator:
         assert '外部信息' in prompt_text
         # Should contain some structured content
         assert '核心技能要求' in prompt_text or '高频' in prompt_text
+
+    def test_get_summary_for_prompt_empty(self):
+        """Test formatted summary for prompt with empty data"""
+        summary = InfoAggregator.aggregate([], [])
+        prompt_text = InfoAggregator.get_summary_for_prompt(summary)
+
+        # Should return a message indicating no external info
+        assert "未检索" in prompt_text
+
+    def test_extract_requirements_keywords_work_experience(self):
+        """Test extracting work experience keywords"""
+        from app.models.external_info import JobDescription
+
+        jd = JobDescription(
+            company="测试公司",
+            position="测试岗位",
+            requirements=["3年以上工作经验", "熟悉后端开发"],
+            keywords=[]
+        )
+
+        keywords = InfoAggregator.extract_requirements_keywords(jd)
+
+        assert "工作经验" in keywords
+
+    def test_extract_requirements_keywords_programming_languages(self):
+        """Test extracting programming language keywords"""
+        from app.models.external_info import JobDescription
+
+        jd = JobDescription(
+            company="测试公司",
+            position="测试岗位",
+            requirements=["熟练掌握Java/Go/Python", "C++开发经验"],
+            keywords=[]
+        )
+
+        keywords = InfoAggregator.extract_requirements_keywords(jd)
+
+        assert "编程语言" in keywords
+
+    def test_extract_requirements_keywords_distributed_systems(self):
+        """Test extracting distributed systems keywords"""
+        from app.models.external_info import JobDescription
+
+        jd = JobDescription(
+            company="测试公司",
+            position="测试岗位",
+            requirements=["熟悉分布式系统架构", "有高并发系统经验"],
+            keywords=[]
+        )
+
+        keywords = InfoAggregator.extract_requirements_keywords(jd)
+
+        assert "分布式系统" in keywords
+        assert "高并发" in keywords
+
+    def test_extract_requirements_keywords_database(self):
+        """Test extracting database keywords"""
+        from app.models.external_info import JobDescription
+
+        jd = JobDescription(
+            company="测试公司",
+            position="测试岗位",
+            requirements=["熟悉MySQL数据库", "Redis使用经验"],
+            keywords=[]
+        )
+
+        keywords = InfoAggregator.extract_requirements_keywords(jd)
+
+        assert "数据库" in keywords
+
+    def test_extract_requirements_keywords_with_existing_keywords(self):
+        """Test that existing JD keywords are included"""
+        from app.models.external_info import JobDescription
+
+        jd = JobDescription(
+            company="测试公司",
+            position="测试岗位",
+            requirements=["3年工作经验"],
+            keywords=["微服务", "云计算"]
+        )
+
+        keywords = InfoAggregator.extract_requirements_keywords(jd)
+
+        # Should include both extracted and existing keywords
+        assert "工作经验" in keywords
+        assert "微服务" in keywords
+        assert "云计算" in keywords
+
+    def test_extract_requirements_keywords_multiple_conditions(self):
+        """Test extracting keywords with multiple matching conditions"""
+        from app.models.external_info import JobDescription
+
+        jd = JobDescription(
+            company="测试公司",
+            position="测试岗位",
+            requirements=[
+                "5年以上Java开发经验",
+                "熟悉分布式系统和高并发架构",
+                "精通MySQL和Redis数据库"
+            ],
+            keywords=["Kafka", "Docker"]
+        )
+
+        keywords = InfoAggregator.extract_requirements_keywords(jd)
+
+        # Should extract all matching keywords
+        assert "工作经验" in keywords
+        assert "编程语言" in keywords
+        assert "分布式系统" in keywords
+        assert "高并发" in keywords
+        assert "数据库" in keywords
+        assert "Kafka" in keywords
+        assert "Docker" in keywords

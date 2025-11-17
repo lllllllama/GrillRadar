@@ -47,3 +47,48 @@ class TestDomainHelper:
         assert summary['total'] == 13
         assert summary['engineering'] == 7
         assert summary['research'] == 6
+
+    def test_get_all_domains(self, helper):
+        """Test getting all domains with complete information"""
+        all_domains = helper.get_all_domains()
+
+        assert isinstance(all_domains, dict)
+        assert 'engineering' in all_domains
+        assert 'research' in all_domains
+
+        # Check that domains have complete structure
+        eng_domains = all_domains['engineering']
+        assert len(eng_domains) == 7
+
+        # Verify a specific domain has all fields
+        assert 'backend' in eng_domains
+        backend = eng_domains['backend']
+        assert 'display_name' in backend
+        assert 'description' in backend
+        assert 'keywords' in backend
+
+    def test_validate_domain_valid_engineering(self, helper):
+        """Test validation of valid engineering domain"""
+        assert helper.validate_domain('backend') is True
+        assert helper.validate_domain('frontend') is True
+
+    def test_validate_domain_valid_research(self, helper):
+        """Test validation of valid research domain"""
+        # Get first research domain
+        all_domains = helper.get_all_domains()
+        if all_domains['research']:
+            first_research = list(all_domains['research'].keys())[0]
+            assert helper.validate_domain(first_research) is True
+
+    def test_validate_domain_invalid(self, helper):
+        """Test validation of invalid domain"""
+        assert helper.validate_domain('nonexistent_domain_12345') is False
+        assert helper.validate_domain('invalid') is False
+
+    def test_validate_domain_none(self, helper):
+        """Test validation when domain is None (allowed)"""
+        assert helper.validate_domain(None) is True
+
+    def test_validate_domain_empty_string(self, helper):
+        """Test validation when domain is empty string (allowed)"""
+        assert helper.validate_domain('') is True

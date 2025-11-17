@@ -1,0 +1,8 @@
+{
+  "target_desc": "Stanford/CMU PhD in Natural Language Processing",
+  "mode": "grad",
+  "domain": "nlp",
+  "level": "mid",
+  "enable_external_info": false,
+  "multi_agent_enabled": true
+}

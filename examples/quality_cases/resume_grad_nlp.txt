@@ -1,0 +1,48 @@
+姓名：李华
+联系方式：lihua@example.com
+申请方向：自然语言处理PhD
+
+教育背景：
+北京大学，计算机科学与技术，本科，2020-2024（预计毕业）
+- GPA: 3.85/4.0，专业排名：5/120
+- 核心课程：机器学习(95)、深度学习(98)、自然语言处理(96)、数据挖掘(92)
+
+研究经历：
+
+1. 北京大学计算语言学实验室，本科科研（2022.9-至今）
+   导师：张教授
+   - 研究方向：大语言模型的可控文本生成
+   - 提出一种基于对比学习的提示优化方法，在多个生成任务上提升BLEU 3-5分
+   - 在CoNLL 2023会议上发表一篇short paper（第二作者）
+   - 正在准备一篇关于少样本学习的论文投稿到ACL 2024
+
+2. 百度NLP实习生（2023.6-2023.12）
+   - 参与文心一言的对话系统优化，负责意图识别模块
+   - 构建了一个多领域意图分类数据集，包含50个意图类别，20k标注样本
+   - 使用BERT进行微调，在测试集上达到92%准确率
+   - 将模型部署到生产环境，日均处理100万+查询
+
+论文与成果：
+- [CoNLL 2023] "Contrastive Learning for Prompt Tuning in Few-Shot Text Generation"
+  （第二作者，CCF-C会议）
+- [Under Review] "Meta-Learning for Cross-Domain Intent Classification"
+  （第一作者，投稿ACL 2024）
+
+竞赛经历：
+- 2023 CCF大数据与计算智能大赛-文本生成赛道：全国第8名
+- 2022 Kaggle NLP竞赛：银牌（Top 5%）
+
+技术能力：
+- 编程语言：Python（精通）、C++（熟练）
+- 深度学习框架：PyTorch（精通）、TensorFlow（了解）
+- NLP工具：Transformers, SpaCy, NLTK
+- 论文阅读：每周阅读3-5篇最新论文（ACL/EMNLP/NeurIPS等）
+
+英语能力：
+- TOEFL: 108 (R:29, L:28, S:24, W:27)
+- GRE: 328 (V:163, Q:165, AW:4.0)
+
+申请目标：
+- 目标学校：Stanford, CMU, UW, UIUC（NLP方向）
+- 研究兴趣：大语言模型、可控生成、少样本学习、多模态NLP
+- 理想导师：对prompt learning和instruction tuning有深入研究的教授

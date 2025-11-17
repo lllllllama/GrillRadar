@@ -487,6 +487,30 @@ pytest tests/test_domain_helper.py -v
 pytest --cov=app tests/
 ```
 
+### 质量控制
+
+评估生成问题的质量：
+
+```bash
+# 运行质量评估（所有测试用例）
+python scripts/evaluate_question_quality.py
+
+# 运行特定场景
+python scripts/evaluate_question_quality.py --case job_backend
+
+# 查看详细建议
+python scripts/evaluate_question_quality.py --verbose
+```
+
+质量检查维度：
+- ✓ 问题清晰度和长度
+- ✓ 提问理由的上下文相关性
+- ✓ 基准答案的结构和深度
+- ✓ 支持资料的具体性
+- ✓ 练习模板的有效性
+
+详细文档：[docs/QUALITY_CONTROL.md](./docs/QUALITY_CONTROL.md)
+
 ### 代码风格
 
 ```bash

@@ -653,6 +653,30 @@ pytest tests/ --cov=app --cov-report=term-missing
 pytest tests/test_document_parser.py -v
 ```
 
+### Quality Control
+
+Evaluate the quality of generated questions:
+
+```bash
+# Run quality evaluation (all test cases)
+python scripts/evaluate_question_quality.py
+
+# Run specific scenario
+python scripts/evaluate_question_quality.py --case job_backend
+
+# View detailed recommendations
+python scripts/evaluate_question_quality.py --verbose
+```
+
+Quality dimensions checked:
+- ✓ Question clarity and length
+- ✓ Rationale contextual relevance
+- ✓ Baseline answer structure and depth
+- ✓ Support notes specificity
+- ✓ Prompt template validity
+
+Detailed documentation: [docs/QUALITY_CONTROL.md](./docs/QUALITY_CONTROL.md)
+
 ### Code Formatting
 
 ```bash

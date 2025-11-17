@@ -1,0 +1,49 @@
+姓名：陈晓
+联系方式：chenxiao@example.com | 186-9876-5432
+目标岗位：前端开发工程师（React方向）
+
+教育背景：
+浙江大学，软件工程硕士，2021-2024（预计毕业）
+本科：浙江工业大学，计算机科学与技术，2017-2021
+
+工作/实习经历：
+
+字节跳动，前端开发实习生（2023.3-2023.9）
+- 参与抖音创作者平台的视频编辑模块开发，使用React + TypeScript
+- 实现时间轴拖拽、素材库管理等核心功能，优化渲染性能至60fps
+- 使用Web Worker处理视频预览，避免主线程阻塞
+- 参与前端工程化建设，推动团队采用Monorepo架构，统一构建和发布流程
+- 负责组件库的文档维护和单元测试编写（Jest + React Testing Library）
+
+腾讯，前端开发实习生（2022.6-2022.12）
+- 参与腾讯会议Web端的开发，负责会议室管理和屏幕共享功能
+- 使用WebRTC实现多人音视频通话，处理网络抖动和断线重连
+- 优化首屏加载时间，通过代码分割和懒加载减少初始bundle大小30%
+- 使用Redux进行状态管理，处理复杂的会议状态同步
+
+项目经验：
+
+1. 可视化低代码平台（个人项目，GitHub 1.2k stars）
+   - 使用React + Ant Design构建拖拽式页面搭建工具
+   - 实现组件库、画布渲染、属性配置、代码生成等核心功能
+   - 支持导出为React/Vue代码，支持响应式布局
+   - 技术栈：React, TypeScript, Ant Design, DnD Kit, Monaco Editor
+
+2. 实时协作文档编辑器（研究生项目）
+   - 使用React + Slate.js构建富文本编辑器，支持多人实时协作
+   - 使用WebSocket + CRDT算法实现冲突解决
+   - 支持@提及、评论、版本历史等功能
+   - 技术栈：React, Slate.js, WebSocket, Node.js, MongoDB
+
+技术栈：
+- 前端框架：React（精通）、Vue 3（熟练）、Next.js（了解）
+- 编程语言：TypeScript（精通）、JavaScript（精通）
+- 状态管理：Redux, Zustand, Jotai
+- 构建工具：Webpack, Vite, Turbopack
+- CSS方案：Tailwind CSS, CSS Modules, Styled Components
+- 测试：Jest, React Testing Library, Cypress
+
+求职期望：
+- 期望薪资：20k-28k
+- 期望城市：杭州、上海、北京
+- 期望公司：字节、阿里、腾讯等互联网公司

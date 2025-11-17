@@ -1,0 +1,59 @@
+# 模式配置文件
+# 定义各模式下的角色权重和问题分布
+
+job:
+  description: "工程求职导向 - 互联网公司技术岗位面试（校招/社招/实习）"
+  roles:
+    technical_interviewer: 0.40  # 技术面试官（主导）
+    hiring_manager: 0.30         # 招聘经理
+    hr: 0.20                     # HR/行为面试官
+    advisor: 0.05                # 导师/PI
+    reviewer: 0.05               # 学术评审
+  question_distribution:
+    cs_fundamentals: 0.30        # CS基础（算法、数据结构、操作系统、网络）
+    project_depth: 0.30          # 项目深度与真实性
+    system_design: 0.25          # 系统设计与工程实践
+    soft_skills: 0.15            # 软技能与职业规划
+  question_count:
+    min: 12
+    max: 18
+    target: 15
+
+grad:
+  description: "学术/读研导向 - 硕士推免/考研复试、博士申请、科研岗位面试"
+  roles:
+    advisor: 0.40                # 导师/PI（主导）
+    reviewer: 0.30               # 学术评审
+    technical_interviewer: 0.15  # 技术面试官
+    hr: 0.10                     # HR/行为面试官
+    hiring_manager: 0.05         # 招聘经理
+  question_distribution:
+    research_interest: 0.25      # 研究兴趣与规划
+    research_methodology: 0.25   # 研究方法论（问题定义、实验设计）
+    paper_reading: 0.20          # 论文阅读与学术规范
+    cs_fundamentals: 0.20        # CS基础（研究的基础）
+    attitude: 0.10               # 科研态度与合作意愿
+  question_count:
+    min: 10
+    max: 16
+    target: 13
+
+mixed:
+  description: "工程+学术双视角 - 同时准备求职和读研、或者申请工业界研究岗位"
+  roles:
+    technical_interviewer: 0.30  # 技术面试官
+    advisor: 0.30                # 导师/PI
+    reviewer: 0.20               # 学术评审
+    hiring_manager: 0.15         # 招聘经理
+    hr: 0.05                     # HR/行为面试官
+  question_distribution:
+    engineering: 0.50            # 工程视角问题
+    research: 0.50               # 学术视角问题
+  question_count:
+    min: 14
+    max: 20
+    target: 17
+  special_requirements:
+    - "每个问题必须标注[工程视角]或[学术视角]"
+    - "summary需包含双线评估：【工程候选人评估】和【科研候选人评估】"
+    - "确保双视角平衡：工程问题和学术问题各占约50%"

@@ -1,0 +1,432 @@
+/* GrillRadar Main Styles */
+
+:root {
+    --primary-color: #ff6b35;
+    --primary-hover: #e55a2b;
+    --secondary-color: #004e89;
+    --success-color: #06d6a0;
+    --error-color: #ef476f;
+    --text-primary: #2b2d42;
+    --text-secondary: #6c757d;
+    --bg-light: #f8f9fa;
+    --bg-white: #ffffff;
+    --border-color: #dee2e6;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+                 "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+/* Header */
+header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #ff8961 100%);
+    color: white;
+    padding: 40px 30px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1rem;
+    opacity: 0.95;
+    font-weight: 300;
+}
+
+/* Main Content */
+main {
+    padding: 40px 30px;
+}
+
+/* Form Styles */
+.report-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.form-label.required::after {
+    content: " *";
+    color: var(--error-color);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 200px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.form-hint {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Radio Group */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.radio-label:hover {
+    border-color: var(--primary-color);
+    background: rgba(255, 107, 53, 0.05);
+}
+
+.radio-label input[type="radio"] {
+    margin-right: 12px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.radio-label input[type="radio"]:checked + .radio-text {
+    color: var(--primary-color);
+}
+
+.radio-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.radio-text strong {
+    font-size: 1rem;
+}
+
+.radio-text small {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Buttons */
+.form-actions {
+    margin-top: 12px;
+}
+
+.btn {
+    padding: 14px 32px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #ff8961 100%);
+    color: white;
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 16px;
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #003a66;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-outline:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* Loading */
+.loading-container {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 20px;
+    border: 4px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.loading-subtext {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+/* Report Container */
+.report-container {
+    margin-top: 40px;
+    border-top: 3px solid var(--primary-color);
+    padding-top: 40px;
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.report-header h2 {
+    font-size: 1.8rem;
+    color: var(--text-primary);
+}
+
+.report-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.report-content {
+    background: var(--bg-light);
+    padding: 30px;
+    border-radius: var(--radius-md);
+    line-height: 1.8;
+}
+
+.report-content h1,
+.report-content h2,
+.report-content h3 {
+    margin-top: 24px;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.report-content h1 {
+    font-size: 1.8rem;
+    border-bottom: 3px solid var(--primary-color);
+    padding-bottom: 12px;
+}
+
+.report-content h2 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.report-content h3 {
+    font-size: 1.2rem;
+}
+
+.report-content ul,
+.report-content ol {
+    margin-left: 24px;
+    margin-bottom: 16px;
+}
+
+.report-content li {
+    margin-bottom: 8px;
+}
+
+.report-content p {
+    margin-bottom: 16px;
+}
+
+.report-content strong {
+    color: var(--primary-color);
+}
+
+.report-content code {
+    background: #2d2d2d;
+    color: #f8f8f2;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+}
+
+.report-content pre {
+    background: #2d2d2d;
+    color: #f8f8f2;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin-bottom: 16px;
+}
+
+.report-content pre code {
+    background: none;
+    padding: 0;
+}
+
+/* Error Container */
+.error-container {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fff5f5;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--error-color);
+}
+
+.error-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+.error-message {
+    font-size: 1.1rem;
+    color: var(--error-color);
+    margin-bottom: 24px;
+}
+
+/* Footer */
+footer {
+    background: var(--bg-light);
+    padding: 24px 30px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-color);
+}
+
+footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    header {
+        padding: 30px 20px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    main {
+        padding: 30px 20px;
+    }
+
+    .report-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .report-actions {
+        width: 100%;
+    }
+
+    .btn-secondary,
+    .btn-outline {
+        flex: 1;
+    }
+}

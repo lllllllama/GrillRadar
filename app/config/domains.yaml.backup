@@ -1,0 +1,187 @@
+# 领域知识配置文件
+# 定义常见技术栈和研究领域的关键词、技术栈、经典论文等
+
+engineering:
+  backend:
+    keywords:
+      - 分布式系统
+      - 微服务
+      - 数据库优化
+      - 缓存设计
+      - 消息队列
+      - 高并发
+      - 系统设计
+    common_stacks:
+      - Java
+      - Go
+      - Python
+      - MySQL
+      - Redis
+      - Kafka
+      - Docker
+      - Kubernetes
+    common_questions:
+      - "如何设计一个高并发的分布式系统？"
+      - "缓存一致性问题如何解决？"
+      - "如何保证分布式事务的一致性？"
+      - "数据库索引优化的策略有哪些？"
+
+  frontend:
+    keywords:
+      - React
+      - Vue
+      - 前端工程化
+      - 性能优化
+      - 状态管理
+      - 浏览器原理
+    common_stacks:
+      - React
+      - Vue.js
+      - TypeScript
+      - Webpack
+      - Vite
+      - Tailwind CSS
+    common_questions:
+      - "React的虚拟DOM工作原理是什么？"
+      - "前端性能优化有哪些手段？"
+      - "如何实现大文件上传和断点续传？"
+
+  llm_application:
+    keywords:
+      - prompt工程
+      - RAG
+      - 向量数据库
+      - LLM微调
+      - Agent
+      - 上下文管理
+    common_stacks:
+      - OpenAI API
+      - Claude API
+      - LangChain
+      - ChromaDB
+      - FAISS
+      - Pinecone
+    common_questions:
+      - "RAG系统的核心挑战是什么？"
+      - "如何优化LLM应用的响应速度和成本？"
+      - "向量检索的评估指标有哪些？"
+
+  algorithm:
+    keywords:
+      - 算法设计
+      - 数据结构
+      - 动态规划
+      - 图算法
+      - 搜索算法
+      - 机器学习
+    common_stacks:
+      - Python
+      - C++
+      - NumPy
+      - TensorFlow
+      - PyTorch
+    common_questions:
+      - "如何设计一个高效的推荐算法？"
+      - "深度学习模型如何部署到生产环境？"
+      - "如何处理类别不平衡问题？"
+
+  data_engineering:
+    keywords:
+      - 数据仓库
+      - ETL
+      - 大数据处理
+      - 数据管道
+      - 流式处理
+    common_stacks:
+      - Spark
+      - Flink
+      - Airflow
+      - Hive
+      - ClickHouse
+    common_questions:
+      - "如何设计一个实时数据管道？"
+      - "数据质量如何保证？"
+      - "离线和实时数据如何同步？"
+
+research:
+  cv_segmentation:
+    keywords:
+      - 语义分割
+      - 实例分割
+      - 全景分割
+      - Transformer
+      - 注意力机制
+      - 多尺度特征
+    canonical_papers:
+      - "Mask R-CNN (ICCV 2017)"
+      - "SegFormer (NeurIPS 2021)"
+      - "Swin Transformer (ICCV 2021)"
+      - "SAM - Segment Anything (ICCV 2023)"
+    conferences:
+      - CVPR
+      - ICCV
+      - ECCV
+    common_questions:
+      - "语义分割和实例分割的区别是什么？"
+      - "Transformer在视觉任务中的优势是什么？"
+      - "如何评估分割模型的性能？"
+
+  nlp:
+    keywords:
+      - 自然语言处理
+      - 大语言模型
+      - 文本生成
+      - 信息抽取
+      - 机器翻译
+      - 预训练模型
+    canonical_papers:
+      - "BERT (NAACL 2019)"
+      - "GPT-3 (NeurIPS 2020)"
+      - "T5 (JMLR 2020)"
+    conferences:
+      - ACL
+      - EMNLP
+      - NAACL
+      - COLING
+    common_questions:
+      - "预训练模型的核心思想是什么？"
+      - "如何评估生成式模型的质量？"
+      - "Few-shot learning在NLP中如何应用？"
+
+  multimodal:
+    keywords:
+      - 多模态学习
+      - 视觉-语言
+      - 跨模态检索
+      - 图文理解
+    canonical_papers:
+      - "CLIP (ICML 2021)"
+      - "BLIP (ICML 2022)"
+      - "Flamingo (NeurIPS 2022)"
+    conferences:
+      - CVPR
+      - NeurIPS
+      - ICLR
+    common_questions:
+      - "多模态对齐的核心挑战是什么？"
+      - "如何评估视觉-语言模型？"
+      - "对比学习在多模态中的作用是什么？"
+
+  cv_detection:
+    keywords:
+      - 目标检测
+      - 实时检测
+      - 小目标检测
+      - 3D检测
+    canonical_papers:
+      - "YOLO series"
+      - "Faster R-CNN"
+      - "DETR (ECCV 2020)"
+    conferences:
+      - CVPR
+      - ICCV
+      - ECCV
+    common_questions:
+      - "一阶段和二阶段检测器的区别？"
+      - "如何提升小目标检测性能？"
+      - "实时检测的优化策略有哪些？"

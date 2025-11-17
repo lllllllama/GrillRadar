@@ -5,6 +5,10 @@ GrillRadar CLI - 命令行界面
 用法:
     python cli.py --config config.json --resume resume.txt --output report.md
 """
+# 重要：在导入任何模块之前先加载环境变量
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
 import argparse
 import json
 import logging

@@ -1,7 +1,14 @@
 """LLM客户端封装"""
 import json
 import logging
+import os
 from typing import Optional
+
+# 重要：在导入anthropic之前先加载环境变量
+# 因为anthropic库会在导入时读取环境变量ANTHROPIC_BASE_URL并设置默认值
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
 from anthropic import Anthropic
 from openai import OpenAI
 from app.config.settings import settings

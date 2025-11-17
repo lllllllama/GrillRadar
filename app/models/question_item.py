@@ -24,31 +24,31 @@ class QuestionItem(BaseModel):
     question: str = Field(
         ...,
         description="问题正文（简体中文），尽量具体、有针对性",
-        min_length=10
+        min_length=5
     )
 
     rationale: str = Field(
         ...,
         description="提问理由（2-4句话），说明为什么问这个问题、考察什么能力、与简历/目标的关联",
-        min_length=20
+        min_length=10
     )
 
     baseline_answer: str = Field(
         ...,
         description="基准答案结构：提供回答框架和关键要点，但不编造用户个人经历",
-        min_length=50
+        min_length=20
     )
 
     support_notes: str = Field(
         ...,
         description="支撑材料：相关概念、经典技术/论文、推荐阅读、搜索关键词等",
-        min_length=20
+        min_length=10
     )
 
     prompt_template: str = Field(
         ...,
         description="可复用的练习提示词，用户可复制此提示词喂给任意AI进行深度练习。包含占位符（如{your_experience}）",
-        min_length=50
+        min_length=20
     )
 
     class Config:

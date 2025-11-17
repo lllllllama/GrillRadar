@@ -32,7 +32,7 @@ class Report(BaseModel):
     summary: str = Field(
         ...,
         description="总体评估：候选人的优势、风险点、准备建议。语气略带grilling但建设性强",
-        min_length=100
+        min_length=30
     )
 
     mode: str = Field(
@@ -49,13 +49,13 @@ class Report(BaseModel):
     highlights: str = Field(
         ...,
         description="候选人亮点：从简历和问题设计中推断出的优势",
-        min_length=50
+        min_length=20
     )
 
     risks: str = Field(
         ...,
         description="关键风险点：简历暴露的薄弱环节",
-        min_length=50
+        min_length=20
     )
 
     questions: List[QuestionItem] = Field(

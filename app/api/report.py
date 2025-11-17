@@ -10,6 +10,7 @@ from app.models.report import Report
 from app.core.report_generator import ReportGenerator
 from app.utils.markdown import report_to_markdown
 from app.utils.domain_helper import domain_helper
+from app.config.config_manager import config_manager
 
 logger = logging.getLogger(__name__)
 
@@ -213,4 +214,61 @@ async def preview_external_info(
         "jd_count": len(summary.job_descriptions),
         "experience_count": len(summary.interview_experiences),
         "keywords": summary.aggregated_keywords[:15]
+    }
+
+
+# Configuration Management Endpoints
+
+@router.post("/config/reload")
+async def reload_configuration():
+    """
+    Reload configuration files (development/debugging)
+
+    Force reload domains.yaml and modes.yaml from disk.
+    Useful for development when configs change.
+
+    Returns:
+        Status message with reload timestamp
+    """
+    try:
+        config_manager.reload()
+
+        return {
+            "status": "success",
+            "message": "Configuration reloaded successfully",
+            "last_reload": config_manager.last_reload.isoformat() if config_manager.last_reload else None,
+            "domains_count": len(config_manager.domains.get('engineering', {})) + len(config_manager.domains.get('research', {})),
+            "modes_count": len(config_manager.modes)
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to reload configuration: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Configuration reload failed: {str(e)}"
+        )
+
+
+@router.get("/config/status")
+async def get_configuration_status():
+    """
+    Get current configuration status
+
+    Returns information about loaded configurations without reloading.
+
+    Returns:
+        Configuration status and statistics
+    """
+    return {
+        "status": "ok",
+        "last_reload": config_manager.last_reload.isoformat() if config_manager.last_reload else "Not loaded yet",
+        "domains": {
+            "engineering_count": len(config_manager.domains.get('engineering', {})),
+            "research_count": len(config_manager.domains.get('research', {})),
+            "total": len(config_manager.domains.get('engineering', {})) + len(config_manager.domains.get('research', {}))
+        },
+        "modes": {
+            "available": list(config_manager.modes.keys()),
+            "count": len(config_manager.modes)
+        }
     }

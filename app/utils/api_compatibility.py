@@ -16,8 +16,9 @@ class APIProvider(str, Enum):
     """Supported API providers"""
     ANTHROPIC = "anthropic"
     OPENAI = "openai"
-    BIGMODEL = "bigmodel"  # Anthropic-compatible third-party
-    CUSTOM = "custom"      # Custom Anthropic-compatible endpoint
+    KIMI = "kimi"           # Moonshot AI (Kimi)
+    BIGMODEL = "bigmodel"   # Anthropic-compatible third-party
+    CUSTOM = "custom"       # Custom Anthropic-compatible endpoint
 
 
 class APIStatus(str, Enum):
@@ -55,6 +56,10 @@ class APICompatibility:
         # OpenAI
         elif provider == "openai":
             return APIProvider.OPENAI
+
+        # Kimi (Moonshot AI)
+        elif provider == "kimi":
+            return APIProvider.KIMI
 
         # Default to configured value
         return APIProvider.CUSTOM
@@ -110,6 +115,22 @@ class APICompatibility:
                 logger.warning(f"Model '{settings.DEFAULT_MODEL}' may not be a valid OpenAI model")
 
             return True, "OpenAI configuration valid"
+
+        # Validate Kimi configuration
+        elif provider == "kimi":
+            if not settings.OPENAI_API_KEY:  # Kimi uses OpenAI-compatible API
+                return False, "Kimi API key not configured (set as OPENAI_API_KEY)"
+
+            # Validate model name
+            valid_kimi_models = [
+                "moonshot-v1-8k",
+                "moonshot-v1-32k",
+                "moonshot-v1-128k"
+            ]
+            if not any(settings.DEFAULT_MODEL.startswith(m) for m in valid_kimi_models):
+                logger.warning(f"Model '{settings.DEFAULT_MODEL}' may not be a valid Kimi model")
+
+            return True, "Kimi configuration valid"
 
         else:
             return False, f"Unsupported LLM provider: {provider}"
@@ -255,6 +276,25 @@ class APICompatibility:
                 ]
             })
 
+        elif provider.lower() == "kimi":
+            info.update({
+                "name": "Kimi (Moonshot AI)",
+                "description": "Chinese AI model with strong long-context capabilities",
+                "max_context": "128K tokens (moonshot-v1-128k)",
+                "supports": [
+                    "long_context",
+                    "chinese_language",
+                    "openai_compatible_api",
+                    "streaming"
+                ],
+                "models": [
+                    "moonshot-v1-128k (recommended)",
+                    "moonshot-v1-32k",
+                    "moonshot-v1-8k (economical)"
+                ],
+                "endpoint": "https://api.moonshot.cn/v1"
+            })
+
         return info
 
     @staticmethod
@@ -296,9 +336,27 @@ class APICompatibility:
                 ],
                 "cost": "$-$$$"
             },
+            "kimi": {
+                "strengths": [
+                    "Excellent Chinese language understanding",
+                    "Long context window (up to 128K)",
+                    "Accessible in China without VPN",
+                    "OpenAI-compatible API",
+                    "Cost-effective pricing"
+                ],
+                "use_cases": [
+                    "Chinese language applications",
+                    "Long document analysis",
+                    "Users in mainland China",
+                    "Cost-conscious deployments"
+                ],
+                "cost": "$"
+            },
             "recommendation": {
                 "for_grillradar": "anthropic",
-                "reason": "Better at complex reasoning and analysis required for generating insightful interview questions"
+                "reason": "Better at complex reasoning and analysis required for generating insightful interview questions",
+                "alternative_china": "kimi",
+                "alternative_china_reason": "Best option for users in mainland China with excellent Chinese support"
             }
         }
 

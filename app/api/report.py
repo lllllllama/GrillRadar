@@ -11,6 +11,7 @@ from app.core.report_generator import ReportGenerator
 from app.utils.markdown import report_to_markdown
 from app.utils.domain_helper import domain_helper
 from app.config.config_manager import config_manager
+from app.config.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -271,4 +272,63 @@ async def get_configuration_status():
             "available": list(config_manager.modes.keys()),
             "count": len(config_manager.modes)
         }
+    }
+
+
+# API Compatibility and Health Check Endpoints
+
+from app.utils.api_compatibility import api_compatibility
+
+
+@router.get("/api-health")
+async def check_api_health():
+    """
+    Check API provider health status
+
+    Returns:
+        API health status including provider info and configuration
+    """
+    health_status = await api_compatibility.check_api_health()
+    return health_status
+
+
+@router.get("/api-info")
+async def get_api_provider_info():
+    """
+    Get detailed information about current API provider
+
+    Returns:
+        Provider information including capabilities and models
+    """
+    provider_info = api_compatibility.get_provider_info()
+    return provider_info
+
+
+@router.get("/api-compare")
+async def compare_api_providers():
+    """
+    Compare different API providers
+
+    Returns:
+        Comparison of available providers with strengths and use cases
+    """
+    comparison = api_compatibility.compare_providers()
+    return comparison
+
+
+@router.get("/api-validate")
+async def validate_api_configuration():
+    """
+    Validate current API configuration
+
+    Returns:
+        Validation result with detailed error messages if invalid
+    """
+    is_valid, message = api_compatibility.validate_api_configuration()
+
+    return {
+        "valid": is_valid,
+        "message": message,
+        "provider": settings.DEFAULT_LLM_PROVIDER,
+        "model": settings.DEFAULT_MODEL
     }

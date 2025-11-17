@@ -374,6 +374,126 @@ class TestGenerateReportFormEndpoint:
         assert response.status_code in [400, 422]
 
 
+class TestAPICompatibilityEndpoints:
+    """Tests for API compatibility endpoints"""
+
+    def test_api_health_endpoint(self):
+        """Test API health check endpoint"""
+        response = client.get("/api/api-health")
+        assert response.status_code == 200
+        data = response.json()
+
+        # Should have required fields
+        assert "provider" in data
+        assert "status" in data
+        assert "message" in data
+
+        # Provider should be one of the supported ones
+        assert data["provider"] in ["anthropic", "openai"]
+
+        # Status should be a valid status
+        assert data["status"] in ["healthy", "degraded", "unavailable", "not_configured"]
+
+    def test_api_info_endpoint(self):
+        """Test API provider info endpoint"""
+        response = client.get("/api/api-info")
+        assert response.status_code == 200
+        data = response.json()
+
+        # Should have provider info
+        assert "provider" in data
+        assert "name" in data
+        assert "models" in data
+        assert "max_context" in data
+        assert "supports" in data
+
+        # Models should be a list
+        assert isinstance(data["models"], list)
+        assert len(data["models"]) > 0
+
+        # Supports should be a list of features
+        assert isinstance(data["supports"], list)
+
+    def test_api_compare_endpoint(self):
+        """Test API providers comparison endpoint"""
+        response = client.get("/api/api-compare")
+        assert response.status_code == 200
+        data = response.json()
+
+        # Should have comparisons for both providers
+        assert "anthropic" in data
+        assert "openai" in data
+        assert "recommendation" in data
+
+        # Check anthropic structure
+        assert "strengths" in data["anthropic"]
+        assert "use_cases" in data["anthropic"]
+        assert "cost" in data["anthropic"]
+        assert isinstance(data["anthropic"]["strengths"], list)
+        assert isinstance(data["anthropic"]["use_cases"], list)
+
+        # Check openai structure
+        assert "strengths" in data["openai"]
+        assert "use_cases" in data["openai"]
+        assert isinstance(data["openai"]["strengths"], list)
+        assert isinstance(data["openai"]["use_cases"], list)
+
+        # Check recommendation
+        assert "for_grillradar" in data["recommendation"]
+        assert "reason" in data["recommendation"]
+        assert data["recommendation"]["for_grillradar"] in ["anthropic", "openai"]
+
+    def test_api_validate_endpoint(self):
+        """Test API configuration validation endpoint"""
+        response = client.get("/api/api-validate")
+        assert response.status_code == 200
+        data = response.json()
+
+        # Should have validation result
+        assert "valid" in data
+        assert "message" in data
+        assert "provider" in data
+        assert "model" in data
+
+        # Valid should be boolean
+        assert isinstance(data["valid"], bool)
+
+        # Provider and model should be strings
+        assert isinstance(data["provider"], str)
+        assert isinstance(data["model"], str)
+
+    def test_api_compatibility_workflow(self):
+        """Test API compatibility workflow"""
+        # 1. Validate configuration
+        validate_response = client.get("/api/api-validate")
+        assert validate_response.status_code == 200
+        validate_data = validate_response.json()
+
+        # 2. Check API health
+        health_response = client.get("/api/api-health")
+        assert health_response.status_code == 200
+        health_data = health_response.json()
+
+        # Health provider should match validated provider
+        assert health_data["provider"] == validate_data["provider"]
+
+        # 3. Get provider info
+        info_response = client.get("/api/api-info")
+        assert info_response.status_code == 200
+        info_data = info_response.json()
+
+        # Info provider should match validated provider
+        assert info_data["provider"] == validate_data["provider"]
+
+        # 4. Compare providers
+        compare_response = client.get("/api/api-compare")
+        assert compare_response.status_code == 200
+        compare_data = compare_response.json()
+
+        # Should have recommendation
+        assert "recommendation" in compare_data
+
+
 class TestAPIIntegration:
     """Integration tests for API workflow"""
 

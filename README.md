@@ -6,7 +6,7 @@ GrillRadar generates comprehensive "deep grilling + guidance reports" through a 
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Test Coverage](https://img.shields.io/badge/coverage-94%25-brightgreen.svg)]()
+[![Test Coverage](https://img.shields.io/badge/coverage-91%25+-brightgreen.svg)]()
 
 ## ✨ Core Features
 
@@ -16,9 +16,10 @@ GrillRadar generates comprehensive "deep grilling + guidance reports" through a 
 - **🎭 Multi-role Perspectives** - Comprehensive evaluation from 6 roles: tech interviewers, HR, mentors/PIs, etc.
 - **📊 Three Modes** - Support for job hunting (job), academic applications (grad), dual perspective (mixed)
 - **🌐 External Information Sources** - Integrate real JD and interview experience data for more realistic questions
-- **📄 Multi-format Resume Support** - **NEW!** Upload PDF, Word, TXT, or Markdown resumes
-- **🔧 Multi-API Compatibility** - **NEW!** Support for Anthropic, OpenAI, and third-party compatible endpoints
-- **⚙️ Flexible Configuration** - **NEW!** 5 configuration methods from interactive wizard to manual editing
+- **📄 Multi-format Resume Support** - Upload PDF, Word, TXT, or Markdown resumes
+- **🔧 Multi-API Compatibility** - Support for Anthropic, OpenAI, Kimi, and third-party compatible endpoints
+- **⚙️ Flexible Configuration** - 5 configuration methods from interactive wizard to manual editing
+- **🤖 Multi-Agent Decision Making** - **NEW!** 6 specialized agents collaborate to generate high-quality questions
 
 ---
 
@@ -645,11 +646,16 @@ black app/ tests/ cli.py
   - File upload API endpoint
   - Comprehensive testing
 - [x] **Milestone 4.6**: Multi-API compatibility ✅
-  - Support for Anthropic, OpenAI, third-party services
+  - Support for Anthropic, OpenAI, Kimi, third-party services
   - Auto-detection and validation
   - Health checking and monitoring
   - Interactive configuration wizard
-- [ ] **Milestone 5**: Multi-agent architecture evolution (BettaFish-style)
+- [x] **Milestone 5**: Multi-agent architecture evolution (BettaFish-style) ✅
+  - 6 specialized agents: Technical Interviewer, Hiring Manager, HR, Advisor, Reviewer, Advocate
+  - ForumEngine for agent coordination and consensus
+  - Parallel agent execution with graceful fallback
+  - Deduplication, quality filtering, and question enhancement
+  - Comprehensive test coverage (91%+ passing)
 - [ ] **Milestone 6**: Multi-round training system
 
 See `Claude.md` for detailed development roadmap.

@@ -17,11 +17,15 @@ router = APIRouter(prefix="/api", tags=["report"])
 
 
 class GenerateReportRequest(BaseModel):
-    """生成报告请求"""
+    """生成报告请求（Milestone 4 增强）"""
     mode: str = Field(..., pattern="^(job|grad|mixed)$", description="模式：job/grad/mixed")
     target_desc: str = Field(..., min_length=5, description="目标描述")
     domain: Optional[str] = Field(None, description="领域选择（可选）")
     resume_text: str = Field(..., min_length=50, max_length=10000, description="简历内容")
+
+    # Milestone 4: 外部信息源字段
+    enable_external_info: bool = Field(default=False, description="是否启用外部信息源（JD、面经）")
+    target_company: Optional[str] = Field(None, description="目标公司名称（用于外部信息检索）")
 
 
 class GenerateReportResponse(BaseModel):
@@ -49,7 +53,9 @@ async def generate_report(request: GenerateReportRequest):
             mode=request.mode,
             target_desc=request.target_desc,
             domain=request.domain,
-            resume_text=request.resume_text
+            resume_text=request.resume_text,
+            enable_external_info=request.enable_external_info,
+            target_company=request.target_company
         )
 
         # 生成报告
@@ -132,3 +138,79 @@ async def get_domain_detail(domain: str):
 async def get_domains_stats():
     """获取领域统计信息"""
     return domain_helper.get_domain_summary()
+
+
+# Milestone 4: External Information Endpoints
+
+from app.sources.external_info_service import external_info_service
+from app.models.external_info import ExternalInfoSummary
+
+
+@router.get("/external-info/search", response_model=ExternalInfoSummary)
+async def search_external_info(
+    company: Optional[str] = None,
+    position: Optional[str] = None,
+    enable_jd: bool = True,
+    enable_interview_exp: bool = True
+):
+    """
+    搜索外部信息（JD和面经）
+
+    Args:
+        company: 目标公司（可选）
+        position: 目标岗位（可选）
+        enable_jd: 是否启用JD检索
+        enable_interview_exp: 是否启用面经检索
+
+    Returns:
+        外部信息摘要
+    """
+    summary = external_info_service.retrieve_external_info(
+        company=company,
+        position=position,
+        enable_jd=enable_jd,
+        enable_interview_exp=enable_interview_exp
+    )
+
+    if summary is None:
+        raise HTTPException(
+            status_code=404,
+            detail="No external information found for the given criteria"
+        )
+
+    return summary
+
+
+@router.get("/external-info/preview")
+async def preview_external_info(
+    company: Optional[str] = None,
+    position: Optional[str] = None
+):
+    """
+    预览外部信息（返回文本摘要）
+
+    Args:
+        company: 目标公司（可选）
+        position: 目标岗位（可选）
+
+    Returns:
+        格式化的文本摘要
+    """
+    summary = external_info_service.retrieve_external_info(
+        company=company,
+        position=position,
+        enable_jd=True,
+        enable_interview_exp=True
+    )
+
+    if summary is None:
+        return {"summary": "未找到相关外部信息"}
+
+    text_summary = summary.get_summary_text()
+
+    return {
+        "summary": text_summary,
+        "jd_count": len(summary.job_descriptions),
+        "experience_count": len(summary.interview_experiences),
+        "keywords": summary.aggregated_keywords[:15]
+    }

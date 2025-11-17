@@ -1,10 +1,14 @@
-"""虚拟委员会Prompt构建器（Milestone 3 增强版）"""
+"""虚拟委员会Prompt构建器（Milestone 3 增强版，Milestone 4 集成外部信息）"""
 import yaml
 import json
+import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
 from app.models.user_config import UserConfig
 from app.config.settings import settings
+from app.sources.external_info_service import external_info_service
+
+logger = logging.getLogger(__name__)
 
 
 class PromptBuilder:
@@ -36,6 +40,9 @@ class PromptBuilder:
         # 获取领域知识（如果指定了domain）
         domain_knowledge = self._get_domain_knowledge(user_config.domain)
 
+        # Milestone 4: 获取外部信息（如果启用）
+        external_info_text = self._get_external_info(user_config)
+
         # 构建Prompt
         prompt = f"""# GrillRadar 虚拟面试委员会 System Prompt
 
@@ -63,6 +70,8 @@ class PromptBuilder:
 
 ### 领域知识（重点参考）
 {domain_knowledge}
+
+{external_info_text}
 
 ### 角色权重（当前模式：{user_config.mode}）
 {self._format_role_weights(mode_config.get('roles', {}))}
@@ -280,3 +289,52 @@ class PromptBuilder:
   作为XX方向的研究生候选人，你的XX基础...
   ```"""
         return ""
+
+    def _get_external_info(self, user_config: UserConfig) -> str:
+        """
+        获取外部信息（Milestone 4）
+
+        Args:
+            user_config: 用户配置
+
+        Returns:
+            格式化的外部信息文本，如果未启用则返回空字符串
+        """
+        if not user_config.enable_external_info:
+            return ""
+
+        try:
+            # 提取公司和岗位信息
+            company = user_config.target_company
+            position_desc = user_config.target_desc
+
+            # 简单提取岗位关键词（实际应用中会更复杂）
+            position = None
+            if "后端" in position_desc or "backend" in position_desc.lower():
+                position = "后端"
+            elif "前端" in position_desc or "frontend" in position_desc.lower():
+                position = "前端"
+            elif "算法" in position_desc:
+                position = "算法"
+
+            logger.info(f"Retrieving external info for company={company}, position={position}")
+
+            # 检索外部信息
+            summary = external_info_service.retrieve_external_info(
+                company=company,
+                position=position,
+                enable_jd=True,
+                enable_interview_exp=True
+            )
+
+            if summary is None:
+                return ""
+
+            # 获取格式化文本
+            external_text = external_info_service.get_prompt_summary(summary)
+
+            return f"\n{external_text}\n"
+
+        except Exception as e:
+            logger.error(f"Failed to get external info: {e}", exc_info=True)
+            return ""

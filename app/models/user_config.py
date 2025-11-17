@@ -40,6 +40,17 @@ class UserConfig(BaseModel):
         min_length=10
     )
 
+    # Milestone 4: 外部信息源配置
+    enable_external_info: bool = Field(
+        default=False,
+        description="是否启用外部信息源（JD、面经）检索"
+    )
+
+    target_company: Optional[str] = Field(
+        None,
+        description="目标公司名称（用于外部信息检索）"
+    )
+
     class Config:
         json_schema_extra = {
             "example": {
@@ -48,6 +59,8 @@ class UserConfig(BaseModel):
                 "domain": "backend",
                 "language": "zh",
                 "level": "junior",
-                "resume_text": "姓名：张三\n教育背景：XX大学 计算机科学与技术 本科\n项目经历：\n1. 分布式爬虫系统..."
+                "resume_text": "姓名：张三\n教育背景：XX大学 计算机科学与技术 本科\n项目经历：\n1. 分布式爬虫系统...",
+                "enable_external_info": True,
+                "target_company": "字节跳动"
             }
         }

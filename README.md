@@ -11,6 +11,7 @@ GrillRadar 通过"虚拟面试/导师委员会"为你生成一份高质量的"�
 - **💡 可复用提示词** - 每个问题提供练习提示词，可直接喂给AI进行深度练习
 - **🎭 多角色视角** - 模拟技术面试官、HR、导师/PI等6个角色的综合评估
 - **📊 三种模式** - 支持工程求职（job）、学术申请（grad）、双视角（mixed）
+- **🌐 外部信息源** - 集成真实JD和面经数据，生成更贴近实际面试场景的问题（M4新增）
 
 ## 🚀 快速开始
 
@@ -71,6 +72,20 @@ OPENAI_API_KEY=sk-...
 - `target_desc`: 目标岗位或方向的详细描述
 - `domain`: 领域（可选），如 `backend`, `llm_application`, `cv_segmentation`
 - `level`: 候选人级别（可选），如 `intern`, `junior`, `senior`, `master`, `phd`
+- `enable_external_info`: 是否启用外部信息源（可选，默认false）
+- `target_company`: 目标公司名称（可选，用于外部信息检索）
+
+**启用外部信息源（Milestone 4）：**
+```json
+{
+  "mode": "job",
+  "target_desc": "字节跳动后端开发工程师",
+  "domain": "backend",
+  "enable_external_info": true,
+  "target_company": "字节跳动"
+}
+```
+启用后，报告生成时会自动检索相关JD和面经，生成更贴近实际面试的问题。详见 [EXTERNAL_INFO.md](./EXTERNAL_INFO.md)
 
 ### 5. 准备简历
 
@@ -151,15 +166,23 @@ python cli.py \
 GrillRadar/
 ├── app/
 │   ├── models/           # Pydantic数据模型
-│   │   ├── user_config.py
+│   │   ├── user_config.py     # 用户配置（M4增强）
 │   │   ├── question_item.py
-│   │   └── report.py
+│   │   ├── report.py
+│   │   └── external_info.py   # 外部信息模型（M4新增）
 │   ├── core/             # 核心业务逻辑
-│   │   ├── prompt_builder.py  # Prompt构建（M3增强）
+│   │   ├── prompt_builder.py  # Prompt构建（M4增强）
 │   │   ├── llm_client.py      # LLM调用
 │   │   └── report_generator.py # 报告生成
+│   ├── sources/          # 外部信息源（M4新增）
+│   │   ├── __init__.py
+│   │   ├── mock_provider.py   # Mock数据提供者
+│   │   └── external_info_service.py  # 外部信息服务
+│   ├── retrieval/        # 信息检索（M4新增）
+│   │   ├── __init__.py
+│   │   └── info_aggregator.py # 信息聚合器
 │   ├── api/              # FastAPI路由
-│   │   └── report.py          # 报告生成API（M3增强）
+│   │   └── report.py          # 报告生成API（M4增强）
 │   ├── config/           # 配置文件
 │   │   ├── domains.yaml       # 领域知识（M3增强：13个领域）
 │   │   ├── modes.yaml         # 模式配置
@@ -183,6 +206,7 @@ GrillRadar/
 ├── .env.example          # 环境变量模板
 ├── Claude.md             # 项目规格说明
 ├── DOMAINS.md            # 领域配置说明（M3新增）
+├── EXTERNAL_INFO.md      # 外部信息源说明（M4新增）
 └── README.md             # 本文件
 ```
 
@@ -315,7 +339,12 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
   - 详细的领域配置（关键词、技术栈、论文、推荐阅读）
   - 增强的Prompt注入
   - 领域管理API和工具
-- [ ] **Milestone 4**: 外部信息源集成（JD、面经）
+- [x] **Milestone 4**: 外部信息源集成（JD、面经） ✅
+  - Mock数据提供者（演示模式）
+  - JD和面经数据模型
+  - 信息聚合和关键词提取
+  - Prompt自动注入外部信息
+  - 外部信息查询API
 - [ ] **Milestone 5**: 多Agent架构演进（BettaFish式）
 - [ ] **Milestone 6**: 多轮训练系统
 

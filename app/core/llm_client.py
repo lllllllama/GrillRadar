@@ -2,6 +2,7 @@
 import json
 import logging
 import os
+import time
 from typing import Optional
 
 # 重要：在导入anthropic之前先加载环境变量
@@ -12,8 +13,10 @@ load_dotenv(override=True)
 from anthropic import Anthropic
 from openai import OpenAI
 from app.config.settings import settings
+from app.utils.json_sanitizer import safe_json_parse
+from app.core.logging import get_logger, log_llm_call
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class LLMClient:
@@ -24,12 +27,16 @@ class LLMClient:
         provider: Optional[str] = None,
         model: Optional[str] = None,
         temperature: Optional[float] = None,
-        max_tokens: Optional[int] = None
+        max_tokens: Optional[int] = None,
+        request_id: Optional[str] = None,
+        enable_json_repair: bool = True
     ):
         self.provider = provider or settings.DEFAULT_LLM_PROVIDER
         self.model = model or settings.DEFAULT_MODEL
         self.temperature = temperature or settings.LLM_TEMPERATURE
         self.max_tokens = max_tokens or settings.LLM_MAX_TOKENS
+        self.request_id = request_id or ""
+        self.enable_json_repair = enable_json_repair
 
         # 初始化对应的客户端
         if self.provider == "anthropic":
@@ -92,6 +99,8 @@ class LLMClient:
             })
             system_prompt = "You are a helpful AI assistant."
 
+        # Time the API call
+        start_time = time.time()
         response = self.client.messages.create(
             model=self.model,
             max_tokens=self.max_tokens,
@@ -99,8 +108,28 @@ class LLMClient:
             system=system_prompt,
             messages=messages
         )
+        elapsed_time = time.time() - start_time
 
-        return response.content[0].text
+        response_text = response.content[0].text
+
+        # Log LLM call metrics
+        tokens_used = {
+            'prompt_tokens': response.usage.input_tokens,
+            'completion_tokens': response.usage.output_tokens
+        }
+
+        log_llm_call(
+            logger=logger,
+            request_id=self.request_id,
+            provider=self.provider,
+            model=self.model,
+            prompt_length=len(system_prompt) + len(user_message),
+            response_length=len(response_text),
+            tokens_used=tokens_used,
+            elapsed_time=elapsed_time
+        )
+
+        return response_text
 
     def _call_openai(self, system_prompt: str, user_message: str) -> str:
         """调用OpenAI API"""
@@ -110,19 +139,42 @@ class LLMClient:
         if user_message:
             messages.append({"role": "user", "content": user_message})
 
+        # Time the API call
+        start_time = time.time()
         response = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
             temperature=self.temperature,
             max_tokens=self.max_tokens
         )
+        elapsed_time = time.time() - start_time
 
-        return response.choices[0].message.content
+        response_text = response.choices[0].message.content
+
+        # Log LLM call metrics
+        tokens_used = {
+            'prompt_tokens': response.usage.prompt_tokens,
+            'completion_tokens': response.usage.completion_tokens
+        }
+
+        log_llm_call(
+            logger=logger,
+            request_id=self.request_id,
+            provider=self.provider,
+            model=self.model,
+            prompt_length=len(system_prompt) + len(user_message),
+            response_length=len(response_text),
+            tokens_used=tokens_used,
+            elapsed_time=elapsed_time
+        )
+
+        return response_text
 
     def call_json(
         self,
         system_prompt: str,
-        user_message: str = ""
+        user_message: str = "",
+        enable_repair: Optional[bool] = None
     ) -> dict:
         """
         调用LLM并解析JSON响应
@@ -130,30 +182,34 @@ class LLMClient:
         Args:
             system_prompt: 系统提示词
             user_message: 用户消息
+            enable_repair: 是否启用JSON修复（默认使用实例配置）
 
         Returns:
             解析后的JSON对象
 
         Raises:
-            json.JSONDecodeError: JSON解析失败
+            ValueError: JSON解析失败（在修复后仍失败）
         """
         response_text = self.call(system_prompt, user_message)
 
-        # 尝试提取JSON（处理可能的markdown代码块包裹）
-        response_text = response_text.strip()
+        # Determine whether to enable JSON repair
+        use_repair = enable_repair if enable_repair is not None else self.enable_json_repair
 
-        # 移除可能的markdown代码块标记
-        if response_text.startswith("```json"):
-            response_text = response_text[7:]
-        if response_text.startswith("```"):
-            response_text = response_text[3:]
-        if response_text.endswith("```"):
-            response_text = response_text[:-3]
+        # Use safe_json_parse with automatic repair
+        result = safe_json_parse(
+            response_text,
+            request_id=self.request_id,
+            enable_llm_repair=use_repair,
+            llm_client=self if use_repair else None,
+            fallback_value=None
+        )
 
-        response_text = response_text.strip()
+        if result is None:
+            # Parsing failed even after repair attempts
+            logger.error(
+                f"Failed to parse JSON after all repair attempts",
+                extra={'request_id': self.request_id}
+            )
+            raise ValueError(f"LLM返回的不是有效的JSON格式，且修复失败")
 
-        try:
-            return json.loads(response_text)
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON response: {response_text[:500]}")
-            raise ValueError(f"LLM返回的不是有效的JSON格式: {str(e)}")
+        return result

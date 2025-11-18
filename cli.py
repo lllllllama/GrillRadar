@@ -4,6 +4,9 @@ GrillRadar CLI - 命令行界面
 
 用法:
     python cli.py --config config.json --resume resume.txt --output report.md
+
+环境变量:
+    GRILLRADAR_DEBUG=1  - 启用调试日志
 """
 # 重要：在导入任何模块之前先加载环境变量
 from dotenv import load_dotenv
@@ -11,7 +14,7 @@ load_dotenv(override=True)
 
 import argparse
 import json
-import logging
+import os
 import sys
 from pathlib import Path
 
@@ -23,13 +26,11 @@ from app.core.pipeline import GrillRadarPipeline
 from app.utils.markdown import report_to_markdown
 from app.utils.document_parser import DocumentParseError
 from app.config.settings import settings
+from app.core.logging import configure_logging, get_logger, generate_request_id
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+# Configure logging (will read GRILLRADAR_DEBUG env var)
+configure_logging()
+logger = get_logger(__name__)
 
 
 def load_config(config_path: str) -> dict:
@@ -154,23 +155,28 @@ config.json格式:
         logger.error(f"配置验证失败: {e}")
         sys.exit(1)
 
+    # Generate request ID for tracing
+    request_id = generate_request_id()
+    logger.info(f"生成请求ID: {request_id}")
+
     # 使用Pipeline生成报告
     logger.info("开始生成报告...")
     try:
         pipeline = GrillRadarPipeline(
             llm_provider=args.provider,
             llm_model=args.model,
-            enable_multi_agent=use_multi_agent
+            enable_multi_agent=use_multi_agent,
+            request_id=request_id
         )
         report = pipeline.run(
             resume_path=args.resume,
             user_config=user_config
         )
     except DocumentParseError as e:
-        logger.error(f"简历文件解析失败: {e}")
+        logger.error(f"简历文件解析失败: {e}", extra={'request_id': request_id})
         sys.exit(1)
     except Exception as e:
-        logger.error(f"报告生成失败: {e}", exc_info=True)
+        logger.error(f"报告生成失败: {e}", extra={'request_id': request_id}, exc_info=True)
         sys.exit(1)
 
     # 输出报告

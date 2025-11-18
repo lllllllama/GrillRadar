@@ -16,8 +16,9 @@ from app.utils.domain_helper import domain_helper
 from app.config.config_manager import config_manager
 from app.config.settings import settings
 from app.utils.document_parser import parse_resume_bytes, is_supported_format, DocumentParseError
+from app.core.logging import get_logger, generate_request_id
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api", tags=["report"])
 
@@ -53,6 +54,12 @@ async def generate_report(request: GenerateReportRequest):
     Returns:
         生成的报告（JSON格式 + Markdown格式）
     """
+    # Generate request ID for tracing
+    request_id = generate_request_id()
+    extra = {'request_id': request_id}
+
+    logger.info(f"API request received - mode={request.mode}", extra=extra)
+
     try:
         # 构建UserConfig with resume_text
         user_config = UserConfig(
@@ -65,7 +72,7 @@ async def generate_report(request: GenerateReportRequest):
         )
 
         # Use GrillRadarPipeline for report generation
-        pipeline = GrillRadarPipeline()
+        pipeline = GrillRadarPipeline(request_id=request_id)
         report = await pipeline.run_with_text_async(
             resume_text=request.resume_text,
             user_config=user_config
@@ -74,6 +81,8 @@ async def generate_report(request: GenerateReportRequest):
         # 导出Markdown
         markdown_content = report_to_markdown(report)
 
+        logger.info(f"API request completed successfully", extra=extra)
+
         return GenerateReportResponse(
             success=True,
             report=report,
@@ -81,13 +90,13 @@ async def generate_report(request: GenerateReportRequest):
         )
 
     except ValidationError as e:
-        logger.error(f"Validation error: {e}")
+        logger.error(f"Validation error: {e}", extra=extra)
         return GenerateReportResponse(
             success=False,
             error=f"数据验证失败: {str(e)}"
         )
     except Exception as e:
-        logger.error(f"Report generation failed: {e}", exc_info=True)
+        logger.error(f"Report generation failed: {e}", extra=extra, exc_info=True)
         return GenerateReportResponse(
             success=False,
             error=f"报告生成失败: {str(e)}"

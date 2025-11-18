@@ -24,8 +24,9 @@ from app.models.user_config import UserConfig
 from app.models.report import Report, ReportMeta
 from app.models.question_item import QuestionItem
 from app.utils.debug_dumper import get_debug_dumper
+from app.core.logging import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class AgentOrchestrator:
@@ -41,15 +42,17 @@ class AgentOrchestrator:
     - Phase 3: Final report assembly
     """
 
-    def __init__(self, llm_client):
+    def __init__(self, llm_client, request_id: Optional[str] = None):
         """
         Initialize orchestrator with all agents
 
         Args:
             llm_client: LLM client for agent communication
+            request_id: Request ID for tracing (optional)
         """
         self.llm_client = llm_client
-        self.logger = logging.getLogger(__name__)
+        self.request_id = request_id or ""
+        self.logger = get_logger(__name__)
 
         # Initialize all 6 agents
         # Core agents (job + grad)

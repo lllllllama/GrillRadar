@@ -34,6 +34,10 @@ class PromptBuilder:
         # Load prompt template from file
         self.prompt_template = self._load_prompt_template()
 
+        # Load research configurations
+        self.research_domains = self._load_research_domains()
+        self.china_grad_config = self._load_china_grad_config()
+
     def _load_prompt_template(self) -> str:
         """
         Load prompt template from external file
@@ -71,10 +75,45 @@ Resume:
 {resume_text}
 
 {domain_knowledge}
+{research_guidance}
 {external_info}
 
 Generate a report with {target_question_count} questions in JSON format.
 """
+
+    def _load_research_domains(self) -> Dict[str, Any]:
+        """Load research domains configuration"""
+        project_root = Path(__file__).parent.parent.parent
+        config_file = project_root / "config" / "research_domains.yaml"
+
+        try:
+            with open(config_file, 'r', encoding='utf-8') as f:
+                config = yaml.safe_load(f)
+            logger.debug(f"Loaded research domains from {config_file}")
+            return config or {}
+        except FileNotFoundError:
+            logger.warning(f"Research domains config not found: {config_file}")
+            return {}
+        except Exception as e:
+            logger.error(f"Failed to load research domains: {e}", exc_info=True)
+            return {}
+
+    def _load_china_grad_config(self) -> Dict[str, Any]:
+        """Load China graduate school interview configuration"""
+        project_root = Path(__file__).parent.parent.parent
+        config_file = project_root / "config" / "china_grad.yaml"
+
+        try:
+            with open(config_file, 'r', encoding='utf-8') as f:
+                config = yaml.safe_load(f)
+            logger.debug(f"Loaded China grad config from {config_file}")
+            return config or {}
+        except FileNotFoundError:
+            logger.warning(f"China grad config not found: {config_file}")
+            return {}
+        except Exception as e:
+            logger.error(f"Failed to load China grad config: {e}", exc_info=True)
+            return {}
 
     def build(self, user_config: UserConfig) -> str:
         """
@@ -95,6 +134,9 @@ Generate a report with {target_question_count} questions in JSON format.
         # Milestone 4: 获取外部信息（如果启用）
         external_info_text = self._get_external_info(user_config)
 
+        # Get research-specific guidance (for grad/mixed modes)
+        research_guidance = self._get_research_guidance(user_config)
+
         # Fill template with values
         prompt = self.prompt_template.format(
             mode=user_config.mode,
@@ -104,6 +146,7 @@ Generate a report with {target_question_count} questions in JSON format.
             level=user_config.level or 'Not specified',
             resume_text=user_config.resume_text,
             domain_knowledge=domain_knowledge,
+            research_guidance=research_guidance,
             external_info=external_info_text,
             role_weights=self._format_role_weights(mode_config.get('roles', {})),
             question_distribution=self._format_question_distribution(user_config.mode, mode_config),
@@ -285,3 +328,142 @@ Generate a report with {target_question_count} questions in JSON format.
         except Exception as e:
             logger.error(f"Failed to get external info: {e}", exc_info=True)
             return ""
+
+    def _get_research_guidance(self, user_config: UserConfig) -> str:
+        """
+        Get research-specific guidance for grad/PhD interview modes
+
+        Args:
+            user_config: User configuration
+
+        Returns:
+            Formatted research guidance string
+        """
+        # Only inject research guidance for grad/mixed modes
+        if user_config.mode not in ['grad', 'mixed']:
+            return ""
+
+        guidance_parts = []
+
+        # Research domain knowledge
+        if user_config.domain and user_config.domain in self.research_domains:
+            domain_info = self.research_domains[user_config.domain]
+            guidance_parts.append(self._format_research_domain(user_config.domain, domain_info))
+
+        # China grad context (if language is Chinese)
+        if user_config.language == 'zh' and self.china_grad_config:
+            guidance_parts.append(self._format_china_grad_context(self.china_grad_config))
+
+        if not guidance_parts:
+            return ""
+
+        return "\n\n" + "\n\n".join(guidance_parts)
+
+    def _format_research_domain(self, domain_key: str, domain_info: Dict[str, Any]) -> str:
+        """Format research domain information for prompt injection"""
+        parts = []
+
+        # Header
+        display_name = domain_info.get('display_name', domain_key)
+        parts.append(f"### 研究领域知识库: {display_name}")
+        parts.append("")
+
+        # Conferences
+        if 'conferences' in domain_info:
+            parts.append("**相关顶级会议/期刊:**")
+            conferences = domain_info['conferences']
+
+            if isinstance(conferences, dict):
+                for tier, conf_list in conferences.items():
+                    if isinstance(conf_list, list) and conf_list:
+                        conf_str = ", ".join(conf_list)
+                        parts.append(f"- {tier}: {conf_str}")
+            elif isinstance(conferences, list):
+                parts.append(f"- {', '.join(conferences)}")
+            parts.append("")
+
+        # Core topics
+        if 'core_topics' in domain_info:
+            topics = domain_info['core_topics']
+            if topics:
+                parts.append("**核心研究主题:**")
+                parts.append(", ".join(topics[:10]))  # Limit to 10
+                parts.append("")
+
+        # Recommended queries
+        if 'recommended_queries' in domain_info:
+            queries = domain_info['recommended_queries']
+            if queries:
+                parts.append("**推荐文献检索关键词:**")
+                for query in queries[:5]:  # Limit to 5
+                    parts.append(f"- \"{query}\"")
+                parts.append("")
+
+        # Common methods
+        if 'common_methods' in domain_info:
+            methods = domain_info['common_methods']
+            if methods:
+                parts.append("**常见方法:**")
+                parts.append(", ".join(methods[:8]))  # Limit to 8
+                parts.append("")
+
+        # Important instructions
+        parts.append("**重要提示:**")
+        parts.append("- 在`support_notes`中，应引导学生阅读相关顶会论文（仅提及会议名，不编造具体论文标题/作者）")
+        parts.append("- 推荐使用上述检索关键词进行文献调研")
+        parts.append("- 避免编造不存在的论文、作者或具体实验结果")
+        parts.append("- 使用如'阅读近期CVPR/NeurIPS关于X的论文'、'搜索Y survey构建系统了解'等表述")
+
+        return "\n".join(parts)
+
+    def _format_china_grad_context(self, china_grad: Dict[str, Any]) -> str:
+        """Format China grad school interview context"""
+        parts = []
+
+        parts.append("### 中国研究生面试情境知识")
+        parts.append("")
+
+        # Interview structure
+        if 'interview_structure' in china_grad:
+            structure = china_grad['interview_structure']
+            if 'typical_components' in structure:
+                parts.append("**典型面试环节:**")
+                for component in structure['typical_components']:
+                    name = component.get('name', '')
+                    desc = component.get('description', '')
+                    if name and desc:
+                        parts.append(f"- {name}: {desc}")
+                parts.append("")
+
+        # Evaluation dimensions
+        if 'evaluation_dimensions' in china_grad:
+            dimensions = china_grad['evaluation_dimensions']
+            if dimensions:
+                parts.append("**核心评估维度:**")
+                for dim in dimensions[:4]:  # Top 4
+                    dim_name = dim.get('dimension', '')
+                    desc = dim.get('description', '')
+                    if dim_name and desc:
+                        parts.append(f"- {dim_name}: {desc}")
+                parts.append("")
+
+        # Killer question patterns
+        if 'killer_question_patterns' in china_grad:
+            patterns = china_grad['killer_question_patterns']
+            if patterns:
+                parts.append("**高质量问题模式 (仅参考模式，不直接使用例子):**")
+                for pattern in patterns[:3]:  # Top 3 patterns
+                    pattern_name = pattern.get('pattern', '')
+                    pattern_desc = pattern.get('description', '')
+                    if pattern_name and pattern_desc:
+                        parts.append(f"- {pattern_name}: {pattern_desc}")
+                parts.append("")
+
+        # Important instructions
+        parts.append("**面试问题生成指导:**")
+        parts.append("- 问题应符合中国研究生面试的评估维度和提问风格")
+        parts.append("- 在`support_notes`中提供符合中国学术环境的准备建议")
+        parts.append("- 考虑导师制、组会文化、科研产出压力等中国特色学术环境")
+        parts.append("- 避免过于西化或不符合中国面试习惯的表述")
+
+        return "\n".join(parts)

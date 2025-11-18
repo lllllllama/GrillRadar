@@ -29,6 +29,8 @@ The user has provided their resume and target position/direction. You need to ge
 ### Domain Knowledge (Key Reference)
 {domain_knowledge}
 
+{research_guidance}
+
 {external_info}
 
 ### Role Weights (Current Mode: {mode})

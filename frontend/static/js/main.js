@@ -1,316 +1,154 @@
-// GrillRadar Main JavaScript
+// GrillRadar Frontend JavaScript
 
-// State management
 let currentReport = null;
 let currentMarkdown = null;
 
-// DOM elements
-const reportForm = document.getElementById('reportForm');
-const loadingIndicator = document.getElementById('loadingIndicator');
-const reportContainer = document.getElementById('reportContainer');
-const reportContent = document.getElementById('reportContent');
-const errorContainer = document.getElementById('errorContainer');
-const errorMessage = document.getElementById('errorMessage');
-const submitBtn = document.getElementById('submitBtn');
-const resumeTextarea = document.getElementById('resume_text');
-const charCount = document.getElementById('charCount');
-
-// Character counter
-if (resumeTextarea && charCount) {
-    resumeTextarea.addEventListener('input', () => {
-        const count = resumeTextarea.value.length;
-        charCount.textContent = count;
-
-        if (count > 10000) {
-            charCount.style.color = 'var(--error-color)';
-        } else {
-            charCount.style.color = 'var(--text-secondary)';
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    const reportForm = document.getElementById('reportForm');
+    const resumeTextarea = document.getElementById('resume_text');
+    const charCount = document.getElementById('charCount');
+    
+    // Character counter
+    resumeTextarea.addEventListener('input', function() {
+        charCount.textContent = this.value.length;
     });
-}
-
-// Form submission
-if (reportForm) {
-    reportForm.addEventListener('submit', async (e) => {
+    
+    // Form submission
+    reportForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         await generateReport();
     });
-}
+    
+    // Export buttons
+    document.getElementById('downloadMd').addEventListener('click', downloadMarkdown);
+    document.getElementById('downloadHtml').addEventListener('click', downloadHTML);
+    document.getElementById('generateNew').addEventListener('click', resetForm);
+    document.getElementById('tryAgain').addEventListener('click', resetForm);
+});
 
-// Generate report function
 async function generateReport() {
+    const form = document.getElementById('reportForm');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const reportContainer = document.getElementById('reportContainer');
+    const errorContainer = document.getElementById('errorContainer');
+    
+    // Hide everything
+    form.style.display = 'none';
+    reportContainer.style.display = 'none';
+    errorContainer.style.display = 'none';
+    loadingIndicator.style.display = 'block';
+    
     // Get form data
-    const formData = new FormData(reportForm);
+    const formData = new FormData(form);
     const data = {
         mode: formData.get('mode'),
         target_desc: formData.get('target_desc'),
         domain: formData.get('domain') || null,
         resume_text: formData.get('resume_text')
     };
-
-    // Validate
-    if (!data.mode || !data.target_desc || !data.resume_text) {
-        showError('请填写所有必填项');
-        return;
-    }
-
-    if (data.resume_text.length < 50) {
-        showError('简历内容至少需要50个字符');
-        return;
-    }
-
-    if (data.resume_text.length > 10000) {
-        showError('简历内容不能超过10000个字符');
-        return;
-    }
-
-    // Show loading
-    showLoading();
-
+    
     try {
+        // Call API
         const response = await fetch('/api/generate-report', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
         });
-
+        
         const result = await response.json();
-
+        
         if (result.success) {
             currentReport = result.report;
             currentMarkdown = result.markdown;
-            showReport(result.markdown);
+            displayReport(result.report, result.markdown);
+            
+            loadingIndicator.style.display = 'none';
+            reportContainer.style.display = 'block';
+            reportContainer.scrollIntoView({ behavior: 'smooth' });
         } else {
-            showError(result.error || '报告生成失败，请重试');
+            throw new Error(result.error || 'Unknown error');
         }
     } catch (error) {
         console.error('Error:', error);
-        showError('网络错误或服务器异常，请检查网络连接后重试');
+        showError(error.message);
+        loadingIndicator.style.display = 'none';
+        errorContainer.style.display = 'block';
     }
 }
 
-// Show loading state
-function showLoading() {
-    reportForm.style.display = 'none';
-    reportContainer.style.display = 'none';
-    errorContainer.style.display = 'none';
-    loadingIndicator.style.display = 'block';
-
-    // Disable submit button
-    if (submitBtn) {
-        submitBtn.disabled = true;
-    }
+function displayReport(report, markdown) {
+    const reportContent = document.getElementById('reportContent');
+    let html = '<div class="report-meta"><div class="meta-item"><div class="meta-label">模式</div><div class="meta-value">' + getModeDisplay(report.mode) + '</div></div><div class="meta-item"><div class="meta-label">目标</div><div class="meta-value">' + escapeHtml(report.target_desc) + '</div></div><div class="meta-item"><div class="meta-label">问题数量</div><div class="meta-value">' + report.questions.length + ' 个</div></div></div>';
+    html += '<div class="report-section"><h3>📊 总体评估</h3><div class="detail-content"><p>' + formatText(report.summary) + '</p></div></div>';
+    html += '<div class="report-section"><h3>✨ 候选人亮点</h3><div class="detail-content"><p>' + formatText(report.highlights) + '</p></div></div>';
+    html += '<div class="report-section"><h3>⚠️ 关键风险点</h3><div class="detail-content"><p>' + formatText(report.risks) + '</p></div></div>';
+    html += '<div class="report-section"><h3>🔥 精选问题列表</h3>';
+    
+    report.questions.forEach(q => {
+        html += '<div class="question-card"><div class="question-header"><div class="question-number">' + q.id + '</div><div class="question-tags"><span class="tag role">' + escapeHtml(q.view_role) + '</span><span class="tag">' + escapeHtml(q.tag) + '</span></div></div>';
+        html += '<div class="question-text">' + escapeHtml(q.question) + '</div>';
+        html += '<div class="question-detail"><div class="detail-label">💡 提问理由</div><div class="detail-content">' + formatText(q.rationale) + '</div></div>';
+        html += '<div class="question-detail"><div class="detail-label">📝 答案结构建议</div><div class="detail-content">' + formatText(q.baseline_answer) + '</div></div>';
+        html += '<div class="question-detail"><div class="detail-label">📚 支撑材料</div><div class="detail-content">' + formatText(q.support_notes) + '</div></div>';
+        html += '<div class="question-detail"><div class="detail-label">🎯 练习提示词</div><div class="highlight-box">' + formatText(q.prompt_template) + '</div></div></div>';
+    });
+    
+    html += '</div>';
+    reportContent.innerHTML = html;
 }
 
-// Show report
-function showReport(markdown) {
-    loadingIndicator.style.display = 'none';
-    reportContainer.style.display = 'block';
-
-    // Convert markdown to HTML
-    reportContent.innerHTML = markdownToHtml(markdown);
-
-    // Scroll to report
-    reportContainer.scrollIntoView({ behavior: 'smooth' });
-
-    // Re-enable submit button
-    if (submitBtn) {
-        submitBtn.disabled = false;
-    }
+function getModeDisplay(mode) {
+    const modes = {'job': '求职模式 🎯', 'grad': '读研模式 🎓', 'mixed': '混合模式 🔀'};
+    return modes[mode] || mode;
 }
 
-// Show error
+function formatText(text) {
+    return escapeHtml(text).replace(/\n/g, '<br>');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 function showError(message) {
-    reportForm.style.display = 'none';
-    loadingIndicator.style.display = 'none';
-    reportContainer.style.display = 'none';
-    errorContainer.style.display = 'block';
-    errorMessage.textContent = message;
-
-    // Re-enable submit button
-    if (submitBtn) {
-        submitBtn.disabled = false;
-    }
+    document.getElementById('errorMessage').textContent = message;
 }
 
-// Simple markdown to HTML converter
-function markdownToHtml(markdown) {
-    let html = markdown;
-
-    // Headers
-    html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-    html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-    html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-
-    // Bold
-    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-
-    // Italic
-    html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-
-    // Code blocks
-    html = html.replace(/```([\s\S]+?)```/g, '<pre><code>$1</code></pre>');
-
-    // Inline code
-    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-
-    // Lists (unordered)
-    html = html.replace(/^\- (.+)$/gm, '<li>$1</li>');
-    html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-
-    // Lists (ordered)
-    html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-
-    // Line breaks to paragraphs
-    html = html.split('\n\n').map(para => {
-        if (!para.match(/^<[h|u|o|p|l]/)) {
-            return '<p>' + para + '</p>';
-        }
-        return para;
-    }).join('\n');
-
-    return html;
+function resetForm() {
+    document.getElementById('reportForm').style.display = 'block';
+    document.getElementById('reportContainer').style.display = 'none';
+    document.getElementById('errorContainer').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Download markdown
-const downloadMdBtn = document.getElementById('downloadMd');
-if (downloadMdBtn) {
-    downloadMdBtn.addEventListener('click', () => {
-        if (currentMarkdown) {
-            downloadFile(currentMarkdown, 'grillradar-report.md', 'text/markdown');
-        }
-    });
-}
-
-// Download HTML
-const downloadHtmlBtn = document.getElementById('downloadHtml');
-if (downloadHtmlBtn) {
-    downloadHtmlBtn.addEventListener('click', () => {
-        if (currentMarkdown) {
-            const html = generateFullHtml(currentMarkdown);
-            downloadFile(html, 'grillradar-report.html', 'text/html');
-        }
-    });
-}
-
-// Generate new report
-const generateNewBtn = document.getElementById('generateNew');
-if (generateNewBtn) {
-    generateNewBtn.addEventListener('click', () => {
-        reportContainer.style.display = 'none';
-        reportForm.style.display = 'flex';
-        reportForm.scrollIntoView({ behavior: 'smooth' });
-    });
-}
-
-// Try again button
-const tryAgainBtn = document.getElementById('tryAgain');
-if (tryAgainBtn) {
-    tryAgainBtn.addEventListener('click', () => {
-        errorContainer.style.display = 'none';
-        reportForm.style.display = 'flex';
-        reportForm.scrollIntoView({ behavior: 'smooth' });
-    });
-}
-
-// Download file helper
-function downloadFile(content, filename, mimeType) {
-    const blob = new Blob([content], { type: mimeType });
+function downloadMarkdown() {
+    if (!currentMarkdown) return alert('No report available');
+    const blob = new Blob([currentMarkdown], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'grillradar-report-' + Date.now() + '.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
 
-// Generate full HTML document
-function generateFullHtml(markdown) {
-    const htmlContent = markdownToHtml(markdown);
-    return `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrillRadar 面试准备报告</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
-                         "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 40px;
-            line-height: 1.8;
-            color: #2b2d42;
-            background: #f8f9fa;
-        }
-        h1 {
-            font-size: 2rem;
-            border-bottom: 3px solid #ff6b35;
-            padding-bottom: 12px;
-            margin-bottom: 24px;
-        }
-        h2 {
-            font-size: 1.5rem;
-            color: #ff6b35;
-            margin-top: 32px;
-            margin-bottom: 16px;
-        }
-        h3 {
-            font-size: 1.2rem;
-            margin-top: 24px;
-            margin-bottom: 12px;
-        }
-        p {
-            margin-bottom: 16px;
-        }
-        ul, ol {
-            margin-left: 24px;
-            margin-bottom: 16px;
-        }
-        li {
-            margin-bottom: 8px;
-        }
-        strong {
-            color: #ff6b35;
-        }
-        code {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Courier New', Courier, monospace;
-        }
-        pre {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 16px;
-            border-radius: 8px;
-            overflow-x: auto;
-        }
-        pre code {
-            background: none;
-            padding: 0;
-        }
-        .footer {
-            margin-top: 60px;
-            padding-top: 20px;
-            border-top: 1px solid #dee2e6;
-            text-align: center;
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-    </style>
-</head>
-<body>
-    ${htmlContent}
-    <div class="footer">
-        <p>生成于 ${new Date().toLocaleString('zh-CN')} | GrillRadar v1.0.0 | Powered by Claude AI</p>
-    </div>
-</body>
-</html>`;
+function downloadHTML() {
+    if (!currentReport) return alert('No report available');
+    const reportContent = document.getElementById('reportContent').innerHTML;
+    const html = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>GrillRadar Report</title><style>body{font-family:sans-serif;padding:40px;max-width:1200px;margin:0 auto;background:#f7f9fc}.report-meta{background:white;padding:20px;border-radius:8px;margin-bottom:24px}.question-card{background:white;padding:24px;border-radius:12px;margin-bottom:24px;border-left:4px solid #ff6b6b;box-shadow:0 2px 8px rgba(0,0,0,0.1)}.question-text{font-size:1.2em;font-weight:600;margin-bottom:12px}</style></head><body><h1 style="color:#ff6b6b;text-align:center;margin-bottom:40px">🔥 GrillRadar 面试准备报告</h1>' + reportContent + '</body></html>';
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'grillradar-report-' + Date.now() + '.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }

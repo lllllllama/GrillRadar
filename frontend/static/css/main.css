@@ -297,6 +297,13 @@ main {
     border-bottom: 2px solid var(--border-color);
 }
 
+.summary-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    line-height: 1.8;
+}
+
 .report-meta {
     background: white;
     padding: 20px;
@@ -324,19 +331,68 @@ main {
     font-size: 1.05em;
 }
 
+/* Questions Header with Filters */
+.questions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.practice-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    background: white;
+    color: var(--text-color);
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-color);
+    background: rgba(255, 107, 107, 0.05);
+}
+
+.filter-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Question Cards */
+.questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
 .question-card {
     background: white;
     padding: 24px;
     border-radius: 12px;
-    margin-bottom: 24px;
     border-left: 4px solid var(--primary-color);
     box-shadow: var(--shadow);
     transition: all 0.3s ease;
 }
 
 .question-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
+}
+
+.question-card.expanded {
+    border-left-width: 6px;
 }
 
 .question-header {
@@ -358,6 +414,15 @@ main {
     justify-content: center;
     font-weight: bold;
     flex-shrink: 0;
+    font-size: 1.1em;
+}
+
+.question-meta-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
 }
 
 .question-tags {
@@ -373,47 +438,172 @@ main {
     border-radius: 16px;
     font-size: 0.85em;
     font-weight: 500;
+    white-space: nowrap;
 }
 
 .tag.role {
-    background: #9b59b6;
+    /* Color is set dynamically via style attribute */
+    font-weight: 600;
+}
+
+.tag.domain {
+    background: #95a5a6;
+}
+
+/* Practice Buttons */
+.practice-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.practice-btn {
+    padding: 6px 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    background: white;
+    color: var(--text-color);
+    font-size: 0.85em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.practice-btn:hover {
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+}
+
+.practice-btn.active[data-state="mastered"] {
+    background: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+}
+
+.practice-btn.active[data-state="need_practice"] {
+    background: var(--warning-color);
+    border-color: var(--warning-color);
+    color: var(--text-color);
 }
 
 .question-text {
     font-size: 1.2em;
     font-weight: 600;
     color: var(--text-color);
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     line-height: 1.6;
 }
 
+/* Toggle Button */
+.question-details-toggle {
+    margin-bottom: 12px;
+}
+
+.toggle-btn {
+    width: 100%;
+    padding: 10px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: white;
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.toggle-btn:hover {
+    background: rgba(255, 107, 107, 0.05);
+    border-color: var(--primary-color);
+}
+
+.toggle-icon {
+    font-size: 0.9em;
+    transition: transform 0.3s ease;
+}
+
+/* Question Details */
+.question-details {
+    padding-top: 16px;
+    border-top: 2px dashed var(--border-color);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .question-detail {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 .detail-label {
     font-weight: 600;
     color: var(--primary-color);
-    margin-bottom: 6px;
-    font-size: 0.95em;
+    margin-bottom: 8px;
+    font-size: 1em;
 }
 
 .detail-content {
     color: var(--text-color);
     line-height: 1.7;
     padding-left: 16px;
+    border-left: 3px solid var(--bg-color);
 }
 
 .detail-content p {
     margin-bottom: 8px;
 }
 
-.highlight-box {
-    background: #fff3cd;
-    border-left: 4px solid var(--warning-color);
+/* Prompt Box */
+.prompt-box {
+    background: #fff9e6;
+    border: 2px solid var(--warning-color);
+    border-radius: 8px;
     padding: 16px;
-    border-radius: 6px;
     margin-top: 8px;
+    position: relative;
+}
+
+.prompt-content {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    white-space: pre-wrap;
+}
+
+.copy-prompt-btn {
+    padding: 8px 16px;
+    border: 2px solid var(--warning-color);
+    border-radius: 6px;
+    background: white;
+    color: var(--text-color);
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.copy-prompt-btn:hover {
+    background: var(--warning-color);
+    color: var(--text-color);
+    transform: scale(1.05);
+}
+
+.copy-prompt-btn.copied {
+    background: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
 }
 
 /* Error */
@@ -488,5 +678,37 @@ footer a:hover {
 
     .report-actions .btn {
         flex: 1;
+    }
+
+    .questions-header {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .practice-filters {
+        width: 100%;
+    }
+
+    .filter-btn {
+        flex: 1;
+        text-align: center;
+    }
+
+    .question-header {
+        flex-direction: column;
+    }
+
+    .question-meta-right {
+        width: 100%;
+        align-items: start;
+    }
+
+    .practice-buttons {
+        width: 100%;
+    }
+
+    .practice-btn {
+        flex: 1;
+        text-align: center;
     }
 }

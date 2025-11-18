@@ -2,14 +2,14 @@
 Document parser for multi-format resume support
 
 Supports:
-- PDF files (.pdf)
+- PDF files (.pdf) - with OCR fallback for scanned documents
 - Word documents (.docx, .doc)
 - Text files (.txt)
 - Markdown files (.md)
 """
 import logging
 from pathlib import Path
-from typing import Union, BinaryIO
+from typing import Union, BinaryIO, Optional
 import io
 
 logger = logging.getLogger(__name__)
@@ -33,9 +33,16 @@ class DocumentParser:
 
     SUPPORTED_EXTENSIONS = {'.pdf', '.docx', '.txt', '.md'}
 
-    def __init__(self):
-        """Initialize document parser"""
+    def __init__(self, ocr_settings: Optional['PdfOcrSettings'] = None):
+        """
+        Initialize document parser
+
+        Args:
+            ocr_settings: OCR settings for PDF parsing (optional)
+        """
         self._lazy_imports_done = False
+        self._ocr_settings = ocr_settings
+        self._ocr_parser = None
 
     def _lazy_import_dependencies(self):
         """Lazy import heavy dependencies only when needed"""
@@ -102,9 +109,9 @@ class DocumentParser:
             logger.warning(f"Encoding detection failed: {e}, defaulting to utf-8")
             return 'utf-8'
 
-    def parse_pdf(self, file_path: Union[str, Path]) -> str:
+    def _extract_pdf_text_original(self, file_path: Union[str, Path]) -> str:
         """
-        Parse PDF file to extract text
+        Extract text from PDF using standard text extraction (no OCR)
 
         Args:
             file_path: Path to PDF file
@@ -132,13 +139,134 @@ class DocumentParser:
                     logger.warning(f"Failed to extract text from page {page_num}: {e}")
                     continue
 
-            if not text_parts:
-                raise DocumentParseError("No text could be extracted from PDF")
-
             full_text = '\n\n'.join(text_parts)
-            logger.info(f"Successfully parsed PDF: {len(reader.pages)} pages, {len(full_text)} chars")
+            logger.debug(f"Text extraction: {len(reader.pages)} pages, {len(full_text)} chars")
 
             return full_text
+
+        except Exception as e:
+            logger.warning(f"Text extraction failed: {e}")
+            return ""
+
+    def _get_ocr_settings(self) -> 'PdfOcrSettings':
+        """Get OCR settings (lazy load from env if not provided)"""
+        if self._ocr_settings is None:
+            try:
+                from app.utils.pdf_ocr_parser import create_ocr_settings_from_env
+                self._ocr_settings = create_ocr_settings_from_env()
+            except Exception as e:
+                logger.warning(f"Failed to load OCR settings from env: {e}")
+                # Create default settings with OCR disabled
+                from app.utils.pdf_ocr_parser import PdfOcrSettings
+                self._ocr_settings = PdfOcrSettings(enabled=False)
+
+        return self._ocr_settings
+
+    def _get_ocr_parser(self) -> 'PdfOcrParser':
+        """Get OCR parser (lazy initialization)"""
+        if self._ocr_parser is None:
+            from app.utils.pdf_ocr_parser import PdfOcrParser
+            settings = self._get_ocr_settings()
+            self._ocr_parser = PdfOcrParser(settings)
+
+        return self._ocr_parser
+
+    def parse_pdf(self, file_path: Union[str, Path], use_ocr: Optional[bool] = None) -> str:
+        """
+        Parse PDF file to extract text with smart OCR fallback
+
+        This method:
+        1. First tries standard text extraction (fast)
+        2. If text extraction fails or returns too little text, uses OCR
+        3. Can be forced to use OCR via use_ocr=True or force_ocr setting
+
+        Args:
+            file_path: Path to PDF file
+            use_ocr: Force OCR usage (None = auto-detect, True = force, False = disable)
+
+        Returns:
+            Extracted text content
+
+        Raises:
+            DocumentParseError: If parsing fails
+        """
+        file_path = Path(file_path)
+
+        try:
+            # Get OCR settings
+            ocr_settings = self._get_ocr_settings()
+
+            # Determine if OCR should be used
+            ocr_enabled = ocr_settings.enabled if use_ocr is None else use_ocr
+            force_ocr = ocr_settings.force_ocr and ocr_enabled
+
+            # Try text extraction first (unless force_ocr is True)
+            text_based = ""
+            if not force_ocr:
+                logger.info("Attempting text-based PDF extraction")
+                text_based = self._extract_pdf_text_original(file_path)
+
+            # Decide whether to use OCR
+            use_ocr_fallback = False
+
+            if force_ocr:
+                logger.info("Force OCR is enabled, using OCR")
+                use_ocr_fallback = True
+            elif not ocr_enabled:
+                logger.debug("OCR is disabled")
+                use_ocr_fallback = False
+            elif len(text_based.strip()) < ocr_settings.min_text_length:
+                logger.info(
+                    f"Text extraction returned {len(text_based.strip())} chars "
+                    f"(< {ocr_settings.min_text_length}), falling back to OCR"
+                )
+                use_ocr_fallback = True
+            else:
+                logger.info(f"Text extraction successful ({len(text_based)} chars), OCR not needed")
+                use_ocr_fallback = False
+
+            # Use OCR if needed
+            if use_ocr_fallback:
+                try:
+                    logger.info("Starting OCR-based extraction")
+                    ocr_parser = self._get_ocr_parser()
+                    ocr_text = ocr_parser.extract_text(file_path)
+
+                    if not ocr_text or len(ocr_text.strip()) < 50:
+                        if text_based:
+                            logger.warning("OCR returned little text, using text extraction result")
+                            return text_based
+                        else:
+                            raise DocumentParseError(
+                                "Both text extraction and OCR failed to extract meaningful content"
+                            )
+
+                    logger.info(f"OCR extraction successful: {len(ocr_text)} chars")
+                    return ocr_text
+
+                except ImportError as e:
+                    logger.warning(f"OCR dependencies not available: {e}")
+                    if text_based:
+                        logger.info("Falling back to text extraction result")
+                        return text_based
+                    else:
+                        raise DocumentParseError(
+                            f"OCR not available and text extraction failed. {e}"
+                        )
+                except Exception as e:
+                    logger.error(f"OCR extraction failed: {e}")
+                    if text_based:
+                        logger.info("Falling back to text extraction result")
+                        return text_based
+                    else:
+                        raise DocumentParseError(f"OCR failed and no text extraction fallback: {e}")
+
+            # Return text-based extraction
+            if not text_based:
+                raise DocumentParseError("No text could be extracted from PDF")
+
+            logger.info(f"Successfully parsed PDF: {len(text_based)} chars")
+            return text_based
 
         except DocumentParseError:
             raise

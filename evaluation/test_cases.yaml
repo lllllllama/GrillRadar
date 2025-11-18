@@ -1,0 +1,45 @@
+# Evaluation Test Cases
+#
+# This file defines fixed input cases for quality evaluation and regression testing.
+# Each case references existing examples to ensure no personal info leakage.
+
+test_cases:
+  - name: "job_backend"
+    description: "Backend engineer job interview preparation"
+    resume_path: "examples/mixed_backend_grad/resume.md"
+    config_path: "examples/quality_cases/config_job_backend.json"
+    expected_metrics:
+      min_questions: 8
+      max_questions: 20
+      min_unique_ratio: 0.85
+      max_missing_rationale: 0
+
+  - name: "job_llm_app"
+    description: "LLM application engineer targeting ByteDance/Alibaba"
+    resume_path: "examples/job_llm_app/resume.md"
+    config_path: "examples/job_llm_app/config.json"
+    expected_metrics:
+      min_questions: 10
+      max_questions: 20
+      min_unique_ratio: 0.85
+      max_missing_rationale: 0
+
+  - name: "grad_cv_segmentation"
+    description: "CV segmentation PhD application"
+    resume_path: "examples/grad_cv_segmentation/resume.md"
+    config_path: "examples/grad_cv_segmentation/config.json"
+    expected_metrics:
+      min_questions: 8
+      max_questions: 20
+      min_unique_ratio: 0.85
+      max_missing_rationale: 0
+
+  - name: "job_frontend"
+    description: "Frontend engineer job interview"
+    resume_path: "examples/mixed_backend_grad/resume.md"  # Reuse resume
+    config_path: "examples/quality_cases/config_job_frontend.json"
+    expected_metrics:
+      min_questions: 8
+      max_questions: 20
+      min_unique_ratio: 0.85
+      max_missing_rationale: 0

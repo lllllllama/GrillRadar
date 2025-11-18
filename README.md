@@ -183,16 +183,16 @@ ANTHROPIC_BASE_URL=https://open.bigmodel.cn/api/anthropic
 
 ```bash
 # 使用文本简历
-python main.py --config config.json --resume resume.txt
+python cli.py --config config.json --resume resume.txt
 
 # 使用PDF简历
-python main.py --config config.json --resume resume.pdf
+python cli.py --config config.json --resume resume.pdf
 
 # 使用Word简历
-python main.py --config config.json --resume resume.docx
+python cli.py --config config.json --resume resume.docx
 ```
 
-生成的报告将保存为`report.json`。
+生成的报告默认保存为`report.md`（Markdown格式）。
 
 ---
 

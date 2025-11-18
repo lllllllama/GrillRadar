@@ -1,119 +1,121 @@
-# GrillRadar Web Interface
+# GrillRadar Web 界面
 
-## 🌐 Overview
+> [English Version](./WEB_INTERFACE.en.md)
 
-GrillRadar now includes a **polished web interface** that showcases the multi-agent intelligence and TrendRadar-style external data integration in action.
+## 🌐 概述
 
-### Key Features
+GrillRadar 现在提供了一个**精致的 Web 界面**，实际展示了多智能体协作和 TrendRadar 风格的外部数据集成。
 
-✅ **Beautiful UI**: Modern, responsive design with smooth animations
-✅ **Real-Time Generation**: Watch the AI committee discuss and generate questions
-✅ **External Data Integration**: Automatically pulls from real JD/interview database
-✅ **Multi-Agent Intelligence**: 6 specialized agents collaborate on every report
-✅ **Export Options**: Download reports as Markdown or HTML
-✅ **Personality & Judgment**: See the "personality" through diverse role perspectives
+### 核心特性
+
+✅ **精美 UI**：现代化响应式设计，流畅动画
+✅ **实时生成**：观看 AI 委员会讨论并生成问题
+✅ **外部数据集成**：自动从真实 JD/面经数据库拉取
+✅ **多智能体协作**：6 个专业智能体协同工作
+✅ **导出选项**：下载 Markdown 或 HTML 格式报告
+✅ **个性与判断力**：通过不同角色视角展现"个性"
 
 ---
 
-## 🚀 Quick Start
+## 🚀 快速开始
 
-### 1. Start the Web Server
+### 1. 启动 Web 服务器
 
 ```bash
-# Option 1: Use the convenience script
+# 方式一：使用便捷脚本
 ./run_web.sh
 
-# Option 2: Manual start
+# 方式二：手动启动
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 2. Open in Browser
+### 2. 在浏览器中打开
 
 ```
 http://localhost:8000
 ```
 
-### 3. Generate Your First Report
+### 3. 生成你的第一份报告
 
-1. **Select Mode**: Choose job/grad/mixed
-2. **Enter Target**: E.g., "字节跳动后端开发工程师"
-3. **Choose Domain** (optional): E.g., "backend"
-4. **Paste Resume**: Your resume text (50+ characters)
-5. **Click "🔥 生成报告"**
+1. **选择模式**：求职/读研/混合模式
+2. **输入目标**：例如 "字节跳动后端开发工程师"
+3. **选择领域**（可选）：例如 "backend"
+4. **粘贴简历**：你的简历文本（至少 50 字）
+5. **点击 "🔥 生成报告"**
 
 ---
 
-## 🎯 What You'll See
+## 🎯 你将看到什么
 
-### Stage 1: Loading (15-30 seconds)
+### 阶段 1：加载中（15-30 秒）
 
 ```
 AI虚拟委员会正在讨论中...
 预计需要 15-30 秒
 ```
 
-Behind the scenes:
-- 6 agents proposing questions in parallel
-- TrendRadar analyzing 15 JDs + 12 interview experiences
-- Keyword frequency analysis (e.g., MySQL appears 6 times)
-- ForumEngine deduplicating and filtering
-- Quality control by Advocate agent
+幕后发生的事：
+- 6 个智能体并行提出问题
+- TrendRadar 分析 15 个 JD + 12 份面经
+- 关键词频率分析（例如 MySQL 出现 6 次）
+- ForumEngine 去重和过滤
+- 候选人守护者智能体质量控制
 
-### Stage 2: Report Display
+### 阶段 2：报告展示
 
-Beautiful, interactive report with:
+精美的交互式报告包含：
 
-**📊 Meta Information**
-- Mode, target, question count, generation time
+**📊 元信息**
+- 模式、目标、问题数量、生成时间
 
-**📊 Overall Assessment**
-- AI committee's comprehensive evaluation
-- Shows multi-agent collaboration results
+**📊 总体评估**
+- AI 委员会的综合评价
+- 展示多智能体协作结果
 
-**✨ Candidate Highlights**
-- Strengths identified from resume
+**✨ 候选人亮点**
+- 从简历中识别的优势
 
-**⚠️  Key Risks**
-- Potential weaknesses and preparation suggestions
+**⚠️  关键风险**
+- 潜在弱点和准备建议
 
-**🔥 Question List** (10-20 questions)
+**🔥 问题列表**（10-20 个问题）
 
-Each question card shows:
-- **Question Number**: Visual identifier
-- **Role Tags**: Which agent asked (技术面试官, HR, 导师/PI, etc.)
-- **Topic Tag**: Subject area
-- **Question Text**: The actual question
-- **💡 Rationale**: Why this question matters (shows "personality")
-- **📝 Answer Structure**: How to structure your response
-- **📚 Support Notes**: Learning resources (**with high-frequency skill markers**)
-- **🎯 Practice Prompt**: Ready-to-use prompt for AI practice
+每个问题卡片显示：
+- **问题编号**：视觉标识
+- **角色标签**：哪个智能体提问（技术面试官、HR、导师/PI 等）
+- **主题标签**：领域
+- **问题文本**：实际问题
+- **💡 提问理由**：为什么这个问题重要（展现"个性"）
+- **📝 答题结构**：如何组织你的回答
+- **📚 支撑材料**：学习资源（**标注高频技能**）
+- **🎯 练习提示词**：可直接使用的 AI 练习提示
 
-### Stage 3: Export
+### 阶段 3：导出
 
-Click to download:
-- **Markdown**: For version control, sharing
-- **HTML**: Self-contained, styled report
+点击下载：
+- **Markdown**：适合版本控制、分享
+- **HTML**：自包含、带样式的报告
 
 ---
 
-## 🔍 TrendRadar Integration in Action
+## 🔍 TrendRadar 集成实战
 
-When you generate a report, you'll see **real-world intelligence** integrated:
+当你生成报告时，你会看到**真实的市场情报**集成：
 
-### Example: Backend Engineer Report
+### 示例：后端工程师报告
 
-**External Data Retrieved:**
-- 8 JDs from 字节跳动, 阿里巴巴, 腾讯, etc.
-- 10 interview experiences with real questions
+**检索到的外部数据：**
+- 8 个来自字节跳动、阿里巴巴、腾讯等公司的 JD
+- 10 份包含真实问题的面经
 
-**Keyword Frequency Analysis:**
+**关键词频率分析：**
 ```
-MySQL ██████ (6 occurrences)
-Redis ████   (4 occurrences)
-性能优化  ████   (4 occurrences)
+MySQL      ██████ (6 次出现)
+Redis      ████   (4 次出现)
+性能优化    ████   (4 次出现)
 ```
 
-**In support_notes, you'll see:**
+**在 support_notes 中，你会看到：**
 ```
 📚 支撑材料:
 该问题涉及 MySQL（高频技能，在6个JD中出现），建议重点准备：
@@ -123,131 +125,131 @@ Redis ████   (4 occurrences)
 参考: 《高性能MySQL》第三版
 ```
 
-**This is TrendRadar-style intelligence!** The system knows MySQL is hot in the market and prioritizes it.
+**这就是 TrendRadar 风格的情报！** 系统知道 MySQL 在市场上很热门，并优先考虑它。
 
 ---
 
-## 🤖 Multi-Agent Intelligence
+## 🤖 多智能体协作
 
-### The 6 Agents
+### 6 个智能体
 
-When you view a report, notice the **role tags** on questions:
+当你查看报告时，注意问题上的**角色标签**：
 
-| Agent | Role Tag | Focus |
-|-------|----------|-------|
-| **Technical Interviewer** | 技术面试官 | CS fundamentals, coding |
-| **Hiring Manager** | 招聘经理 | Project depth, role fit |
-| **HR Agent** | HR/行为面试官 | Soft skills, culture |
-| **Advisor/PI** | 导师/PI | Research potential (grad mode) |
-| **Academic Reviewer** | 学术评审 | Methodology (grad mode) |
-| **Advocate** | 候选人守护者 | Quality control |
+| 智能体 | 角色标签 | 关注点 |
+|--------|----------|--------|
+| **技术面试官** | 技术面试官 | CS 基础、编程能力 |
+| **招聘经理** | 招聘经理 | 项目深度、岗位匹配 |
+| **HR 智能体** | HR/行为面试官 | 软技能、文化契合 |
+| **导师/PI** | 导师/PI | 研究潜力（读研模式） |
+| **学术评审** | 学术评审 | 方法论（读研模式） |
+| **候选人守护者** | 候选人守护者 | 质量控制 |
 
-### Personality & Judgment
+### 个性与判断力
 
-You'll see **personality** in:
+你会在以下方面看到**个性**：
 
-1. **Diverse Perspectives**: Questions from 6 different viewpoints
-2. **Contextual Rationales**: Each explains WHY it matters
-3. **Balanced Coverage**: Not just technical, but soft skills too
-4. **Resume-Specific**: References your actual experience
-5. **Quality Filtering**: No generic or unfair questions
+1. **多元视角**：来自 6 个不同观点的问题
+2. **情境化理由**：每个问题解释为什么重要
+3. **平衡覆盖**：不仅技术，还有软技能
+4. **简历定制**：引用你的实际经验
+5. **质量过滤**：没有通用或不公平的问题
 
-### Example: Multi-Agent Collaboration
+### 示例：多智能体协作
 
-**Question 1** (技术面试官):
+**问题 1**（技术面试官）：
 > 你在简历中提到使用Go开发API网关，请详细讲一下你是如何实现限流、熔断和负载均衡的？
 
-**Rationale**:
+**提问理由**：
 > 技术面试官关注系统设计能力。简历中提到的API网关是核心项目，需要深入考察候选人对分布式系统关键技术的理解...
 
-**Question 2** (HR/行为面试官):
+**问题 2**（HR/行为面试官）：
 > 在小米实习期间，你如何与团队协作完成用户认证服务的重构？遇到过什么挑战？
 
-**Rationale**:
+**提问理由**：
 > HR关注团队协作和沟通能力。从简历看候选人有实习经验，需要了解其在真实团队环境中的表现...
 
-This shows **judgment**: different agents care about different things, giving you comprehensive preparation.
+这展示了**判断力**：不同智能体关心不同的事情，给你全面的准备。
 
 ---
 
-## 📊 Technical Architecture
+## 📊 技术架构
 
-### Frontend Stack
+### 前端技术栈
 
-- **HTML5**: Semantic, accessible markup
-- **CSS3**: Modern gradients, animations, responsive grid
-- **Vanilla JS**: No frameworks, fast and lightweight
-- **Fetch API**: Async communication with backend
+- **HTML5**：语义化、可访问的标记
+- **CSS3**：现代渐变、动画、响应式网格
+- **原生 JS**：无框架、快速轻量
+- **Fetch API**：与后端异步通信
 
-### Backend Stack
+### 后端技术栈
 
-- **FastAPI**: High-performance async Python framework
-- **Pydantic**: Data validation and serialization
-- **JSON Data Provider**: Real JD/interview database
-- **Enhanced Info Service**: Keyword frequency analysis
+- **FastAPI**：高性能异步 Python 框架
+- **Pydantic**：数据验证和序列化
+- **JSON 数据提供者**：真实 JD/面经数据库
+- **增强信息服务**：关键词频率分析
 
-### Data Flow
+### 数据流
 
 ```
-User Input (Resume)
+用户输入（简历）
       ↓
-FastAPI Endpoint
+FastAPI 端点
       ↓
-Enhanced Info Service → JSON Database (15 JDs, 12 interviews)
+增强信息服务 → JSON 数据库（15 个 JD，12 份面经）
       ↓                         ↓
-Keyword Frequency Analysis → High-freq keywords identified
+关键词频率分析 → 识别高频关键词
       ↓
-Prompt Builder → Injects external data + keyword intelligence
+提示构建器 → 注入外部数据 + 关键词情报
       ↓
-LLM (Claude/OpenAI) → Generates questions
+LLM (Claude/OpenAI) → 生成问题
       ↓
-Multi-Agent Simulation → 6 agents propose & discuss
+多智能体模拟 → 6 个智能体提议并讨论
       ↓
-ForumEngine → Deduplicates & filters
+ForumEngine → 去重并过滤
       ↓
-Report Assembly → Marks high-freq skills in support_notes
+报告组装 → 在 support_notes 中标记高频技能
       ↓
-Frontend Display → Beautiful, exportable report
+前端展示 → 精美、可导出的报告
 ```
 
 ---
 
-## 🎨 Customization
+## 🎨 自定义
 
-### Change Port
+### 更改端口
 
 ```bash
 python -m uvicorn app.main:app --host 0.0.0.0 --port 9000
 ```
 
-### Modify Domains
+### 修改领域
 
-Edit `app/config/domains.yaml` to add/remove domains. Changes auto-reload with `--reload` flag.
+编辑 `app/config/domains.yaml` 以添加/删除领域。使用 `--reload` 标志可自动重载更改。
 
-### Add More External Data
+### 添加更多外部数据
 
-Edit `app/sources/data/jd_database.json` or `interview_database.json`:
+编辑 `app/sources/data/jd_database.json` 或 `interview_database.json`：
 
 ```json
 {
   "id": "jd_custom_001",
-  "company": "Your Company",
-  "position": "Your Position",
+  "company": "你的公司",
+  "position": "你的职位",
   "keywords": ["Python", "Go", "MySQL"],
   "requirements": [...],
   ...
 }
 ```
 
-Server will automatically load new data on restart.
+重启服务器将自动加载新数据。
 
-### Customize Styling
+### 自定义样式
 
-Edit `frontend/static/css/main.css`. All CSS variables are in `:root`:
+编辑 `frontend/static/css/main.css`。所有 CSS 变量都在 `:root` 中：
 
 ```css
 :root {
-    --primary-color: #ff6b6b;  /* Change to your brand color */
+    --primary-color: #ff6b6b;  /* 改为你的品牌颜色 */
     --secondary-color: #4ecdc4;
     ...
 }
@@ -255,61 +257,61 @@ Edit `frontend/static/css/main.css`. All CSS variables are in `:root`:
 
 ---
 
-## 🐛 Troubleshooting
+## 🐛 故障排除
 
-### Port Already in Use
+### 端口已被占用
 
 ```bash
-# Find and kill process on port 8000
+# 查找并结束端口 8000 上的进程
 lsof -ti:8000 | xargs kill -9
 
-# Then restart
+# 然后重启
 ./run_web.sh
 ```
 
-### API Key Not Set
+### API 密钥未设置
 
 ```
-Error: "API key not found"
+错误: "API key not found"
 ```
 
-**Solution**: Edit `.env` and add:
+**解决方案**：编辑 `.env` 并添加：
 ```
 ANTHROPIC_API_KEY=sk-ant-your-key-here
-# or
+# 或
 OPENAI_API_KEY=sk-your-key-here
 ```
 
-### Slow Generation
+### 生成速度慢
 
-If generation takes >60 seconds:
-- Check API quota/rate limits
-- Check network connection
-- Try a different LLM provider
+如果生成时间超过 60 秒：
+- 检查 API 配额/速率限制
+- 检查网络连接
+- 尝试不同的 LLM 提供商
 
-### No Questions Generated
+### 未生成问题
 
 ```
-Error: "问题数量不足：只有0个"
+错误: "问题数量不足：只有0个"
 ```
 
-**Causes**:
-- Resume too short (<50 chars)
-- LLM API error
-- Invalid configuration
+**原因**：
+- 简历太短（<50 字）
+- LLM API 错误
+- 配置无效
 
-**Solution**:
-- Check resume length
-- Check API logs in terminal
-- Verify `.env` configuration
+**解决方案**：
+- 检查简历长度
+- 检查终端中的 API 日志
+- 验证 `.env` 配置
 
 ---
 
-## 📝 Export Formats
+## 📝 导出格式
 
-### Markdown Export
+### Markdown 导出
 
-Click "下载 Markdown" to get:
+点击 "下载 Markdown" 获取：
 
 ```markdown
 # GrillRadar 面试准备报告
@@ -333,62 +335,62 @@ Click "下载 Markdown" to get:
 ...
 ```
 
-### HTML Export
+### HTML 导出
 
-Click "下载 HTML" to get self-contained file with embedded styles. Can be:
-- Opened directly in browser
-- Shared via email
-- Printed as PDF (browser print dialog)
-
----
-
-## 🔒 Security & Privacy
-
-### Data Handling
-
-- **Resume data**: Sent to LLM API, not stored on server
-- **Generated reports**: Only in browser memory, cleared on refresh
-- **No tracking**: No analytics, no cookies
-- **Local first**: All data processing happens on your server
-
-### API Keys
-
-- Stored in `.env` (git-ignored)
-- Never sent to browser
-- Only used for server-side LLM calls
-
-### Production Deployment
-
-For production use:
-1. Enable HTTPS
-2. Add authentication
-3. Rate limiting
-4. Input sanitization (already basic validation)
+点击 "下载 HTML" 获取带嵌入样式的自包含文件。可以：
+- 直接在浏览器中打开
+- 通过电子邮件分享
+- 打印为 PDF（浏览器打印对话框）
 
 ---
 
-## 🚀 Performance
+## 🔒 安全与隐私
 
-### Typical Metrics
+### 数据处理
 
-| Metric | Value |
-|--------|-------|
-| **Page Load** | <1s |
-| **Report Generation** | 15-30s (depends on LLM) |
-| **Report Display** | <500ms |
-| **Export** | <100ms |
+- **简历数据**：发送到 LLM API，不存储在服务器上
+- **生成的报告**：仅在浏览器内存中，刷新后清除
+- **无跟踪**：无分析、无 cookie
+- **本地优先**：所有数据处理在你的服务器上进行
 
-### Optimization Tips
+### API 密钥
 
-1. **Use Haiku model** for faster generation (at cost of some quality)
-2. **Enable caching** in LLM client
-3. **Reduce question count** (10 instead of 20)
+- 存储在 `.env` 中（git 忽略）
+- 从不发送到浏览器
+- 仅用于服务器端 LLM 调用
+
+### 生产部署
+
+对于生产使用：
+1. 启用 HTTPS
+2. 添加身份验证
+3. 速率限制
+4. 输入清理（已有基本验证）
 
 ---
 
-## 📚 API Endpoints
+## 🚀 性能
 
-For developers who want to integrate programmatically:
+### 典型指标
+
+| 指标 | 值 |
+|------|-----|
+| **页面加载** | <1s |
+| **报告生成** | 15-30s（取决于 LLM） |
+| **报告展示** | <500ms |
+| **导出** | <100ms |
+
+### 优化建议
+
+1. **使用 Haiku 模型**加快生成速度（牺牲一些质量）
+2. **在 LLM 客户端启用缓存**
+3. **减少问题数量**（10 个而不是 20 个）
+
+---
+
+## 📚 API 端点
+
+对于希望以编程方式集成的开发者：
 
 ### POST /api/generate-report
 
@@ -403,7 +405,7 @@ curl -X POST http://localhost:8000/api/generate-report \
   }'
 ```
 
-**Response**:
+**响应**：
 ```json
 {
   "success": true,
@@ -418,7 +420,7 @@ curl -X POST http://localhost:8000/api/generate-report \
 curl http://localhost:8000/api/domains
 ```
 
-**Response**: List of available domains (engineering + research)
+**响应**：可用领域列表（工程 + 研究）
 
 ### GET /health
 
@@ -426,7 +428,7 @@ curl http://localhost:8000/api/domains
 curl http://localhost:8000/health
 ```
 
-**Response**:
+**响应**：
 ```json
 {
   "status": "ok",
@@ -437,34 +439,34 @@ curl http://localhost:8000/health
 
 ---
 
-## 🎓 Learning Resources
+## 🎓 学习资源
 
-To understand how it works:
+要了解它是如何工作的：
 
-1. **Architecture**: Read [docs/ADVANCED_DEMOS.md](./docs/ADVANCED_DEMOS.md)
-2. **Quality Control**: Read [docs/QUALITY_CONTROL.md](./docs/QUALITY_CONTROL.md)
-3. **Source Code**:
-   - Frontend: `frontend/static/js/main.js`
-   - Backend: `app/api/report.py`
-   - External Data: `app/sources/json_data_provider.py`
-
----
-
-## 🤝 Contributing
-
-Want to improve the web interface?
-
-**Ideas:**
-- Add real-time progress tracking
-- Support file upload for resume
-- Add report history/comparison
-- Theme customization UI
-- Multi-language support
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+1. **架构**：阅读 [examples/ADVANCED_README.md](./examples/ADVANCED_README.md)
+2. **质量控制**：阅读 [examples/quality_cases/README.md](./examples/quality_cases/README.md)
+3. **源代码**：
+   - 前端：`frontend/static/js/main.js`
+   - 后端：`app/api/report.py`
+   - 外部数据：`app/sources/json_data_provider.py`
 
 ---
 
-**🔥 Enjoy using GrillRadar!**
+## 🤝 贡献
 
-For issues or questions, open an issue on [GitHub](https://github.com/lllllllama/GrillRadar).
+想要改进 Web 界面？
+
+**想法：**
+- 添加实时进度跟踪
+- 支持简历文件上传
+- 添加报告历史/比较
+- 主题自定义 UI
+- 多语言支持
+
+查看 [CONTRIBUTING.md](./CONTRIBUTING.md) 获取指南。
+
+---
+
+**🔥 享受使用 GrillRadar！**
+
+如有问题或疑问，请在 [GitHub](https://github.com/lllllllama/GrillRadar) 上提出 issue。

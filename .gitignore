@@ -58,3 +58,6 @@ reports/
 # Temporary
 *.tmp
 temp/
+
+# Multi-agent debug artifacts
+debug/

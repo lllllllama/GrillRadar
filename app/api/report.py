@@ -8,6 +8,8 @@ from pydantic import BaseModel, Field, ValidationError
 from app.models.user_config import UserConfig
 from app.models.report import Report
 from app.core.report_generator import ReportGenerator
+from app.core.agent_orchestrator import AgentOrchestrator
+from app.core.llm_client import LLMClient
 from app.utils.markdown import report_to_markdown
 from app.utils.domain_helper import domain_helper
 from app.config.config_manager import config_manager
@@ -61,9 +63,16 @@ async def generate_report(request: GenerateReportRequest):
             target_company=request.target_company
         )
 
-        # 生成报告
-        generator = ReportGenerator()
-        report = generator.generate_report(user_config)
+        # 生成报告：使用多智能体模式或单智能体模式
+        if settings.MULTI_AGENT_ENABLED:
+            logger.info("Using multi-agent mode for report generation")
+            llm_client = LLMClient()
+            orchestrator = AgentOrchestrator(llm_client)
+            report = await orchestrator.generate_report(user_config, enable_multi_agent=True)
+        else:
+            logger.info("Using single-agent fallback mode")
+            generator = ReportGenerator()
+            report = generator.generate_report(user_config)
 
         # 导出Markdown
         markdown_content = report_to_markdown(report)

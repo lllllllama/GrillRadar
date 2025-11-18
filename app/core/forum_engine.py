@@ -14,27 +14,11 @@ from collections import Counter
 from app.agents.models import DraftQuestion
 from app.models.question_item import QuestionItem
 from app.models.user_config import UserConfig
+from app.models.enriched_draft_question import EnrichedDraftQuestion
 from app.config.settings import settings
 from app.utils.debug_dumper import get_debug_dumper
 
 logger = logging.getLogger(__name__)
-
-
-class EnrichedDraftQuestion:
-    """Draft question with enhanced metadata for selection"""
-    def __init__(
-        self,
-        draft: DraftQuestion,
-        agent_name: str,
-        dimension: str,
-        difficulty: str,
-        score: float
-    ):
-        self.draft = draft
-        self.agent_name = agent_name
-        self.dimension = dimension
-        self.difficulty = difficulty
-        self.score = score
 
 
 class ForumEngine:

@@ -18,14 +18,11 @@ from pathlib import Path
 # 添加app目录到Python路径
 sys.path.insert(0, str(Path(__file__).parent))
 
-from app.models.user_config import UserConfig
-from app.core.report_generator import ReportGenerator
-from app.core.agent_orchestrator import AgentOrchestrator
-from app.core.llm_client import LLMClient
+from app.models import UserConfig
+from app.core.pipeline import GrillRadarPipeline
 from app.utils.markdown import report_to_markdown
-from app.utils.document_parser import parse_resume, is_supported_format, DocumentParseError
+from app.utils.document_parser import DocumentParseError
 from app.config.settings import settings
-import asyncio
 
 # 配置日志
 logging.basicConfig(
@@ -42,54 +39,6 @@ def load_config(config_path: str) -> dict:
             return json.load(f)
     except Exception as e:
         logger.error(f"加载配置文件失败: {e}")
-        sys.exit(1)
-
-
-def load_resume(resume_path: str) -> str:
-    """
-    加载简历文件（支持多种格式）
-
-    支持的格式:
-    - PDF (.pdf)
-    - Word (.docx)
-    - Text (.txt)
-    - Markdown (.md)
-    """
-    try:
-        # Check if file exists
-        resume_path_obj = Path(resume_path)
-        if not resume_path_obj.exists():
-            logger.error(f"简历文件不存在: {resume_path}")
-            sys.exit(1)
-
-        # Check if format is supported
-        if not is_supported_format(resume_path):
-            logger.error(
-                f"不支持的文件格式: {resume_path_obj.suffix}\n"
-                f"支持的格式: .pdf, .docx, .txt, .md"
-            )
-            sys.exit(1)
-
-        # Parse document
-        logger.info(f"正在解析简历文件: {resume_path_obj.name}")
-        text = parse_resume(resume_path)
-
-        # Validate extracted text
-        if not text or len(text.strip()) < 50:
-            logger.error(
-                f"简历内容过短或为空（{len(text.strip())} 字符）\n"
-                f"请确保文件包含有效的简历内容"
-            )
-            sys.exit(1)
-
-        logger.info(f"✓ 成功解析简历: {len(text)} 字符")
-        return text
-
-    except DocumentParseError as e:
-        logger.error(f"简历文件解析失败: {e}")
-        sys.exit(1)
-    except Exception as e:
-        logger.error(f"加载简历文件失败: {e}")
         sys.exit(1)
 
 
@@ -194,36 +143,34 @@ config.json格式:
         settings.GRILLRADAR_DEBUG_AGENTS = True
         logger.info("已启用debug模式：将保存中间产物到debug/目录")
 
-    # 加载配置和简历
-    logger.info("正在加载配置和简历...")
+    # 加载配置
+    logger.info("正在加载配置...")
     config_data = load_config(args.config)
-    resume_text = load_resume(args.resume)
 
-    # 构建UserConfig
-    config_data['resume_text'] = resume_text
+    # 构建UserConfig (不包含resume_text，由pipeline处理)
     try:
-        user_config = UserConfig(**config_data)
+        user_config = UserConfig(**config_data, resume_text="")  # Placeholder
     except Exception as e:
         logger.error(f"配置验证失败: {e}")
         sys.exit(1)
 
-    # 生成报告：使用多智能体模式或单智能体模式
+    # 使用Pipeline生成报告
     logger.info("开始生成报告...")
     try:
-        if use_multi_agent:
-            logger.info("使用多智能体模式生成报告")
-            llm_client = LLMClient(provider=args.provider, model=args.model)
-            orchestrator = AgentOrchestrator(llm_client)
-            report = asyncio.run(orchestrator.generate_report(user_config, enable_multi_agent=True))
-        else:
-            logger.info("使用单智能体模式生成报告")
-            generator = ReportGenerator(
-                llm_provider=args.provider,
-                llm_model=args.model
-            )
-            report = generator.generate_report(user_config)
+        pipeline = GrillRadarPipeline(
+            llm_provider=args.provider,
+            llm_model=args.model,
+            enable_multi_agent=use_multi_agent
+        )
+        report = pipeline.run(
+            resume_path=args.resume,
+            user_config=user_config
+        )
+    except DocumentParseError as e:
+        logger.error(f"简历文件解析失败: {e}")
+        sys.exit(1)
     except Exception as e:
-        logger.error(f"报告生成失败: {e}")
+        logger.error(f"报告生成失败: {e}", exc_info=True)
         sys.exit(1)
 
     # 输出报告

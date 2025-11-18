@@ -12,7 +12,7 @@ from typing import List, Dict, Any, Optional
 
 from app.config.settings import settings
 from app.agents.models import DraftQuestion, AgentOutput, AgentState
-from app.core.forum_engine import EnrichedDraftQuestion
+from app.models.enriched_draft_question import EnrichedDraftQuestion
 
 logger = logging.getLogger(__name__)
 

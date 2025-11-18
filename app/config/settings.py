@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     APP_NAME: str = "GrillRadar"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
+    API_RATE_LIMIT_REQUESTS: int = 30
+    API_RATE_LIMIT_WINDOW: int = 60
 
     # Multi-Agent配置
     MULTI_AGENT_ENABLED: bool = True  # 启用多智能体模式

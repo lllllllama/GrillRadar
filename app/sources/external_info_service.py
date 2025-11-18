@@ -1,11 +1,12 @@
 """外部信息服务（Milestone 4）
 
 统一管理外部信息源的获取和聚合
-支持Mock和真实爬虫两种模式
+支持Mock、真实爬虫以及本地数据集三种模式
 """
 import logging
 import os
-from typing import Optional
+from typing import Dict, Optional
+
 from app.models.external_info import ExternalInfoSummary
 from app.models.user_config import UserConfig
 from app.sources.mock_provider import MockDataProvider
@@ -28,6 +29,10 @@ class ExternalInfoService:
         """
         self.provider_type = provider_type
         self.logger = logging.getLogger(__name__)
+        self._latest_trend_payload: Dict[str, list] = {
+            "keyword_trends": [],
+            "topic_trends": [],
+        }
 
         # 根据类型初始化提供者
         if provider_type == "multi_source_crawler":
@@ -49,6 +54,19 @@ class ExternalInfoService:
                 self.logger.warning(f"Failed to initialize crawler provider: {e}. Falling back to mock.")
                 self.provider = MockDataProvider()
                 self.provider_type = "mock"
+        elif provider_type == "local_dataset":
+            try:
+                from app.sources.local_dataset_provider import LocalDatasetProvider
+
+                self.provider = LocalDatasetProvider()
+                self.logger.info("Using LocalDatasetProvider (curated JSON dataset)")
+            except Exception as exc:
+                self.logger.warning(
+                    "Failed to initialize LocalDatasetProvider: %s. Falling back to mock.",
+                    exc,
+                )
+                self.provider = MockDataProvider()
+                self.provider_type = "mock"
         else:
             self.provider = MockDataProvider()
             self.logger.info("Using MockDataProvider (fast, no real crawling)")
@@ -60,7 +78,8 @@ class ExternalInfoService:
         position: Optional[str] = None,
         resume_keywords: Optional[list] = None,
         enable_jd: bool = True,
-        enable_interview_exp: bool = True
+        enable_interview_exp: bool = True,
+        domain: Optional[str] = None,
     ) -> Optional[ExternalInfoSummary]:
         """
         检索外部信息
@@ -79,10 +98,26 @@ class ExternalInfoService:
         try:
             # 如果使用真实爬虫
             if self.provider_type == "multi_source_crawler" and user_config:
-                return self.provider.retrieve_external_info(
+                summary = self.provider.retrieve_external_info(
                     user_config=user_config,
                     resume_keywords=resume_keywords
                 )
+                return summary
+
+            if self.provider_type == "local_dataset":
+                from app.sources.local_dataset_provider import LocalDatasetProvider
+
+                dataset_provider: LocalDatasetProvider = self.provider
+                summary = dataset_provider.retrieve_external_info(
+                    user_config=user_config,
+                    company=company,
+                    position=position,
+                    domain=domain,
+                    enable_jd=enable_jd,
+                    enable_interview_exp=enable_interview_exp,
+                )
+                self._latest_trend_payload = dataset_provider.get_trend_payload()
+                return summary
 
             # 否则使用Mock模式
             jds = []
@@ -122,12 +157,18 @@ class ExternalInfoService:
         if summary is None:
             return "未启用外部信息检索。"
 
-        # 如果使用爬虫模式，使用爬虫的格式化方法
         if self.provider_type == "multi_source_crawler":
             return self.provider.get_prompt_summary(summary)
 
-        # 否则使用原有的格式化方法
+        if self.provider_type == "local_dataset":
+            return self.provider.format_prompt(summary)
+
         return InfoAggregator.get_summary_for_prompt(summary)
+
+    def get_latest_trends(self) -> Dict[str, list]:
+        """Return structured trend payload for API consumers."""
+
+        return self._latest_trend_payload
 
 
 # 全局单例（默认使用mock，可通过环境变量配置）

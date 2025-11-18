@@ -255,6 +255,7 @@ from app.models.external_info import ExternalInfoSummary
 async def search_external_info(
     company: Optional[str] = None,
     position: Optional[str] = None,
+    domain: Optional[str] = None,
     enable_jd: bool = True,
     enable_interview_exp: bool = True
 ):
@@ -273,6 +274,7 @@ async def search_external_info(
     summary = external_info_service.retrieve_external_info(
         company=company,
         position=position,
+        domain=domain,
         enable_jd=enable_jd,
         enable_interview_exp=enable_interview_exp
     )
@@ -289,7 +291,8 @@ async def search_external_info(
 @router.get("/external-info/preview")
 async def preview_external_info(
     company: Optional[str] = None,
-    position: Optional[str] = None
+    position: Optional[str] = None,
+    domain: Optional[str] = None,
 ):
     """
     预览外部信息（返回文本摘要）
@@ -304,6 +307,7 @@ async def preview_external_info(
     summary = external_info_service.retrieve_external_info(
         company=company,
         position=position,
+        domain=domain,
         enable_jd=True,
         enable_interview_exp=True
     )
@@ -317,8 +321,39 @@ async def preview_external_info(
         "summary": text_summary,
         "jd_count": len(summary.job_descriptions),
         "experience_count": len(summary.interview_experiences),
-        "keywords": summary.aggregated_keywords[:15]
+        "keywords": summary.aggregated_keywords[:15],
+        "keyword_trends": summary.keyword_trends[:10],
+        "topic_trends": summary.topic_trends[:10],
     }
+
+
+@router.get("/external-info/trends")
+async def get_external_info_trends(
+    company: Optional[str] = None,
+    position: Optional[str] = None,
+    domain: Optional[str] = None,
+):
+    """获取最新的高频技能/主题趋势"""
+
+    if company or position or domain:
+        summary = external_info_service.retrieve_external_info(
+            company=company,
+            position=position,
+            domain=domain,
+            enable_jd=True,
+            enable_interview_exp=True,
+        )
+        if summary is None:
+            raise HTTPException(
+                status_code=404,
+                detail="No external information found for the given criteria",
+            )
+
+    payload = external_info_service.get_latest_trends()
+    if not payload["keyword_trends"] and not payload["topic_trends"]:
+        raise HTTPException(status_code=404, detail="Trend data is not available yet")
+
+    return payload
 
 
 # Configuration Management Endpoints

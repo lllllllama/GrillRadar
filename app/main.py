@@ -15,6 +15,7 @@ from app.api.report import router as report_router
 from app.config.settings import settings
 from app.config.validator import ConfigValidator
 from app.exceptions import ConfigurationError
+from app.middleware.rate_limiter import RateLimiterMiddleware
 
 # 配置日志
 logging.basicConfig(
@@ -28,6 +29,13 @@ app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
     description="GrillRadar: AI驱动的面试准备「拷问+陪练」报告生成系统"
+)
+
+app.add_middleware(
+    RateLimiterMiddleware,
+    max_requests=settings.API_RATE_LIMIT_REQUESTS,
+    window_seconds=settings.API_RATE_LIMIT_WINDOW,
+    exempt_paths=["/health", "/api/health", "/api/domains"],
 )
 
 # 挂载静态文件

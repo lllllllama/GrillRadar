@@ -26,6 +26,10 @@ chardet==5.2.0
 beautifulsoup4==4.12.2
 lxml==4.9.3
 
+# PDF OCR (optional - for scanned PDF support)
+# Install with: pip install -r requirements-ocr.txt
+# See requirements-ocr.txt for OCR dependencies
+
 # Development
 pytest==7.4.3
 pytest-asyncio==0.21.1

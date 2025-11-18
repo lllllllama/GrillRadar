@@ -167,10 +167,45 @@ python cli.py --config config.json --resume 你的简历.pdf
 
 | 格式 | 扩展名 | 支持 |
 |------|--------|------|
-| PDF | `.pdf` | ✅ |
+| PDF | `.pdf` | ✅ **支持OCR** |
 | Word | `.docx`, `.doc` | ✅ |
 | 文本 | `.txt` | ✅ 自动编码检测 |
 | Markdown | `.md` | ✅ |
+
+**🔍 智能OCR支持（扫描PDF/图片PDF）**
+
+自动识别扫描简历和图片PDF，无缝切换到OCR模式：
+- 支持中英文混合识别
+- 自动检测文本可选性，智能回退
+- 可配置OCR引擎（PaddleOCR/Tesseract）
+
+<details>
+<summary><b>启用OCR功能（可选）</b></summary>
+
+1. 安装OCR依赖：
+```bash
+pip install -r requirements-ocr.txt
+```
+
+2. 配置OCR（`.env`文件）：
+```bash
+# 启用OCR
+PDF_OCR_ENABLED=true
+
+# 可选配置
+PDF_OCR_ENGINE=paddleocr  # 或 tesseract
+PDF_OCR_LANG=ch          # ch/en/ch_en
+PDF_OCR_MIN_TEXT=200     # 触发OCR的最小文本长度
+```
+
+**工作原理：**
+1. 首先尝试标准文本提取（快速）
+2. 如果文本不足200字符，自动切换到OCR
+3. OCR失败时智能回退到文本提取
+
+**不安装OCR？** 没问题！系统仍能处理普通PDF，只是不支持扫描版。
+
+</details>
 
 ### 🔧 多API兼容
 

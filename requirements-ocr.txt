@@ -1,0 +1,17 @@
+# Optional OCR dependencies for scanned PDF support
+# Install with: pip install -r requirements-ocr.txt
+
+# PDF to image conversion
+pdf2image==1.16.3
+Pillow==10.1.0
+
+# OCR engines
+paddleocr==2.7.0.3
+paddlepaddle==2.5.2  # Use paddlepaddle-gpu for GPU support
+
+# For Tesseract OCR (alternative engine)
+# pytesseract==0.3.10
+# Also requires: sudo apt-get install tesseract-ocr tesseract-ocr-chi-sim
+
+# System requirements (Linux):
+# - poppler-utils: sudo apt-get install poppler-utils

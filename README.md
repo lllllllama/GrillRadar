@@ -136,12 +136,99 @@ python cli.py --config config.json --resume 你的简历.pdf
 
 ---
 
+## 🎬 示例场景演示
+
+GrillRadar 提供了 **3 个真实示例**,展示不同场景下的面试准备:
+
+### 📱 示例 1: LLM 应用工程师求职
+
+**场景**: 阿里巴巴 LLM 应用工程师,目标字节跳动/阿里巴巴
+
+**技术特点**: RAG系统、Prompt工程、Agent框架、开源项目
+
+```bash
+python cli.py \
+  --config examples/job_llm_app/config.json \
+  --resume examples/job_llm_app/resume.md \
+  --output llm_report.md
+```
+
+**报告亮点**:
+- ✅ 15个工程面试问题
+- ✅ 涵盖RAG检索、Prompt优化、向量数据库、幻觉检测
+- ✅ 考察系统设计、性能优化、大模型基础理论
+- ✅ 每个问题附带练习提示词,可复制到ChatGPT/Claude深度练习
+
+📂 [查看完整示例](./examples/job_llm_app/)
+
+---
+
+### 🎓 示例 2: 计算机视觉 PhD 申请
+
+**场景**: 上海交大本科生,申请美国/香港 CV 方向 PhD
+
+**学术特点**: MICCAI论文投稿、竞赛获奖、开源项目 (350+ stars)
+
+```bash
+python cli.py \
+  --config examples/grad_cv_segmentation/config.json \
+  --resume examples/grad_cv_segmentation/resume.md \
+  --output cv_grad_report.md
+```
+
+**报告亮点**:
+- ✅ 12个PhD面试问题
+- ✅ 涵盖研究创新性、实验严谨性、理论基础、文献综述
+- ✅ 考察失败经历、学术诚信、Research Proposal、英语能力
+- ✅ 导师视角深度拷问,暴露简历薄弱点
+
+📂 [查看完整示例](./examples/grad_cv_segmentation/)
+
+---
+
+### 🔀 示例 3: 混合模式 - 工程 + PhD 双重准备
+
+**场景**: 字节跳动后端工程师,同时准备分布式系统 PhD 申请
+
+**特点**: 工程经验 + 科研背景 (SOSP投稿、Raft开源项目)
+
+```bash
+python cli.py \
+  --config examples/mixed_backend_grad/config.json \
+  --resume examples/mixed_backend_grad/resume.md \
+  --output mixed_report.md
+```
+
+**报告亮点**:
+- ✅ 10个双视角问题 (5个工程 + 5个学术)
+- ✅ 工程侧: 性能优化、系统设计、Raft工程实践
+- ✅ 学术侧: 研究创新性、理论基础、PhD规划
+- ✅ 交叉问题: 工程vs学术的平衡与价值
+
+📂 [查看完整示例](./examples/mixed_backend_grad/)
+
+---
+
+### 💡 如何选择模式?
+
+| 场景 | 模式 | 适用人群 |
+|------|------|----------|
+| 工程求职 | `mode: job` | 程序员、算法工程师、LLM应用开发者 |
+| 学术申请 | `mode: grad` | 研究生、PhD申请者、科研人员 |
+| 双重准备 | `mode: mixed` | 工作同时准备读博、纠结工程vs学术 |
+
+👉 **更多详情**: [QUICK_START_ZH.md](./QUICK_START_ZH.md) - 5分钟快速上手指南
+
+---
+
 ## 📚 文档导航
 
 ### 🔰 新手入门
 | 文档 | 说明 |
 |------|------|
 | [快速开始](#-5分钟快速开始) | 5分钟上手指南 |
+| [详细使用指南](./QUICK_START_ZH.md) | 完整的中文使用教程 |
+| [示例场景](#-示例场景演示) | 3个真实示例演示 |
 | [配置指南](./CONFIGURATION.md) | 详细配置说明 |
 | [Web界面](./WEB_INTERFACE.md) | 使用Web版本 |
 

@@ -1,0 +1,448 @@
+# Research Domains Configuration
+#
+# Structured knowledge base for research-oriented (grad/PhD) interview preparation.
+# Each domain includes conferences, core topics, recommended searches, and common methods.
+#
+# IMPORTANT: This file provides general domain knowledge, NOT specific paper titles or authors.
+# Use this to guide students toward legitimate research areas and search strategies.
+
+cv_segmentation:
+  display_name: "计算机视觉 - 图像分割"
+  display_name_en: "Computer Vision - Image Segmentation"
+  category: "research"
+
+  conferences:
+    tier1:
+      - CVPR     # IEEE Conference on Computer Vision and Pattern Recognition
+      - ICCV     # International Conference on Computer Vision
+      - ECCV     # European Conference on Computer Vision
+    medical:
+      - MICCAI   # Medical Image Computing and Computer Assisted Intervention
+      - IPMI     # Information Processing in Medical Imaging
+    journals:
+      - IEEE TMI        # IEEE Transactions on Medical Imaging
+      - Medical Image Analysis
+      - IEEE TPAMI      # IEEE Transactions on Pattern Analysis and Machine Intelligence
+
+  core_topics:
+    - Semantic segmentation
+    - Instance segmentation
+    - Panoptic segmentation
+    - Medical image segmentation
+    - 3D segmentation
+    - Interactive segmentation
+    - Weakly-supervised segmentation
+    - Few-shot segmentation
+    - Transformer-based segmentation
+    - Real-time segmentation
+
+  recommended_queries:
+    - "image segmentation survey"
+    - "semantic segmentation review"
+    - "medical image segmentation review"
+    - "Transformer segmentation"
+    - "U-Net architecture variants"
+    - "segmentation benchmark datasets"
+    - "weakly supervised segmentation methods"
+
+  common_methods:
+    - U-Net and variants (U-Net++, Attention U-Net, etc.)
+    - DeepLab series (v3, v3+)
+    - Mask R-CNN / Cascade Mask R-CNN
+    - SegFormer / Segmenter
+    - Swin-Unet
+    - TransUNet
+    - SAM (Segment Anything Model)
+
+  typical_baselines:
+    - FCN (Fully Convolutional Networks)
+    - U-Net
+    - DeepLabv3+
+    - PSPNet
+
+  evaluation_metrics:
+    - Dice Score / Dice Coefficient
+    - IoU (Intersection over Union)
+    - Pixel Accuracy
+    - Hausdorff Distance (for medical imaging)
+
+nlp:
+  display_name: "自然语言处理"
+  display_name_en: "Natural Language Processing"
+  category: "research"
+
+  conferences:
+    tier1:
+      - ACL      # Association for Computational Linguistics
+      - EMNLP    # Empirical Methods in Natural Language Processing
+      - NAACL    # North American Chapter of ACL
+      - COLING   # International Conference on Computational Linguistics
+    ml:
+      - NeurIPS
+      - ICML
+      - ICLR
+    journals:
+      - TACL     # Transactions of ACL
+      - CL       # Computational Linguistics
+
+  core_topics:
+    - Large Language Models (LLMs)
+    - Pre-training and Fine-tuning
+    - Machine Translation
+    - Information Extraction
+    - Question Answering
+    - Dialogue Systems
+    - Sentiment Analysis
+    - Text Generation
+    - Named Entity Recognition (NER)
+    - Relation Extraction
+    - Low-resource NLP
+    - Multilingual NLP
+    - Prompt Engineering
+    - In-Context Learning
+
+  recommended_queries:
+    - "transformer architecture survey"
+    - "pre-trained language models review"
+    - "large language models survey"
+    - "information extraction methods"
+    - "neural machine translation review"
+    - "prompt learning survey"
+
+  common_methods:
+    - BERT and variants (RoBERTa, ALBERT, etc.)
+    - GPT series
+    - T5 / BART
+    - LLaMA / Mistral
+    - Sequence-to-Sequence models
+    - Attention mechanisms
+    - Retrieval-Augmented Generation (RAG)
+
+  typical_baselines:
+    - LSTM / BiLSTM
+    - Transformer
+    - BERT-base
+    - GPT-2
+
+llm_application:
+  display_name: "大语言模型应用"
+  display_name_en: "Large Language Model Applications"
+  category: "engineering_research"
+
+  conferences:
+    ml:
+      - NeurIPS
+      - ICML
+      - ICLR
+    nlp:
+      - ACL
+      - EMNLP
+    systems:
+      - MLSys
+
+  core_topics:
+    - Prompt Engineering
+    - In-Context Learning
+    - Chain-of-Thought (CoT)
+    - Retrieval-Augmented Generation (RAG)
+    - LLM Fine-tuning (LoRA, QLoRA, etc.)
+    - Agent Systems
+    - Tool Use / Function Calling
+    - LLM Evaluation
+    - Alignment (RLHF, DPO)
+    - Model Compression
+    - Inference Optimization
+
+  recommended_queries:
+    - "prompt engineering survey"
+    - "retrieval augmented generation review"
+    - "LLM agent systems"
+    - "LLM evaluation benchmarks"
+    - "parameter efficient fine-tuning"
+    - "LLM alignment methods"
+
+  common_methods:
+    - Few-shot prompting
+    - Chain-of-Thought prompting
+    - RAG (Dense Retrieval + LLM)
+    - LoRA / QLoRA fine-tuning
+    - ReAct (Reasoning + Acting)
+    - LangChain / LlamaIndex
+
+  evaluation_metrics:
+    - BLEU / ROUGE (for generation)
+    - Exact Match / F1 (for QA)
+    - Human evaluation
+    - GPT-4 as judge
+
+multimodal:
+  display_name: "多模态学习"
+  display_name_en: "Multimodal Learning"
+  category: "research"
+
+  conferences:
+    cv:
+      - CVPR
+      - ICCV
+      - ECCV
+    ml:
+      - NeurIPS
+      - ICML
+      - ICLR
+    nlp:
+      - ACL
+      - EMNLP
+
+  core_topics:
+    - Vision-Language Models
+    - Image Captioning
+    - Visual Question Answering (VQA)
+    - Cross-modal Retrieval
+    - Video Understanding
+    - Audio-Visual Learning
+    - Vision-and-Language Navigation
+    - Multimodal Pre-training
+    - Unified Multimodal Models
+
+  recommended_queries:
+    - "vision language models survey"
+    - "multimodal pre-training review"
+    - "visual question answering methods"
+    - "image captioning survey"
+    - "cross-modal retrieval review"
+
+  common_methods:
+    - CLIP
+    - BLIP / BLIP-2
+    - Flamingo
+    - GPT-4V
+    - LLaVA
+    - MiniGPT-4
+    - ViLT (Vision-and-Language Transformer)
+
+  typical_baselines:
+    - ViT (Vision Transformer)
+    - BERT
+    - Simple concatenation baselines
+
+general_ml:
+  display_name: "机器学习（通用）"
+  display_name_en: "Machine Learning (General)"
+  category: "research"
+
+  conferences:
+    tier1:
+      - NeurIPS
+      - ICML
+      - ICLR
+    ai:
+      - AAAI
+      - IJCAI
+
+  core_topics:
+    - Deep Learning Fundamentals
+    - Optimization Methods
+    - Generalization Theory
+    - Transfer Learning
+    - Meta-Learning
+    - Reinforcement Learning
+    - Unsupervised Learning
+    - Self-Supervised Learning
+    - Graph Neural Networks
+    - Federated Learning
+    - Adversarial Robustness
+
+  recommended_queries:
+    - "deep learning fundamentals"
+    - "optimization methods survey"
+    - "transfer learning review"
+    - "self-supervised learning survey"
+    - "graph neural networks review"
+
+  common_methods:
+    - Convolutional Neural Networks (CNNs)
+    - Recurrent Neural Networks (RNNs)
+    - Transformers
+    - Graph Neural Networks (GNNs)
+    - Variational Autoencoders (VAEs)
+    - Generative Adversarial Networks (GANs)
+
+graph_learning:
+  display_name: "图学习"
+  display_name_en: "Graph Learning"
+  category: "research"
+
+  conferences:
+    ml:
+      - NeurIPS
+      - ICML
+      - ICLR
+    dm:
+      - KDD
+      - WWW
+      - WSDM
+
+  core_topics:
+    - Graph Neural Networks (GNNs)
+    - Graph Convolutional Networks (GCNs)
+    - Graph Attention Networks (GATs)
+    - Graph Representation Learning
+    - Link Prediction
+    - Graph Classification
+    - Node Classification
+    - Graph Generation
+    - Heterogeneous Graphs
+    - Dynamic Graphs
+
+  recommended_queries:
+    - "graph neural networks survey"
+    - "graph representation learning review"
+    - "GNN architectures comparison"
+    - "heterogeneous graph learning"
+
+  common_methods:
+    - GCN (Graph Convolutional Network)
+    - GAT (Graph Attention Network)
+    - GraphSAGE
+    - GIN (Graph Isomorphism Network)
+    - Message Passing Neural Networks
+
+reinforcement_learning:
+  display_name: "强化学习"
+  display_name_en: "Reinforcement Learning"
+  category: "research"
+
+  conferences:
+    ml:
+      - NeurIPS
+      - ICML
+      - ICLR
+    rl:
+      - AAMAS
+
+  core_topics:
+    - Deep Q-Learning
+    - Policy Gradient Methods
+    - Actor-Critic Methods
+    - Model-Based RL
+    - Multi-Agent RL
+    - Offline RL
+    - Meta-RL
+    - Inverse RL
+    - Safe RL
+    - RL from Human Feedback (RLHF)
+
+  recommended_queries:
+    - "reinforcement learning survey"
+    - "deep reinforcement learning review"
+    - "policy gradient methods"
+    - "multi-agent reinforcement learning"
+
+  common_methods:
+    - DQN (Deep Q-Network)
+    - A3C / A2C
+    - PPO (Proximal Policy Optimization)
+    - DDPG / TD3
+    - SAC (Soft Actor-Critic)
+
+  typical_baselines:
+    - Q-Learning
+    - REINFORCE
+    - DQN
+
+robotics:
+  display_name: "机器人学"
+  display_name_en: "Robotics"
+  category: "research"
+
+  conferences:
+    robotics:
+      - ICRA    # IEEE International Conference on Robotics and Automation
+      - IROS    # IEEE/RSJ International Conference on Intelligent Robots and Systems
+      - RSS     # Robotics: Science and Systems
+      - CoRL    # Conference on Robot Learning
+
+  core_topics:
+    - Motion Planning
+    - SLAM (Simultaneous Localization and Mapping)
+    - Manipulation
+    - Imitation Learning
+    - Robot Learning
+    - Human-Robot Interaction
+    - Visual Servoing
+    - Grasping
+    - Navigation
+
+  recommended_queries:
+    - "robot learning survey"
+    - "SLAM algorithms review"
+    - "robotic manipulation methods"
+    - "imitation learning robotics"
+
+  common_methods:
+    - Behavior Cloning
+    - Inverse Kinematics
+    - RRT / RRT* (motion planning)
+    - Visual SLAM
+    - Reinforcement Learning for Robotics
+
+generative_ai:
+  display_name: "生成式AI"
+  display_name_en: "Generative AI"
+  category: "research"
+
+  conferences:
+    ml:
+      - NeurIPS
+      - ICML
+      - ICLR
+    cv:
+      - CVPR
+      - ICCV
+
+  core_topics:
+    - Diffusion Models
+    - Generative Adversarial Networks (GANs)
+    - Variational Autoencoders (VAEs)
+    - Text-to-Image Generation
+    - Image-to-Image Translation
+    - Neural Rendering
+    - 3D Generation
+    - Video Generation
+    - Audio Generation
+
+  recommended_queries:
+    - "diffusion models survey"
+    - "text-to-image generation review"
+    - "GAN architectures comparison"
+    - "neural rendering methods"
+
+  common_methods:
+    - Stable Diffusion
+    - DALL-E 2 / DALL-E 3
+    - Midjourney (architecture insights)
+    - StyleGAN series
+    - DDPM / DDIM
+    - ControlNet
+
+  typical_baselines:
+    - DCGAN
+    - VAE
+    - Pix2Pix
+
+# Meta-configuration for research domains
+meta:
+  how_to_add_new_domain:
+    - "Copy an existing domain template"
+    - "Fill in conferences (use official acronyms)"
+    - "List core topics (5-15 items)"
+    - "Provide recommended search queries"
+    - "Add common methods (optional)"
+    - "Specify evaluation metrics (optional)"
+
+  guidance:
+    - "NEVER fabricate specific paper titles or authors"
+    - "Reference conferences by name only (e.g., 'read recent CVPR papers on X')"
+    - "Suggest search queries for students to explore (e.g., 'search for Y survey')"
+    - "Focus on general methodologies, not specific implementations"
+    - "Keep information factual and verifiable"

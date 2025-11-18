@@ -1,0 +1,216 @@
+# Chinese Graduate School Interview Configuration
+#
+# Context-specific guidance for Chinese master's/PhD interview scenarios.
+# Provides typical interview structure, evaluation dimensions, and question patterns.
+#
+# IMPORTANT: This contains GENERAL patterns only, no personal data or real interview questions.
+
+interview_structure:
+  typical_components:
+    - name: "自我介绍"
+      name_en: "Self-Introduction"
+      duration: "2-3分钟"
+      description: "简要介绍教育背景、科研经历、申请动机"
+      key_points:
+        - "本科/硕士院校及专业"
+        - "主要科研项目和成果"
+        - "为什么选择这个方向和导师"
+        - "未来研究兴趣"
+
+    - name: "基础课程考察"
+      name_en: "Core Course Questions"
+      duration: "10-15分钟"
+      description: "考察专业基础知识掌握程度"
+      typical_subjects:
+        - "数学基础（线性代数、概率论、最优化）"
+        - "专业核心课程（数据结构、算法、机器学习等）"
+        - "编程能力"
+
+    - name: "科研/项目讨论"
+      name_en: "Research/Project Discussion"
+      duration: "15-20分钟"
+      description: "深入讨论简历中的科研项目"
+      focus_areas:
+        - "项目背景和motivation"
+        - "技术方案设计"
+        - "遇到的困难和解决方法"
+        - "实验结果分析"
+        - "创新点和贡献"
+
+    - name: "未来规划"
+      name_en: "Future Plans"
+      duration: "5-10分钟"
+      description: "了解研究兴趣和职业规划"
+      common_questions:
+        - "为什么选择读研/读博？"
+        - "对哪个研究方向感兴趣？"
+        - "未来是否考虑学术道路？"
+        - "博士毕业后的打算？"
+
+    - name: "英语能力考察"
+      name_en: "English Proficiency"
+      duration: "5-10分钟"
+      description: "考察英语文献阅读和交流能力"
+      formats:
+        - "英文自我介绍"
+        - "英文文献阅读理解"
+        - "专业术语英文表达"
+
+evaluation_dimensions:
+  - dimension: "专业基础"
+    dimension_en: "Fundamental Knowledge"
+    weight: "高"
+    description: "数学、编程、专业课程基础是否扎实"
+    typical_questions:
+      - "解释核心概念（如梯度下降、反向传播等）"
+      - "推导算法复杂度"
+      - "手写代码实现基础算法"
+
+  - dimension: "科研潜力"
+    dimension_en: "Research Potential"
+    weight: "高"
+    description: "是否具备独立科研能力和创新思维"
+    typical_questions:
+      - "你的项目中最大的创新点是什么？"
+      - "如何验证你的方法的有效性？"
+      - "如果让你改进这个工作，你会怎么做？"
+      - "读过哪些相关领域的经典论文？"
+
+  - dimension: "长期投入意愿"
+    dimension_en: "Long-term Commitment"
+    weight: "中"
+    description: "是否有清晰的研究方向和长期规划"
+    typical_questions:
+      - "为什么选择这个研究方向？"
+      - "博士期间可能面临哪些困难？你如何看待？"
+      - "如何平衡科研和生活？"
+
+  - dimension: "与实验室契合度"
+    dimension_en: "Lab Fit"
+    weight: "中"
+    description: "研究兴趣是否与导师/实验室方向匹配"
+    typical_questions:
+      - "了解我们实验室的研究方向吗？"
+      - "你希望在这里做什么样的研究？"
+      - "为什么选择我们实验室而不是其他？"
+
+  - dimension: "综合素质"
+    dimension_en: "Overall Quality"
+    weight: "中"
+    description: "沟通能力、团队协作、抗压能力等"
+    typical_questions:
+      - "如何与团队成员合作？"
+      - "遇到研究瓶颈时如何处理？"
+      - "是否有论文被拒的经历？如何应对？"
+
+killer_question_patterns:
+  # High-level patterns only, NO specific real questions
+
+  - pattern: "深度追问项目细节"
+    pattern_en: "Deep Dive into Project Details"
+    description: "对简历中项目进行深入技术追问"
+    examples:
+      - "你提到用了Transformer，为什么不用CNN？"
+      - "你的数据集有多大？如何处理数据不平衡问题？"
+      - "这个超参数是怎么调的？试过哪些值？"
+      - "为什么选择这个loss function？"
+
+  - pattern: "理论基础考察"
+    pattern_en: "Theoretical Foundation"
+    description: "考察核心概念的深度理解"
+    examples:
+      - "解释一下为什么梯度下降能收敛？"
+      - "什么情况下会过拟合？如何避免？"
+      - "L1和L2正则化的区别是什么？"
+      - "Attention机制的本质是什么？"
+
+  - pattern: "研究方法论"
+    pattern_en: "Research Methodology"
+    description: "考察科研思维和方法论"
+    examples:
+      - "你如何设计实验来验证这个假设？"
+      - "如果baseline比你的方法好，怎么办？"
+      - "你认为这个领域未来的研究方向是什么？"
+      - "如何判断一个研究问题是否有价值？"
+
+  - pattern: "文献阅读深度"
+    pattern_en: "Literature Understanding"
+    description: "考察对领域文献的熟悉程度"
+    examples:
+      - "你读过这个方向的哪些代表性工作？"
+      - "最近CVPR/NeurIPS有哪些相关工作？"
+      - "你的方法和XX论文的区别是什么？"
+      - "如何评价XX工作的贡献？"
+
+  - pattern: "开放性研究问题"
+    pattern_en: "Open Research Questions"
+    description: "考察创新思维和problem-solving能力"
+    examples:
+      - "如果给你充足的计算资源，你会做什么？"
+      - "这个领域当前最大的challenge是什么？"
+      - "如何将你的方法扩展到其他应用场景？"
+
+chinese_academic_culture:
+  important_contexts:
+    - key: "导师-学生关系"
+      value: "导师制，导师对学生的学术和生活有较大影响"
+
+    - key: "科研产出压力"
+      value: "博士毕业通常需要一定数量的高水平论文（如顶会论文）"
+
+    - key: "实验室文化"
+      value: "实验室组会、论文阅读、团队合作是常态"
+
+    - key: "竞争环境"
+      value: "顶尖高校和实验室竞争激烈，需要展示research potential"
+
+  communication_tips:
+    - "诚实回答，不要编造不懂的内容"
+    - "承认不足，但说明学习能力和改进计划"
+    - "展示对研究的热情和commitment"
+    - "准备好讨论失败经历和从中学到的经验"
+    - "了解导师的研究方向和代表性工作"
+
+common_pitfalls:
+  - pitfall: "简历造假或夸大"
+    consequence: "技术追问时容易露馅"
+
+  - pitfall: "对领域文献不熟悉"
+    consequence: "无法展示research awareness"
+
+  - pitfall: "缺乏对未来的规划"
+    consequence: "让人怀疑commitment"
+
+  - pitfall: "英语能力不足"
+    consequence: "可能影响读博期间的文献阅读和国际交流"
+
+  - pitfall: "过于功利化的表达"
+    consequence: "如'只是为了学历'等会降低印象分"
+
+preparation_checklist:
+  fundamentals:
+    - "复习数学基础（线性代数、概率论、最优化）"
+    - "熟练掌握至少一门编程语言"
+    - "理解核心专业课程概念"
+
+  research:
+    - "深入理解简历中的每个项目"
+    - "阅读相关领域的经典论文和近期顶会论文"
+    - "准备项目的详细技术方案和实验结果"
+    - "思考项目的不足和改进方向"
+
+  personal:
+    - "准备中英文自我介绍"
+    - "明确研究兴趣和未来规划"
+    - "了解目标导师和实验室的研究方向"
+    - "准备几个想向导师提出的问题"
+
+  mental:
+    - "保持谦虚和学习的态度"
+    - "不要害怕承认不懂"
+    - "展示对科研的热情"
+    - "保持自信但不傲慢"
+
+# Note: This configuration provides general guidance based on common patterns
+# in Chinese graduate school interviews. Specific interview formats may vary
+# by institution, department, and supervisor.

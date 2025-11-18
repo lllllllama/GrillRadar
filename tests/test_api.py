@@ -1,7 +1,7 @@
 """Tests for API endpoints"""
 
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, AsyncMock
 from fastapi.testclient import TestClient
 from app.main import app
 from app.models.report import Report, ReportMeta
@@ -201,13 +201,13 @@ class TestGenerateReportEndpoint:
             )
         )
 
-    @patch('app.api.report.ReportGenerator')
-    def test_generate_report_success(self, mock_generator_class, sample_report):
+    @patch('app.api.report.GrillRadarPipeline')
+    def test_generate_report_success(self, mock_pipeline_class, sample_report):
         """Test successful report generation"""
         # Setup mock
-        mock_generator = Mock()
-        mock_generator_class.return_value = mock_generator
-        mock_generator.generate_report.return_value = sample_report
+        mock_pipeline = Mock()
+        mock_pipeline_class.return_value = mock_pipeline
+        mock_pipeline.run_with_text_async = AsyncMock(return_value=sample_report)
 
         # Make request
         request_data = {
@@ -235,12 +235,12 @@ class TestGenerateReportEndpoint:
         # Verify markdown content
         assert "# GrillRadar 面试准备报告" in data["markdown"]
 
-    @patch('app.api.report.ReportGenerator')
-    def test_generate_report_with_external_info(self, mock_generator_class, sample_report):
+    @patch('app.api.report.GrillRadarPipeline')
+    def test_generate_report_with_external_info(self, mock_pipeline_class, sample_report):
         """Test report generation with external info enabled"""
-        mock_generator = Mock()
-        mock_generator_class.return_value = mock_generator
-        mock_generator.generate_report.return_value = sample_report
+        mock_pipeline = Mock()
+        mock_pipeline_class.return_value = mock_pipeline
+        mock_pipeline.run_with_text_async = AsyncMock(return_value=sample_report)
 
         request_data = {
             "mode": "job",
@@ -291,12 +291,12 @@ class TestGenerateReportEndpoint:
         response = client.post("/api/generate-report", json=request_data)
         assert response.status_code == 422
 
-    @patch('app.api.report.ReportGenerator')
-    def test_generate_report_llm_error(self, mock_generator_class):
+    @patch('app.api.report.GrillRadarPipeline')
+    def test_generate_report_llm_error(self, mock_pipeline_class):
         """Test report generation when LLM fails"""
-        mock_generator = Mock()
-        mock_generator_class.return_value = mock_generator
-        mock_generator.generate_report.side_effect = Exception("LLM API Error")
+        mock_pipeline = Mock()
+        mock_pipeline_class.return_value = mock_pipeline
+        mock_pipeline.run_with_text_async = AsyncMock(side_effect=Exception("LLM API Error"))
 
         request_data = {
             "mode": "job",
@@ -315,8 +315,8 @@ class TestGenerateReportEndpoint:
 
 
 class TestGenerateReportFormEndpoint:
-    @patch('app.api.report.ReportGenerator')
-    def test_generate_report_form_success(self, mock_generator_class):
+    @patch('app.api.report.GrillRadarPipeline')
+    def test_generate_report_form_success(self, mock_pipeline_class):
         """Test form-based report generation"""
         # Setup mock
         questions = []
@@ -342,9 +342,9 @@ class TestGenerateReportFormEndpoint:
             meta=ReportMeta(num_questions=10)
         )
 
-        mock_generator = Mock()
-        mock_generator_class.return_value = mock_generator
-        mock_generator.generate_report.return_value = sample_report
+        mock_pipeline = Mock()
+        mock_pipeline_class.return_value = mock_pipeline
+        mock_pipeline.run_with_text_async = AsyncMock(return_value=sample_report)
 
         # Make form request
         form_data = {

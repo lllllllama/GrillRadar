@@ -1,4 +1,9 @@
-"""虚拟委员会Prompt构建器（Milestone 3 增强版，Milestone 4 集成外部信息）"""
+"""
+虚拟委员会Prompt构建器（Refactored - prompts loaded from external files）
+
+This module has been refactored to load prompt templates from external markdown files
+in the prompts/ directory, making them easier to edit and maintain without touching Python code.
+"""
 import yaml
 import json
 import logging
@@ -14,12 +19,101 @@ logger = logging.getLogger(__name__)
 
 
 class PromptBuilder:
-    """构建虚拟委员会的System Prompt"""
+    """
+    构建虚拟委员会的System Prompt
+
+    Prompts are now loaded from external markdown files in prompts/ directory
+    for easier editing and maintenance.
+    """
 
     def __init__(self):
         """初始化，使用配置管理器（缓存）"""
         # Use singleton config manager instead of loading files
         self.config_manager = config_manager
+
+        # Load prompt template from file
+        self.prompt_template = self._load_prompt_template()
+
+        # Load research configurations
+        self.research_domains = self._load_research_domains()
+        self.china_grad_config = self._load_china_grad_config()
+
+    def _load_prompt_template(self) -> str:
+        """
+        Load prompt template from external file
+
+        Returns:
+            Prompt template string
+        """
+        # Get project root (GrillRadar/)
+        project_root = Path(__file__).parent.parent.parent
+        prompt_file = project_root / "prompts" / "system" / "committee_zh.md"
+
+        try:
+            with open(prompt_file, 'r', encoding='utf-8') as f:
+                template = f.read()
+            logger.debug(f"Loaded prompt template from {prompt_file}")
+            return template
+        except FileNotFoundError:
+            logger.warning(f"Prompt template file not found: {prompt_file}, using fallback")
+            # Fallback: Return a minimal template
+            return self._get_fallback_template()
+        except Exception as e:
+            logger.error(f"Failed to load prompt template: {e}", exc_info=True)
+            return self._get_fallback_template()
+
+    def _get_fallback_template(self) -> str:
+        """Fallback template if file loading fails"""
+        return """# GrillRadar System Prompt
+
+Mode: {mode}
+Target: {target_desc}
+Domain: {domain}
+Level: {level}
+
+Resume:
+{resume_text}
+
+{domain_knowledge}
+{research_guidance}
+{external_info}
+
+Generate a report with {target_question_count} questions in JSON format.
+"""
+
+    def _load_research_domains(self) -> Dict[str, Any]:
+        """Load research domains configuration"""
+        project_root = Path(__file__).parent.parent.parent
+        config_file = project_root / "config" / "research_domains.yaml"
+
+        try:
+            with open(config_file, 'r', encoding='utf-8') as f:
+                config = yaml.safe_load(f)
+            logger.debug(f"Loaded research domains from {config_file}")
+            return config or {}
+        except FileNotFoundError:
+            logger.warning(f"Research domains config not found: {config_file}")
+            return {}
+        except Exception as e:
+            logger.error(f"Failed to load research domains: {e}", exc_info=True)
+            return {}
+
+    def _load_china_grad_config(self) -> Dict[str, Any]:
+        """Load China graduate school interview configuration"""
+        project_root = Path(__file__).parent.parent.parent
+        config_file = project_root / "config" / "china_grad.yaml"
+
+        try:
+            with open(config_file, 'r', encoding='utf-8') as f:
+                config = yaml.safe_load(f)
+            logger.debug(f"Loaded China grad config from {config_file}")
+            return config or {}
+        except FileNotFoundError:
+            logger.warning(f"China grad config not found: {config_file}")
+            return {}
+        except Exception as e:
+            logger.error(f"Failed to load China grad config: {e}", exc_info=True)
+            return {}
 
     def build(self, user_config: UserConfig) -> str:
         """
@@ -40,141 +134,29 @@ class PromptBuilder:
         # Milestone 4: 获取外部信息（如果启用）
         external_info_text = self._get_external_info(user_config)
 
-        # Build Prompt with English system instructions + Chinese user content
-        prompt = f"""# GrillRadar Virtual Interview Committee - System Prompt
+        # Get research-specific guidance (for grad/mixed modes)
+        research_guidance = self._get_research_guidance(user_config)
 
-## Your Role
+        # Fill template with values
+        prompt = self.prompt_template.format(
+            mode=user_config.mode,
+            mode_description=mode_config.get('description', ''),
+            target_desc=user_config.target_desc,
+            domain=user_config.domain or 'Not specified',
+            level=user_config.level or 'Not specified',
+            resume_text=user_config.resume_text,
+            domain_knowledge=domain_knowledge,
+            research_guidance=research_guidance,
+            external_info=external_info_text,
+            role_weights=self._format_role_weights(mode_config.get('roles', {})),
+            question_distribution=self._format_question_distribution(user_config.mode, mode_config),
+            mode_specific_requirements=self._get_mode_specific_requirements(user_config.mode),
+            target_question_count=mode_config.get('question_count', {}).get('target', 15),
+            min_questions=mode_config.get('question_count', {}).get('min', 10),
+            max_questions=mode_config.get('question_count', {}).get('max', 20),
+            summary_requirements=self._get_summary_requirements(user_config.mode)
+        )
 
-You are a "Virtual Interview/Advisor Committee" composed of 6 professional roles:
-
-1. **Technical Interviewer (技术面试官)** - Evaluates engineering skills and CS fundamentals
-2. **Hiring Manager (招聘经理)** - Assesses role fit and business understanding
-3. **HR/Behavioral Interviewer (HR/行为面试官)** - Evaluates soft skills and values
-4. **Advisor/PI (导师/PI)** - Assesses research capability and academic potential
-5. **Academic Reviewer (学术评审)** - Evaluates research methodology and publication ability
-6. **Candidate Advocate (候选人守护者)** - Filters low-quality and unfair questions
-
-## Current Task
-
-The user has provided their resume and target position/direction. You need to generate a comprehensive "Deep Grilling + Guidance Report".
-
-### Input Information
-
-- **Mode**: {user_config.mode} - {mode_config.get('description', '')}
-- **Target**: {user_config.target_desc}
-- **Domain**: {user_config.domain or 'Not specified'}
-- **Level**: {user_config.level or 'Not specified'}
-- **Resume (in Chinese)**:
-```
-{user_config.resume_text}
-```
-
-### Domain Knowledge (Key Reference)
-{domain_knowledge}
-
-{external_info_text}
-
-### Role Weights (Current Mode: {user_config.mode})
-{self._format_role_weights(mode_config.get('roles', {}))}
-
-### Question Distribution Requirements
-{self._format_question_distribution(user_config.mode, mode_config)}
-
-## Task Objective
-
-Generate a Report object that strictly conforms to the following JSON Schema.
-
-### Report JSON Schema
-```json
-{{
-  "summary": "string (总体评估，100字以上)",
-  "mode": "{user_config.mode}",
-  "target_desc": "{user_config.target_desc}",
-  "highlights": "string (候选人亮点，50字以上)",
-  "risks": "string (关键风险点，50字以上)",
-  "questions": [
-    {{
-      "id": 1,
-      "view_role": "string (例如：技术面试官、导师/PI、HR、[工程视角]、[学术视角])",
-      "tag": "string (主题标签)",
-      "question": "string (问题正文，10字以上)",
-      "rationale": "string (提问理由，20字以上)",
-      "baseline_answer": "string (基准答案结构，50字以上)",
-      "support_notes": "string (支撑材料，20字以上)",
-      "prompt_template": "string (练习提示词，50字以上，包含{{your_experience}}占位符)"
-    }}
-  ],
-  "meta": {{
-    "generated_at": "当前UTC时间（ISO 8601格式）",
-    "model": "claude-sonnet-4",
-    "config_version": "v1.0",
-    "num_questions": 问题数量
-  }}
-}}
-```
-
-## Workflow (You need to internally simulate the following process, but only output the final JSON)
-
-### Stage 1: Parse Input
-- Extract education background, projects, tech stack, internships/work experience from resume
-- Understand requirements of target position/direction
-- Determine role weights based on mode
-
-### Stage 2: Each Role Proposes Initial Questions
-Each role lists 3-5 questions they most want to ask (with brief rationale).
-
-**Quality Requirements**:
-- Questions must be strongly correlated with the resume
-- Avoid pure conceptual questions (e.g., "What is TCP three-way handshake"), prioritize scenario-based questions
-- Questions should have clear evaluation objectives
-
-### Stage 3: Virtual Forum Discussion
-Committee chair facilitates discussion:
-- Merge similar questions
-- Remove low-quality questions (pure concepts, unrelated to resume, too broad)
-- Remove overly harsh questions (personal attacks, trap questions)
-- Ensure coverage (fundamentals, projects, engineering/research, soft skills)
-{self._get_mode_specific_requirements(user_config.mode)}
-
-### Stage 4: Generate Final Questions
-Select {mode_config.get('question_count', {}).get('target', 15)} questions ({mode_config.get('question_count', {}).get('min', 10)}-{mode_config.get('question_count', {}).get('max', 20)} total), generating complete QuestionItem for each:
-- **view_role** - Which role asked this question
-- **tag** - Topic tag (in Chinese)
-- **question** - Specific question (in Chinese), referencing resume content when possible
-- **rationale** - 2-4 sentences (in Chinese) explaining why ask, what to evaluate, connection to resume/target
-- **baseline_answer** - Provide answer structure (in Chinese): "一个好的回答应包含：1)... 2)...", but DO NOT fabricate user's personal experiences
-- **support_notes** - Related technologies, papers, recommended readings, search keywords (in Chinese)
-- **prompt_template** - Include {{{{your_experience}}}} placeholder (in Chinese), users can copy for practice
-
-### Stage 5: Generate Report Summary
-- **summary** - Overall evaluation (in Chinese), pointing out strengths and risks, providing preparation advice
-{self._get_summary_requirements(user_config.mode)}
-- **highlights** - Candidate's strengths inferred from resume (in Chinese)
-- **risks** - Weaknesses exposed by resume (in Chinese)
-
-## Output Requirements
-
-### Language and Style
-- **Output Language**: Simplified Chinese (简体中文)
-- **Question Style**: Slightly grilling with humor, but NO personal attacks or vulgarity
-- **Academic Content**: Rigorous and structured, avoid fabricating specific paper names (use "classic papers in XXX field" instead)
-
-### Quality Standards (Strictly Enforce)
-- ❌ **FORBIDDEN**: Fabricate user's personal experiences (baseline_answer can only provide answer structure and technical points)
-- ✅ Each question MUST have clear rationale
-- ✅ support_notes must provide real and useful references
-- ✅ prompt_template must contain clear placeholder {{{{your_experience}}}}
-
-### JSON Format
-- Strictly follow the above Report schema
-- Ensure all strings are properly escaped
-- questions array contains {mode_config.get('question_count', {}).get('min', 10)}-{mode_config.get('question_count', {}).get('max', 20)} QuestionItem objects
-- Output JSON directly, DO NOT wrap with markdown code blocks
-
----
-
-**Now, based on the above input, directly output the complete Report JSON (no additional explanations).**
-"""
         return prompt
 
     def _get_domain_knowledge(self, domain: Optional[str]) -> str:
@@ -346,3 +328,142 @@ Select {mode_config.get('question_count', {}).get('target', 15)} questions ({mod
         except Exception as e:
             logger.error(f"Failed to get external info: {e}", exc_info=True)
             return ""
+
+    def _get_research_guidance(self, user_config: UserConfig) -> str:
+        """
+        Get research-specific guidance for grad/PhD interview modes
+
+        Args:
+            user_config: User configuration
+
+        Returns:
+            Formatted research guidance string
+        """
+        # Only inject research guidance for grad/mixed modes
+        if user_config.mode not in ['grad', 'mixed']:
+            return ""
+
+        guidance_parts = []
+
+        # Research domain knowledge
+        if user_config.domain and user_config.domain in self.research_domains:
+            domain_info = self.research_domains[user_config.domain]
+            guidance_parts.append(self._format_research_domain(user_config.domain, domain_info))
+
+        # China grad context (if language is Chinese)
+        if user_config.language == 'zh' and self.china_grad_config:
+            guidance_parts.append(self._format_china_grad_context(self.china_grad_config))
+
+        if not guidance_parts:
+            return ""
+
+        return "\n\n" + "\n\n".join(guidance_parts)
+
+    def _format_research_domain(self, domain_key: str, domain_info: Dict[str, Any]) -> str:
+        """Format research domain information for prompt injection"""
+        parts = []
+
+        # Header
+        display_name = domain_info.get('display_name', domain_key)
+        parts.append(f"### 研究领域知识库: {display_name}")
+        parts.append("")
+
+        # Conferences
+        if 'conferences' in domain_info:
+            parts.append("**相关顶级会议/期刊:**")
+            conferences = domain_info['conferences']
+
+            if isinstance(conferences, dict):
+                for tier, conf_list in conferences.items():
+                    if isinstance(conf_list, list) and conf_list:
+                        conf_str = ", ".join(conf_list)
+                        parts.append(f"- {tier}: {conf_str}")
+            elif isinstance(conferences, list):
+                parts.append(f"- {', '.join(conferences)}")
+            parts.append("")
+
+        # Core topics
+        if 'core_topics' in domain_info:
+            topics = domain_info['core_topics']
+            if topics:
+                parts.append("**核心研究主题:**")
+                parts.append(", ".join(topics[:10]))  # Limit to 10
+                parts.append("")
+
+        # Recommended queries
+        if 'recommended_queries' in domain_info:
+            queries = domain_info['recommended_queries']
+            if queries:
+                parts.append("**推荐文献检索关键词:**")
+                for query in queries[:5]:  # Limit to 5
+                    parts.append(f"- \"{query}\"")
+                parts.append("")
+
+        # Common methods
+        if 'common_methods' in domain_info:
+            methods = domain_info['common_methods']
+            if methods:
+                parts.append("**常见方法:**")
+                parts.append(", ".join(methods[:8]))  # Limit to 8
+                parts.append("")
+
+        # Important instructions
+        parts.append("**重要提示:**")
+        parts.append("- 在`support_notes`中，应引导学生阅读相关顶会论文（仅提及会议名，不编造具体论文标题/作者）")
+        parts.append("- 推荐使用上述检索关键词进行文献调研")
+        parts.append("- 避免编造不存在的论文、作者或具体实验结果")
+        parts.append("- 使用如'阅读近期CVPR/NeurIPS关于X的论文'、'搜索Y survey构建系统了解'等表述")
+
+        return "\n".join(parts)
+
+    def _format_china_grad_context(self, china_grad: Dict[str, Any]) -> str:
+        """Format China grad school interview context"""
+        parts = []
+
+        parts.append("### 中国研究生面试情境知识")
+        parts.append("")
+
+        # Interview structure
+        if 'interview_structure' in china_grad:
+            structure = china_grad['interview_structure']
+            if 'typical_components' in structure:
+                parts.append("**典型面试环节:**")
+                for component in structure['typical_components']:
+                    name = component.get('name', '')
+                    desc = component.get('description', '')
+                    if name and desc:
+                        parts.append(f"- {name}: {desc}")
+                parts.append("")
+
+        # Evaluation dimensions
+        if 'evaluation_dimensions' in china_grad:
+            dimensions = china_grad['evaluation_dimensions']
+            if dimensions:
+                parts.append("**核心评估维度:**")
+                for dim in dimensions[:4]:  # Top 4
+                    dim_name = dim.get('dimension', '')
+                    desc = dim.get('description', '')
+                    if dim_name and desc:
+                        parts.append(f"- {dim_name}: {desc}")
+                parts.append("")
+
+        # Killer question patterns
+        if 'killer_question_patterns' in china_grad:
+            patterns = china_grad['killer_question_patterns']
+            if patterns:
+                parts.append("**高质量问题模式 (仅参考模式，不直接使用例子):**")
+                for pattern in patterns[:3]:  # Top 3 patterns
+                    pattern_name = pattern.get('pattern', '')
+                    pattern_desc = pattern.get('description', '')
+                    if pattern_name and pattern_desc:
+                        parts.append(f"- {pattern_name}: {pattern_desc}")
+                parts.append("")
+
+        # Important instructions
+        parts.append("**面试问题生成指导:**")
+        parts.append("- 问题应符合中国研究生面试的评估维度和提问风格")
+        parts.append("- 在`support_notes`中提供符合中国学术环境的准备建议")
+        parts.append("- 考虑导师制、组会文化、科研产出压力等中国特色学术环境")
+        parts.append("- 避免过于西化或不符合中国面试习惯的表述")
+
+        return "\n".join(parts)

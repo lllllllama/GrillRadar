@@ -1,15 +1,16 @@
-"""FastAPI路由：报告生成接口"""
+"""
+FastAPI路由：报告生成接口
+
+Refactored to use GrillRadarPipeline for cleaner architecture.
+"""
 import logging
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Form, UploadFile, File
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel, Field, ValidationError
 
-from app.models.user_config import UserConfig
-from app.models.report import Report
-from app.core.report_generator import ReportGenerator
-from app.core.agent_orchestrator import AgentOrchestrator
-from app.core.llm_client import LLMClient
+from app.models import UserConfig, Report
+from app.core.pipeline import GrillRadarPipeline
 from app.utils.markdown import report_to_markdown
 from app.utils.domain_helper import domain_helper
 from app.config.config_manager import config_manager
@@ -53,7 +54,7 @@ async def generate_report(request: GenerateReportRequest):
         生成的报告（JSON格式 + Markdown格式）
     """
     try:
-        # 构建UserConfig
+        # 构建UserConfig with resume_text
         user_config = UserConfig(
             mode=request.mode,
             target_desc=request.target_desc,
@@ -63,16 +64,12 @@ async def generate_report(request: GenerateReportRequest):
             target_company=request.target_company
         )
 
-        # 生成报告：使用多智能体模式或单智能体模式
-        if settings.MULTI_AGENT_ENABLED:
-            logger.info("Using multi-agent mode for report generation")
-            llm_client = LLMClient()
-            orchestrator = AgentOrchestrator(llm_client)
-            report = await orchestrator.generate_report(user_config, enable_multi_agent=True)
-        else:
-            logger.info("Using single-agent fallback mode")
-            generator = ReportGenerator()
-            report = generator.generate_report(user_config)
+        # Use GrillRadarPipeline for report generation
+        pipeline = GrillRadarPipeline()
+        report = await pipeline.run_with_text_async(
+            resume_text=request.resume_text,
+            user_config=user_config
+        )
 
         # 导出Markdown
         markdown_content = report_to_markdown(report)

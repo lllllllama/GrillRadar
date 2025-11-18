@@ -1,205 +1,207 @@
-# GrillRadar Advanced Demos
+# GrillRadar 高级演示
 
-This directory contains advanced demonstrations showcasing GrillRadar's sophisticated features.
+> [English Version](./ADVANCED_README.en.md)
 
-## 🎯 Overview
+本目录包含展示 GrillRadar 高级功能的演示。
 
-**Two Advanced Features**:
+## 🎯 概述
 
-1. **TrendRadar-Style External Information** - Real-world JD/interview data with keyword frequency analysis
-2. **BettaFish-Style Multi-Agent Architecture** - 6 specialized agents collaborating for better questions
+**两大高级特性**：
 
-## 📂 Directory Structure
+1. **TrendRadar 风格外部信息** - 真实 JD/面经数据及关键词频率分析
+2. **BettaFish 风格多智能体架构** - 6 个专业智能体协作生成更好的问题
+
+## 📂 目录结构
 
 ```
 examples/
-├── demo_advanced_features.py          # Main advanced features demo
-├── compare_single_vs_multi_agent.py   # Single vs multi-agent comparison
-├── quality_cases/                     # Test cases for all demos
+├── demo_advanced_features.py          # 主高级功能演示
+├── compare_single_vs_multi_agent.py   # 单智能体 vs 多智能体对比
+├── quality_cases/                     # 所有演示的测试用例
 │   ├── resume_job_backend.txt
 │   ├── config_job_backend.json
 │   ├── resume_job_frontend.txt
 │   ├── config_job_frontend.json
 │   ├── resume_grad_nlp.txt
 │   └── config_grad_nlp.json
-├── run_demo_llm.py                    # Quick demo: LLM engineer
-├── run_demo_cv.py                     # Quick demo: CV researcher
-└── ADVANCED_README.md                 # This file
+├── run_demo_llm.py                    # 快速演示：LLM 工程师
+├── run_demo_cv.py                     # 快速演示：CV 研究员
+└── ADVANCED_README.md                 # 本文件
 ```
 
-## 🚀 Quick Start
+## 🚀 快速开始
 
-### Prerequisites
+### 前置要求
 
 ```bash
-# 1. Install dependencies
+# 1. 安装依赖
 pip install -r requirements.txt
 
-# 2. Configure API key
+# 2. 配置 API 密钥
 cp .env.example .env
-# Edit .env and add ANTHROPIC_API_KEY or OPENAI_API_KEY
+# 编辑 .env 并添加 ANTHROPIC_API_KEY 或 OPENAI_API_KEY
 ```
 
-### Run Advanced Features Demo
+### 运行高级功能演示
 
 ```bash
-# Basic demo (shows both features)
+# 基础演示（展示两个功能）
 python examples/demo_advanced_features.py
 
-# Specific test case
+# 特定测试用例
 python examples/demo_advanced_features.py --case job_backend
 
-# Frontend engineering demo
+# 前端工程演示
 python examples/demo_advanced_features.py --case job_frontend
 
-# NLP research demo
+# NLP 研究演示
 python examples/demo_advanced_features.py --case grad_nlp
 ```
 
-### Run Multi-Agent Comparison
+### 运行多智能体对比
 
 ```bash
-# Compare approaches
+# 对比方法
 python examples/compare_single_vs_multi_agent.py --case job_backend
 
-# Generate markdown report
+# 生成 markdown 报告
 python examples/compare_single_vs_multi_agent.py --case job_backend \
     --output my_comparison.md
 ```
 
-## 📊 Demo 1: TrendRadar Information Acquisition
+## 📊 演示 1：TrendRadar 信息获取
 
-### What It Shows
+### 展示内容
 
-- **Real JD Data**: 15 job descriptions from ByteDance, Alibaba, Tencent, etc.
-- **Interview Experiences**: 12 real interview experiences with questions
-- **Keyword Frequency**: Identifies high-frequency skills (e.g., MySQL appears in 6 JDs)
-- **Trend Analysis**: Shows which topics are hot in the industry
+- **真实 JD 数据**：来自字节跳动、阿里巴巴、腾讯等 15 个职位描述
+- **面经数据**：12 份包含真实问题的面试经验
+- **关键词频率**：识别高频技能（例如 MySQL 在 6 个 JD 中出现）
+- **趋势分析**：显示行业热门话题
 
-### Example Output
+### 示例输出
 
 ```
-🔥 High-Frequency Keywords Analysis:
+🔥 高频关键词分析:
 
-  Top keywords (sorted by frequency):
-   1. MySQL                     ██████ (6 occurrences)
-   2. Redis                     ████   (4 occurrences)
-   3. 性能优化                      ████   (4 occurrences)
-   4. Python                    ████   (4 occurrences)
-   5. 微服务                       ███    (3 occurrences)
+  热门关键词（按频率排序）:
+   1. MySQL                     ██████ (6 次出现)
+   2. Redis                     ████   (4 次出现)
+   3. 性能优化                      ████   (4 次出现)
+   4. Python                    ████   (4 次出现)
+   5. 微服务                       ███    (3 次出现)
 
-📝 Integration into support_notes:
+📝 集成到 support_notes:
 
   该问题涉及 MySQL（高频技能，在6个JD中出现），
   建议重点准备相关知识点...
 ```
 
-### Key Features
+### 核心功能
 
-- ✅ Real-world data from actual job postings
-- ✅ Frequency-based skill prioritization
-- ✅ Domain-specific keyword boosting
-- ✅ Automatic marking of high-frequency skills in support_notes
+- ✅ 来自真实职位发布的数据
+- ✅ 基于频率的技能优先级排序
+- ✅ 领域特定关键词加权
+- ✅ 在 support_notes 中自动标记高频技能
 
-## 🤖 Demo 2: Multi-Agent Architecture
+## 🤖 演示 2：多智能体架构
 
-### What It Shows
+### 展示内容
 
-- **6 Specialized Agents**: Technical Interviewer, Hiring Manager, HR, Advisor, Reviewer, Advocate
-- **Parallel Proposal**: All agents propose questions simultaneously
-- **Forum Discussion**: Virtual committee filters and refines questions
-- **Quality Control**: Advocate agent removes unfair/low-quality questions
+- **6 个专业智能体**：技术面试官、招聘经理、HR、导师、评审、守护者
+- **并行提议**：所有智能体同时提出问题
+- **论坛讨论**：虚拟委员会过滤和完善问题
+- **质量控制**：守护者智能体移除不公平/低质量问题
 
-### Example Output
+### 示例输出
 
 ```
-🎭 Role Perspective Analysis:
+🎭 角色视角分析:
 
-  技术面试官                                    ████████ 4 questions (26.7%)
-  招聘经理                                      ███████ 3 questions (20.0%)
-  HR/行为面试官                                 ████ 2 questions (13.3%)
-  导师/PI                                      ████ 2 questions (13.3%)
-  学术评审                                     ████ 2 questions (13.3%)
-  候选人守护者                                 ████ 2 questions (13.3%)
+  技术面试官                                    ████████ 4 个问题 (26.7%)
+  招聘经理                                      ███████ 3 个问题 (20.0%)
+  HR/行为面试官                                 ████ 2 个问题 (13.3%)
+  导师/PI                                      ████ 2 个问题 (13.3%)
+  学术评审                                     ████ 2 个问题 (13.3%)
+  候选人守护者                                 ████ 2 个问题 (13.3%)
 
-💡 Multi-Agent Architecture Benefits:
+💡 多智能体架构的优势:
 
-  ✓ Diverse Perspectives: 6 different role viewpoints
-  ✓ Comprehensive Coverage: 12 unique topics addressed
-  ✓ Resume Alignment: 78.5% questions reference resume
-  ✓ Quality Control: Advocate agent filters low-quality questions
-  ✓ Deduplication: ForumEngine removes similar questions
+  ✓ 多元视角: 6 个不同角色的观点
+  ✓ 全面覆盖: 12 个独特话题
+  ✓ 简历对齐: 78.5% 的问题引用简历
+  ✓ 质量控制: 守护者智能体过滤低质量问题
+  ✓ 去重: ForumEngine 移除相似问题
 ```
 
-### Key Features
+### 核心功能
 
-- ✅ Multiple expert perspectives on same resume
-- ✅ Collaborative filtering improves quality
-- ✅ Better coverage of different skill dimensions
-- ✅ Reduced bias through diverse viewpoints
+- ✅ 对同一份简历的多个专家视角
+- ✅ 协作过滤提高质量
+- ✅ 更好地覆盖不同技能维度
+- ✅ 通过多元观点减少偏见
 
-## 📖 Test Cases
+## 📖 测试用例
 
 ### job_backend
 
-**Resume**: 2-year backend engineer (Go/Python) from Xiaomi
-**Projects**: API Gateway, task scheduling system
-**Target**: Alibaba Cloud backend engineer
-**Domain**: backend
+**简历**：来自小米的 2 年后端工程师（Go/Python）
+**项目**：API 网关、任务调度系统
+**目标**：阿里云后端工程师
+**领域**：backend
 
-**Run**: `python examples/demo_advanced_features.py --case job_backend`
+**运行**：`python examples/demo_advanced_features.py --case job_backend`
 
 ### job_frontend
 
-**Resume**: 3-year frontend engineer (React) from ByteDance/Tencent
-**Projects**: Low-code platform, real-time collaboration editor
-**Target**: ByteDance frontend engineer
-**Domain**: frontend
+**简历**：来自字节跳动/腾讯的 3 年前端工程师（React）
+**项目**：低代码平台、实时协作编辑器
+**目标**：字节跳动前端工程师
+**领域**：frontend
 
-**Run**: `python examples/demo_advanced_features.py --case job_frontend`
+**运行**：`python examples/demo_advanced_features.py --case job_frontend`
 
 ### grad_nlp
 
-**Resume**: Peking University undergrad, NLP research, CoNLL 2023 paper
-**Projects**: Few-shot learning, intent classification
-**Target**: Stanford/CMU PhD in NLP
-**Domain**: nlp
+**简历**：北京大学本科生，NLP 研究，CoNLL 2023 论文
+**项目**：少样本学习、意图分类
+**目标**：Stanford/CMU NLP 方向博士
+**领域**：nlp
 
-**Run**: `python examples/demo_advanced_features.py --case grad_nlp`
+**运行**：`python examples/demo_advanced_features.py --case grad_nlp`
 
-## 📈 Performance
+## 📈 性能
 
-### TrendRadar Data Loading
+### TrendRadar 数据加载
 
-- **15 JDs + 12 interviews**: <50ms load time
-- **Keyword analysis**: <10ms
-- **Memory usage**: <5MB
+- **15 个 JD + 12 份面经**：<50ms 加载时间
+- **关键词分析**：<10ms
+- **内存使用**：<5MB
 
-### Multi-Agent Generation
+### 多智能体生成
 
-- **Single-agent**: 8-12 seconds
-- **Multi-agent (6 agents)**: 20-35 seconds
-- **Quality improvement**: +20% based on automated evaluation
+- **单智能体**：8-12 秒
+- **多智能体（6 个智能体）**：20-35 秒
+- **质量提升**：基于自动评估提升 +20%
 
-## 💡 Integration into Your Workflow
+## 💡 集成到你的工作流
 
-### Use TrendRadar Data
+### 使用 TrendRadar 数据
 
 ```python
 from app.sources.json_data_provider import json_data_provider
 
-# Get JDs for domain
+# 获取领域的 JD
 jds = json_data_provider.get_jds(domain='backend')
 
-# Analyze high-frequency keywords
+# 分析高频关键词
 keywords = json_data_provider.get_high_frequency_keywords(
     jds, domain='backend', top_k=10
 )
 
-# Results: [('MySQL', 6), ('Redis', 4), ...]
+# 结果: [('MySQL', 6), ('Redis', 4), ...]
 ```
 
-### Enable Multi-Agent Mode
+### 启用多智能体模式
 
 ```python
 from app.core.agent_orchestrator import AgentOrchestrator
@@ -208,76 +210,76 @@ from app.models.user_config import UserConfig
 orchestrator = AgentOrchestrator(llm_client)
 report = await orchestrator.generate_report(
     user_config,
-    enable_multi_agent=True  # Enable multi-agent
+    enable_multi_agent=True  # 启用多智能体
 )
 ```
 
-## 🔧 Customization
+## 🔧 自定义
 
-### Add Your Own JD Data
+### 添加你自己的 JD 数据
 
-1. Edit `app/sources/data/jd_database.json`
-2. Follow the schema:
+1. 编辑 `app/sources/data/jd_database.json`
+2. 遵循架构：
 ```json
 {
   "id": "jd_custom_001",
-  "company": "Your Company",
-  "position": "Your Position",
+  "company": "你的公司",
+  "position": "你的职位",
   "keywords": ["Python", "Go", "MySQL"],
   "requirements": [...],
   ...
 }
 ```
 
-3. Test: `python examples/demo_advanced_features.py`
+3. 测试：`python examples/demo_advanced_features.py`
 
-### Adjust Agent Weights
+### 调整智能体权重
 
-Edit `app/config/modes.yaml`:
+编辑 `app/config/modes.yaml`：
 
 ```yaml
 job:
   roles:
-    technical_interviewer: 0.40  # Increase technical focus
+    technical_interviewer: 0.40  # 增加技术关注
     hiring_manager: 0.25
     hr: 0.20
     advocate: 0.15
 ```
 
-## 📚 Documentation
+## 📚 文档
 
-- **Full Advanced Demos Guide**: [docs/ADVANCED_DEMOS.md](../docs/ADVANCED_DEMOS.md)
-- **Quality Control**: [docs/QUALITY_CONTROL.md](../docs/QUALITY_CONTROL.md)
-- **Main README**: [README.md](../README.md)
+- **质量控制**：[quality_cases/README.md](./quality_cases/README.md)
+- **主 README**：[README.md](../README.md)
+- **Web 界面**：[WEB_INTERFACE.md](../WEB_INTERFACE.md)
 
-## 🐛 Troubleshooting
+## 🐛 故障排除
 
 ### "No JDs found for domain"
 
-**Solution**: Check domain name matches one of: `backend`, `frontend`, `ml`, `nlp`, `cv_segmentation`
+**解决方案**：检查领域名称是否匹配以下之一：`backend`、`frontend`、`ml`、`nlp`、`cv_segmentation`
 
 ### "AttributeError: 'Anthropic' object has no attribute 'messages'"
 
-**Solution**: Update Anthropic SDK: `pip install --upgrade anthropic`
+**解决方案**：更新 Anthropic SDK：`pip install --upgrade anthropic`
 
 ### "Test case files not found"
 
-**Solution**: Ensure you're running from project root:
+**解决方案**：确保从项目根目录运行：
 ```bash
 cd /path/to/GrillRadar
 python examples/demo_advanced_features.py
 ```
 
-## 🤝 Contributing
+## 🤝 贡献
 
-Want to add more features or data?
+想要添加更多功能或数据？
 
-1. **More JD Data**: Add to `app/sources/data/jd_database.json`
-2. **New Agents**: Create in `app/agents/your_agent.py`
-3. **Better Algorithms**: Improve keyword frequency in `json_data_provider.py`
+1. **更多 JD 数据**：添加到 `app/sources/data/jd_database.json`
+2. **新智能体**：在 `app/agents/your_agent.py` 中创建
+3. **更好的算法**：改进 `json_data_provider.py` 中的关键词频率
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
+查看 [CONTRIBUTING.md](../CONTRIBUTING.md) 获取指南。
 
 ---
 
-**Need Help?** Check [docs/ADVANCED_DEMOS.md](../docs/ADVANCED_DEMOS.md) for detailed technical documentation.
+**需要帮助？** 查看主 [README.md](../README.md) 获取详细的技术文档。

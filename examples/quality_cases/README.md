@@ -1,91 +1,93 @@
-# GrillRadar Quality Test Cases
+# GrillRadar 质量测试用例
 
-This directory contains test cases for evaluating the quality of generated questions.
+> [English Version](./README.en.md)
 
-## 📁 Test Cases
+本目录包含用于评估生成问题质量的测试用例。
 
-### 1. Job - Backend Engineer (`job_backend`)
-- **Resume**: `resume_job_backend.txt`
-- **Config**: `config_job_backend.json`
-- **Scenario**: Backend engineer (Go/Python) applying to Alibaba Cloud
-- **Key points**: Microservices, distributed systems, API gateway
+## 📁 测试用例
 
-### 2. Job - Frontend Engineer (`job_frontend`)
-- **Resume**: `resume_job_frontend.txt`
-- **Config**: `config_job_frontend.json`
-- **Scenario**: Frontend engineer (React) applying to ByteDance
-- **Key points**: React, TypeScript, performance optimization, collaboration tools
+### 1. 求职 - 后端工程师 (`job_backend`)
+- **简历**：`resume_job_backend.txt`
+- **配置**：`config_job_backend.json`
+- **场景**：后端工程师（Go/Python）应聘阿里云
+- **关键点**：微服务、分布式系统、API 网关
 
-### 3. Graduate - NLP PhD (`grad_nlp`)
-- **Resume**: `resume_grad_nlp.txt`
-- **Config**: `config_grad_nlp.json`
-- **Scenario**: NLP researcher applying to Stanford/CMU PhD programs
-- **Key points**: Large language models, few-shot learning, controllable generation
+### 2. 求职 - 前端工程师 (`job_frontend`)
+- **简历**：`resume_job_frontend.txt`
+- **配置**：`config_job_frontend.json`
+- **场景**：前端工程师（React）应聘字节跳动
+- **关键点**：React、TypeScript、性能优化、协作工具
 
-## 🔧 Usage
+### 3. 读研 - NLP 博士 (`grad_nlp`)
+- **简历**：`resume_grad_nlp.txt`
+- **配置**：`config_grad_nlp.json`
+- **场景**：NLP 研究员申请 Stanford/CMU 博士项目
+- **关键点**：大语言模型、少样本学习、可控生成
 
-### Run quality evaluation on all cases:
+## 🔧 使用方法
+
+### 对所有用例运行质量评估：
 ```bash
 python scripts/evaluate_question_quality.py
 ```
 
-### Run quality evaluation on a specific case:
+### 对特定用例运行质量评估：
 ```bash
 python scripts/evaluate_question_quality.py --case job_backend
 python scripts/evaluate_question_quality.py --case grad_nlp
 ```
 
-### Run with verbose output:
+### 使用详细输出运行：
 ```bash
 python scripts/evaluate_question_quality.py --verbose
 ```
 
-## 📊 Quality Checks
+## 📊 质量检查
 
-The evaluation script checks the following quality dimensions:
+评估脚本检查以下质量维度：
 
-### Question Quality
-- ✓ Length (minimum 10 chars, recommended 20+)
-- ✓ Clarity (not too generic, has specific context)
+### 问题质量
+- ✓ 长度（最少 10 字，建议 20+ 字）
+- ✓ 清晰度（不太笼统，有具体情境）
 
-### Rationale Quality
-- ✓ Length (minimum 30 chars, recommended 50+)
-- ✓ Contextual relevance (mentions resume/target/domain)
+### 提问理由质量
+- ✓ 长度（最少 30 字，建议 50+ 字）
+- ✓ 情境相关性（提及简历/目标/领域）
 
-### Baseline Answer Quality
-- ✓ Structure (has paragraphs, bullets, or sections)
-- ✓ Depth (minimum 50 chars, recommended 200+)
+### 基线答案质量
+- ✓ 结构（有段落、要点或章节）
+- ✓ 深度（最少 50 字，建议 200+ 字）
 
-### Support Notes Quality
-- ✓ Specificity (contains knowledge points, resources)
-- ✓ Length (minimum 20 chars, recommended 100+)
+### 支撑材料质量
+- ✓ 具体性（包含知识点、资源）
+- ✓ 长度（最少 20 字，建议 100+ 字）
 
-### Prompt Template Quality
-- ✓ Has placeholders for practice (e.g., {your_experience})
-- ✓ More detailed than the question itself
+### 练习提示词质量
+- ✓ 有练习占位符（例如 {your_experience}）
+- ✓ 比问题本身更详细
 
-## 📈 Quality Grading
+## 📈 质量评分
 
-- **Grade A (90%+)**: Excellent - ready for production
-- **Grade B (80-89%)**: Good - minor improvements recommended
-- **Grade C (70-79%)**: Acceptable - some improvements needed
-- **Grade D (<70%)**: Needs improvement - significant issues
+- **A 级（90%+）**：优秀 - 可用于生产
+- **B 级（80-89%）**：良好 - 建议小幅改进
+- **C 级（70-79%）**：可接受 - 需要一些改进
+- **D 级（<70%）**：需要改进 - 存在重大问题
 
-## 🎯 Adding New Test Cases
+## 🎯 添加新测试用例
 
-To add a new test case:
+要添加新测试用例：
 
-1. Create resume file: `resume_{your_case}.txt`
-2. Create config file: `config_{your_case}.json`
-3. Add case name to `available_cases` in `evaluate_question_quality.py`
-4. Run evaluation: `python scripts/evaluate_question_quality.py --case {your_case}`
+1. 创建简历文件：`resume_{your_case}.txt`
+2. 创建配置文件：`config_{your_case}.json`
+3. 将用例名称添加到 `evaluate_question_quality.py` 中的 `available_cases`
+4. 运行评估：`python scripts/evaluate_question_quality.py --case {your_case}`
 
-## 💡 Tips for Quality Improvement
+## 💡 质量改进建议
 
-If you see quality issues:
+如果你发现质量问题：
 
-1. **Question too generic**: Add specific technical context or domain terms
-2. **Rationale lacks context**: Reference specific resume items or target requirements
-3. **Answer lacks structure**: Use paragraphs, bullet points, or numbered lists
-4. **Support notes not specific**: Include concrete papers, tools, or concepts
-5. **Prompt template missing placeholders**: Add {your_experience}, {your_project}, etc.
+1. **问题太笼统**：添加具体技术情境或领域术语
+2. **理由缺乏情境**：引用具体简历项目或目标要求
+3. **答案缺乏结构**：使用段落、要点或编号列表
+4. **支撑材料不具体**：包含具体论文、工具或概念
+5. **练习提示词缺少占位符**：添加 {your_experience}、{your_project} 等

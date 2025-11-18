@@ -5,7 +5,7 @@ This module provides a clean abstraction for the entire report generation pipeli
 It decouples CLI/API from implementation details (document parsing, agent orchestration, etc.)
 
 Usage:
-    pipeline = GrillRadarPipeline()
+    pipeline = GrillRadarPipeline(request_id="req_abc123")
     report = pipeline.run(resume_path="resume.pdf", user_config=config)
 """
 import asyncio
@@ -19,8 +19,9 @@ from app.core.agent_orchestrator import AgentOrchestrator
 from app.core.llm_client import LLMClient
 from app.utils.document_parser import parse_resume, is_supported_format, DocumentParseError
 from app.config.settings import settings
+from app.core.logging import get_logger, log_stage_timing, set_request_context, generate_request_id
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class GrillRadarPipeline:
@@ -43,7 +44,8 @@ class GrillRadarPipeline:
         self,
         llm_provider: Optional[str] = None,
         llm_model: Optional[str] = None,
-        enable_multi_agent: Optional[bool] = None
+        enable_multi_agent: Optional[bool] = None,
+        request_id: Optional[str] = None
     ):
         """
         Initialize pipeline
@@ -52,11 +54,13 @@ class GrillRadarPipeline:
             llm_provider: LLM provider (anthropic/openai), defaults to settings
             llm_model: LLM model name, defaults to settings
             enable_multi_agent: Enable multi-agent mode, defaults to settings.MULTI_AGENT_ENABLED
+            request_id: Request ID for tracing (auto-generated if not provided)
         """
         self.llm_provider = llm_provider
-        self.llm_model = llm_model
+        self.llm_model = llm_model or settings.DEFAULT_MODEL
         self.enable_multi_agent = enable_multi_agent if enable_multi_agent is not None else settings.MULTI_AGENT_ENABLED
-        self.logger = logging.getLogger(__name__)
+        self.request_id = request_id or generate_request_id()
+        self.logger = get_logger(__name__)
 
     def run(
         self,
@@ -78,17 +82,38 @@ class GrillRadarPipeline:
             ValidationError: If config validation fails
             Exception: If report generation fails
         """
-        # Parse resume
-        resume_text = self._parse_resume(resume_path)
+        # Set request context for logging
+        set_request_context(
+            request_id=self.request_id,
+            mode=user_config.mode,
+            domain=user_config.domain,
+            target_desc=user_config.target_desc,
+            llm_model=self.llm_model
+        )
+
+        self.logger.info(
+            f"Pipeline started - mode={user_config.mode}, multi_agent={self.enable_multi_agent}",
+            extra={'request_id': self.request_id}
+        )
+
+        # Parse resume with timing
+        with log_stage_timing(self.logger, "resume_parsing", self.request_id):
+            resume_text = self._parse_resume(resume_path)
 
         # Update user_config with parsed text
         user_config.resume_text = resume_text
 
         # Generate report (synchronous wrapper around async)
-        if self.enable_multi_agent:
-            report = asyncio.run(self._generate_multi_agent(user_config))
-        else:
-            report = self._generate_single_agent(user_config)
+        with log_stage_timing(self.logger, "report_generation", self.request_id):
+            if self.enable_multi_agent:
+                report = asyncio.run(self._generate_multi_agent(user_config))
+            else:
+                report = self._generate_single_agent(user_config)
+
+        self.logger.info(
+            f"Pipeline completed - {len(report.questions)} questions generated",
+            extra={'request_id': self.request_id}
+        )
 
         return report
 
@@ -112,17 +137,38 @@ class GrillRadarPipeline:
             ValidationError: If config validation fails
             Exception: If report generation fails
         """
-        # Parse resume
-        resume_text = self._parse_resume(resume_path)
+        # Set request context for logging
+        set_request_context(
+            request_id=self.request_id,
+            mode=user_config.mode,
+            domain=user_config.domain,
+            target_desc=user_config.target_desc,
+            llm_model=self.llm_model
+        )
+
+        self.logger.info(
+            f"Pipeline started (async) - mode={user_config.mode}, multi_agent={self.enable_multi_agent}",
+            extra={'request_id': self.request_id}
+        )
+
+        # Parse resume with timing
+        with log_stage_timing(self.logger, "resume_parsing", self.request_id):
+            resume_text = self._parse_resume(resume_path)
 
         # Update user_config with parsed text
         user_config.resume_text = resume_text
 
         # Generate report
-        if self.enable_multi_agent:
-            report = await self._generate_multi_agent(user_config)
-        else:
-            report = self._generate_single_agent(user_config)
+        with log_stage_timing(self.logger, "report_generation", self.request_id):
+            if self.enable_multi_agent:
+                report = await self._generate_multi_agent(user_config)
+            else:
+                report = self._generate_single_agent(user_config)
+
+        self.logger.info(
+            f"Pipeline completed - {len(report.questions)} questions generated",
+            extra={'request_id': self.request_id}
+        )
 
         return report
 
@@ -143,14 +189,34 @@ class GrillRadarPipeline:
         Returns:
             Generated Report
         """
+        # Set request context for logging
+        set_request_context(
+            request_id=self.request_id,
+            mode=user_config.mode,
+            domain=user_config.domain,
+            target_desc=user_config.target_desc,
+            llm_model=self.llm_model
+        )
+
+        self.logger.info(
+            f"Pipeline started (with text) - mode={user_config.mode}, multi_agent={self.enable_multi_agent}",
+            extra={'request_id': self.request_id}
+        )
+
         # Update user_config with text
         user_config.resume_text = resume_text
 
         # Generate report
-        if self.enable_multi_agent:
-            report = asyncio.run(self._generate_multi_agent(user_config))
-        else:
-            report = self._generate_single_agent(user_config)
+        with log_stage_timing(self.logger, "report_generation", self.request_id):
+            if self.enable_multi_agent:
+                report = asyncio.run(self._generate_multi_agent(user_config))
+            else:
+                report = self._generate_single_agent(user_config)
+
+        self.logger.info(
+            f"Pipeline completed - {len(report.questions)} questions generated",
+            extra={'request_id': self.request_id}
+        )
 
         return report
 
@@ -169,14 +235,34 @@ class GrillRadarPipeline:
         Returns:
             Generated Report
         """
+        # Set request context for logging
+        set_request_context(
+            request_id=self.request_id,
+            mode=user_config.mode,
+            domain=user_config.domain,
+            target_desc=user_config.target_desc,
+            llm_model=self.llm_model
+        )
+
+        self.logger.info(
+            f"Pipeline started (async with text) - mode={user_config.mode}, multi_agent={self.enable_multi_agent}",
+            extra={'request_id': self.request_id}
+        )
+
         # Update user_config with text
         user_config.resume_text = resume_text
 
         # Generate report
-        if self.enable_multi_agent:
-            report = await self._generate_multi_agent(user_config)
-        else:
-            report = self._generate_single_agent(user_config)
+        with log_stage_timing(self.logger, "report_generation", self.request_id):
+            if self.enable_multi_agent:
+                report = await self._generate_multi_agent(user_config)
+            else:
+                report = self._generate_single_agent(user_config)
+
+        self.logger.info(
+            f"Pipeline completed - {len(report.questions)} questions generated",
+            extra={'request_id': self.request_id}
+        )
 
         return report
 
@@ -230,10 +316,11 @@ class GrillRadarPipeline:
         Returns:
             Generated Report
         """
-        self.logger.info("Using single-agent mode")
+        self.logger.info("Using single-agent mode", extra={'request_id': self.request_id})
         generator = ReportGenerator(
             llm_provider=self.llm_provider,
-            llm_model=self.llm_model
+            llm_model=self.llm_model,
+            request_id=self.request_id
         )
         return generator.generate_report(user_config)
 
@@ -247,12 +334,13 @@ class GrillRadarPipeline:
         Returns:
             Generated Report
         """
-        self.logger.info("Using multi-agent mode")
+        self.logger.info("Using multi-agent mode", extra={'request_id': self.request_id})
         llm_client = LLMClient(
             provider=self.llm_provider,
-            model=self.llm_model
+            model=self.llm_model,
+            request_id=self.request_id
         )
-        orchestrator = AgentOrchestrator(llm_client)
+        orchestrator = AgentOrchestrator(llm_client, request_id=self.request_id)
         return await orchestrator.generate_report(user_config, enable_multi_agent=True)
 
 

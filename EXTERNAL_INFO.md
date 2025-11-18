@@ -15,8 +15,9 @@ Milestone 4 引入了外部信息源集成，使报告生成能够参考真实�
 - ✅ **JD 检索** - 检索目标公司和岗位的职位描述
 - ✅ **面经检索** - 检索相关的面试经历分享
 - ✅ **信息聚合** - 自动提取和聚合关键信息（技能要求、高频问题等）
+- ✅ **趋势洞察** - 通过 LocalDatasetProvider + JSON 数据库返回结构化高频技能/主题
 - ✅ **Prompt 注入** - 将外部信息自动注入到报告生成 Prompt 中
-- ✅ **API 支持** - 提供 REST API 查询外部信息
+- ✅ **API 支持** - 提供 REST API 查询外部信息与趋势
 
 ---
 
@@ -31,8 +32,8 @@ Milestone 4 引入了外部信息源集成，使报告生成能够参考真实�
            │
            v
 ┌─────────────────────┐
-│ ExternalInfoService │ ← uses → MockDataProvider
-└──────────┬──────────┘          (or real crawler)
+│ ExternalInfoService │ ← uses → MockDataProvider / LocalDatasetProvider / MultiSourceCrawler
+└──────────┬──────────┘
            │
            v
 ┌─────────────────────┐
@@ -95,6 +96,8 @@ class ExternalInfoSummary(BaseModel):
     aggregated_keywords: List[str]        # 聚合的关键词
     aggregated_topics: List[str]          # 聚合的主题
     high_frequency_questions: List[str]   # 高频问题
+    keyword_trends: List[KeywordTrend]    # 高频技能趋势（来源+频次）
+    topic_trends: List[TopicTrend]        # 热点面试主题
     retrieved_at: datetime                # 检索时间
 ```
 
@@ -117,6 +120,14 @@ class ExternalInfoSummary(BaseModel):
 ```
 
 ### Web API 方式
+
+```bash
+curl \
+  "http://localhost:8000/api/external-info/search?company=字节跳动&position=后端&domain=backend"
+
+# 获取结构化趋势，可选触发新一轮检索
+curl "http://localhost:8000/api/external-info/trends?domain=backend"
+```
 
 在请求中包含外部信息字段：
 

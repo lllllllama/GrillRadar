@@ -1,7 +1,8 @@
-"""外部信息源数据模型（Milestone 4）"""
-from typing import List, Optional, Dict
-from pydantic import BaseModel, Field
+"""Models describing structured external information for GrillRadar."""
 from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, Field
 
 
 class JobDescription(BaseModel):
@@ -115,6 +116,25 @@ class InterviewExperience(BaseModel):
         }
 
 
+class KeywordTrend(BaseModel):
+    """结构化的关键字趋势信息"""
+
+    keyword: str = Field(..., description="技能或主题关键词")
+    frequency: int = Field(..., description="在数据集中出现的次数")
+    weight: float = Field(1.0, description="结合领域权重后的得分")
+    sources: List[str] = Field(
+        default_factory=list,
+        description="该关键词出现的公司或数据源"
+    )
+
+
+class TopicTrend(BaseModel):
+    """面经主题趋势"""
+
+    topic: str = Field(..., description="面试主题")
+    frequency: int = Field(..., description="出现次数")
+
+
 class ExternalInfoSummary(BaseModel):
     """外部信息汇总"""
 
@@ -141,6 +161,16 @@ class ExternalInfoSummary(BaseModel):
     high_frequency_questions: List[str] = Field(
         default_factory=list,
         description="高频问题列表"
+    )
+
+    keyword_trends: List[KeywordTrend] = Field(
+        default_factory=list,
+        description="结构化的高频技能趋势"
+    )
+
+    topic_trends: List[TopicTrend] = Field(
+        default_factory=list,
+        description="结构化的高频面试主题"
     )
 
     retrieved_at: datetime = Field(
@@ -170,5 +200,20 @@ class ExternalInfoSummary(BaseModel):
             lines.append(f"\n**高频面试题**:")
             for q in self.high_frequency_questions[:5]:
                 lines.append(f"- {q}")
+
+        if self.keyword_trends:
+            trend_str = "、".join(
+                [
+                    f"{trend.keyword}(x{trend.frequency})"
+                    for trend in self.keyword_trends[:8]
+                ]
+            )
+            lines.append(f"\n**高频技能趋势**: {trend_str}")
+
+        if self.topic_trends:
+            topic_trend_str = "、".join(
+                [f"{trend.topic}(x{trend.frequency})" for trend in self.topic_trends[:6]]
+            )
+            lines.append(f"\n**热点面试主题**: {topic_trend_str}")
 
         return "\n".join(lines) if lines else "未找到相关外部信息"

@@ -1,4 +1,5 @@
 """问题卡片数据模型"""
+from typing import Optional, Literal
 from pydantic import BaseModel, Field
 
 
@@ -49,6 +50,31 @@ class QuestionItem(BaseModel):
         ...,
         description="可复用的练习提示词，用户可复制此提示词喂给任意AI进行深度练习。包含占位符（如{your_experience}）",
         min_length=20
+    )
+
+    # Multi-agent enhanced fields (optional, for future frontend visualization and training modes)
+    dimension: Optional[Literal[
+        "foundation",       # CS基础
+        "engineering",      # 工程实践
+        "project_depth",    # 项目深度
+        "research_method",  # 研究方法论
+        "reflection",       # 反思与软技能
+        "soft_skill"        # 软技能与职业规划
+    ]] = Field(
+        default=None,
+        description="问题维度分类，用于多智能体系统的覆盖度分析和训练模式"
+    )
+
+    difficulty: Optional[Literal["basic", "intermediate", "killer"]] = Field(
+        default=None,
+        description="问题难度，用于多智能体系统的难度平衡"
+    )
+
+    relevance_score: Optional[float] = Field(
+        default=None,
+        ge=0.0,
+        le=5.0,
+        description="相关性评分（0-5），综合考虑与简历、目标岗位、领域的匹配度"
     )
 
     class Config:

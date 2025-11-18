@@ -23,6 +23,7 @@ from app.core.forum_engine import ForumEngine
 from app.models.user_config import UserConfig
 from app.models.report import Report, ReportMeta
 from app.models.question_item import QuestionItem
+from app.utils.debug_dumper import get_debug_dumper
 
 logger = logging.getLogger(__name__)
 
@@ -125,6 +126,12 @@ class AgentOrchestrator:
             self.logger.info(f"🔧 LLM calls: {context.state.total_llm_calls}")
             self.logger.info("=" * 70)
 
+            # Debug: dump workflow summary
+            context.state.final_question_count = len(report.questions)
+            context.state.report_generated = True
+            debug_dumper = get_debug_dumper()
+            debug_dumper.dump_workflow_summary(context.state)
+
             return report
 
         except Exception as e:
@@ -203,6 +210,8 @@ class AgentOrchestrator:
             "candidate_advocate"
         ]
 
+        debug_dumper = get_debug_dumper()
+
         for idx, result in enumerate(results):
             agent_name = agent_names[idx]
 
@@ -210,10 +219,14 @@ class AgentOrchestrator:
                 self.logger.error(f"Agent '{agent_name}' failed: {result}")
                 context.record_error(agent_name, str(result))
                 proposals[agent_name] = []
+                # Debug: dump error
+                debug_dumper.dump_agent_output(agent_name, [], success=False, error=str(result))
             elif isinstance(result, list):
                 proposals[agent_name] = result
                 context.record_proposal(agent_name, result)
                 self.logger.info(f"  ✓ {agent_name}: {len(result)} questions")
+                # Debug: dump agent output
+                debug_dumper.dump_agent_output(agent_name, result, success=True)
             else:
                 self.logger.warning(f"Unexpected result from {agent_name}: {type(result)}")
                 proposals[agent_name] = []

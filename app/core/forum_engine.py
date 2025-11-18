@@ -4,15 +4,37 @@ Forum Engine - Multi-Agent Coordination and Consensus
 Consolidates questions from multiple agents through discussion,
 deduplication, and quality filtering.
 """
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional, Literal
 import logging
 import asyncio
+import yaml
+from pathlib import Path
+from collections import Counter
 
 from app.agents.models import DraftQuestion
 from app.models.question_item import QuestionItem
 from app.models.user_config import UserConfig
+from app.config.settings import settings
+from app.utils.debug_dumper import get_debug_dumper
 
 logger = logging.getLogger(__name__)
+
+
+class EnrichedDraftQuestion:
+    """Draft question with enhanced metadata for selection"""
+    def __init__(
+        self,
+        draft: DraftQuestion,
+        agent_name: str,
+        dimension: str,
+        difficulty: str,
+        score: float
+    ):
+        self.draft = draft
+        self.agent_name = agent_name
+        self.dimension = dimension
+        self.difficulty = difficulty
+        self.score = score
 
 
 class ForumEngine:
@@ -22,13 +44,25 @@ class ForumEngine:
     Phases:
     1. Deduplication - Merge similar questions
     2. Quality filtering - Remove low-quality questions
-    3. Coverage validation - Ensure comprehensive coverage
-    4. Enhancement - Convert draft questions to final QuestionItems
+    3. Labeling & Scoring - Add dimension, difficulty, and relevance scores
+    4. Coverage validation - Ensure comprehensive coverage per modes.yaml
+    5. Advocate gatekeeper - Filter problematic questions
+    6. Enhancement - Convert draft questions to final QuestionItems
     """
 
     def __init__(self, llm_client):
         self.llm_client = llm_client
         self.logger = logging.getLogger(__name__)
+        self.modes_config = self._load_modes_config()
+
+    def _load_modes_config(self) -> Dict:
+        """Load modes configuration from YAML"""
+        try:
+            with open(settings.MODES_CONFIG, 'r', encoding='utf-8') as f:
+                return yaml.safe_load(f)
+        except Exception as e:
+            self.logger.warning(f"Failed to load modes config: {e}")
+            return {}
 
     async def discuss(
         self,
@@ -70,17 +104,430 @@ class ForumEngine:
         filtered = self._filter_low_quality(deduped)
         self.logger.info(f"After quality filter: {len(filtered)} questions")
 
-        # Phase 3: Select top questions (10-20)
-        self.logger.info("\nPhase 3: Selection")
-        selected = self._select_final_set(filtered, user_config)
+        # Phase 3: Labeling & Scoring
+        self.logger.info("\nPhase 3: Labeling & Scoring")
+        enriched = await self._label_and_score(filtered, user_config, resume_text)
+        self.logger.info(f"Labeled and scored: {len(enriched)} questions")
+
+        # Debug: dump pre-selection candidates
+        debug_dumper = get_debug_dumper()
+        debug_dumper.dump_pre_selection_candidates(enriched)
+
+        # Phase 4: Coverage-aware selection
+        self.logger.info("\nPhase 4: Coverage-Aware Selection")
+        selected = self._select_with_coverage(enriched, user_config)
         self.logger.info(f"Final selection: {len(selected)} questions")
 
-        # Phase 4: Enhance each question to final format
-        self.logger.info("\nPhase 4: Enhancement")
-        final_questions = await self._enhance_questions(selected, resume_text, user_config)
+        # Debug: dump selected questions
+        debug_dumper.dump_selected_questions(selected)
+
+        # Phase 5: Advocate gatekeeper (quality control)
+        self.logger.info("\nPhase 5: Advocate Gatekeeper")
+        before_count = len(selected)
+        approved = await self._advocate_review(selected, user_config)
+        after_count = len(approved)
+        self.logger.info(f"After advocate review: {after_count} questions")
+
+        # Debug: dump advocate feedback
+        filtered_questions = [
+            eq.draft.question for eq in selected if eq not in approved
+        ]
+        debug_dumper.dump_advocate_feedback(before_count, after_count, filtered_questions)
+
+        # Phase 6: Enhance to final QuestionItems
+        self.logger.info("\nPhase 6: Enhancement")
+        final_questions = await self._enhance_questions(approved, resume_text, user_config)
         self.logger.info(f"Enhanced questions: {len(final_questions)}")
 
         return final_questions
+
+    async def _label_and_score(
+        self,
+        drafts: List[Tuple[DraftQuestion, str]],
+        user_config: UserConfig,
+        resume_text: str
+    ) -> List[EnrichedDraftQuestion]:
+        """
+        Label each draft question with dimension, difficulty, and score
+
+        Args:
+            drafts: Filtered draft questions
+            user_config: User configuration
+            resume_text: Resume text
+
+        Returns:
+            List of enriched draft questions with metadata
+        """
+        enriched_questions = []
+
+        for draft, agent_name in drafts:
+            # Determine dimension based on tags and agent role
+            dimension = self._infer_dimension(draft, agent_name, user_config)
+
+            # Determine difficulty based on question complexity
+            difficulty = self._infer_difficulty(draft)
+
+            # Calculate relevance score (1-5)
+            score = self._calculate_relevance_score(draft, user_config, resume_text)
+
+            enriched = EnrichedDraftQuestion(
+                draft=draft,
+                agent_name=agent_name,
+                dimension=dimension,
+                difficulty=difficulty,
+                score=score
+            )
+            enriched_questions.append(enriched)
+
+            self.logger.debug(
+                f"Labeled question: dimension={dimension}, difficulty={difficulty}, score={score:.2f}"
+            )
+
+        return enriched_questions
+
+    def _infer_dimension(
+        self,
+        draft: DraftQuestion,
+        agent_name: str,
+        user_config: UserConfig
+    ) -> str:
+        """
+        Infer question dimension from tags and agent role
+
+        Returns:
+            One of: foundation, engineering, project_depth, research_method, reflection, soft_skill
+        """
+        # Check tags first
+        tags_lower = [tag.lower() for tag in draft.tags]
+
+        # Foundation keywords
+        foundation_keywords = ['算法', '数据结构', '操作系统', '网络', '数据库', 'cs基础',
+                               'algorithm', 'data structure', 'os', 'network']
+        if any(kw in ' '.join(tags_lower) for kw in foundation_keywords):
+            return "foundation"
+
+        # Research method keywords (for grad mode)
+        research_keywords = ['研究方法', '实验设计', '论文', '学术', '方法论',
+                             'research', 'methodology', 'experiment', 'paper']
+        if any(kw in ' '.join(tags_lower) for kw in research_keywords):
+            return "research_method"
+
+        # Project depth keywords
+        project_keywords = ['项目', '实现', '架构', '设计', '优化',
+                            'project', 'implementation', 'architecture', 'design']
+        if any(kw in ' '.join(tags_lower) for kw in project_keywords):
+            return "project_depth"
+
+        # Soft skills keywords
+        soft_keywords = ['团队', '协作', '沟通', '规划', '职业',
+                         'team', 'collaboration', 'communication', 'planning']
+        if any(kw in ' '.join(tags_lower) for kw in soft_keywords):
+            return "soft_skill"
+
+        # Reflection keywords
+        reflection_keywords = ['反思', '成长', '挑战', '学习',
+                               'reflection', 'growth', 'challenge', 'learning']
+        if any(kw in ' '.join(tags_lower) for kw in reflection_keywords):
+            return "reflection"
+
+        # Fallback based on agent role
+        if agent_name in ['technical_interviewer', 'hiring_manager']:
+            return "engineering"
+        elif agent_name in ['academic_advisor', 'academic_reviewer']:
+            return "research_method"
+        elif agent_name == 'hr_specialist':
+            return "soft_skill"
+        elif agent_name == 'candidate_advocate':
+            return "reflection"
+
+        return "engineering"  # Default
+
+    def _infer_difficulty(self, draft: DraftQuestion) -> str:
+        """
+        Infer question difficulty based on complexity indicators
+
+        Returns:
+            One of: basic, intermediate, killer
+        """
+        question = draft.question.lower()
+        rationale = draft.rationale.lower()
+
+        # Killer question indicators
+        killer_indicators = ['深入', '详细描述', '权衡', '优化', '为什么这样设计',
+                             '底层原理', '源码', '如何处理', '最坏情况',
+                             'deep dive', 'trade-off', 'optimize', 'why', 'source code']
+        if any(ind in question or ind in rationale for ind in killer_indicators):
+            return "killer"
+
+        # Basic question indicators
+        basic_indicators = ['是什么', '有什么', '用过', '了解', '知道',
+                            'what is', 'have you used', 'familiar with', 'know']
+        if any(ind in question or ind in rationale for ind in basic_indicators):
+            return "basic"
+
+        # Check question length (longer questions tend to be more complex)
+        if len(draft.question) > 100:
+            return "intermediate"
+
+        # Check confidence (lower confidence might indicate tricky question)
+        if draft.confidence < 0.7:
+            return "killer"
+
+        return "intermediate"  # Default
+
+    def _calculate_relevance_score(
+        self,
+        draft: DraftQuestion,
+        user_config: UserConfig,
+        resume_text: str
+    ) -> float:
+        """
+        Calculate relevance score (1-5) based on:
+        - Resume relevance
+        - Target job/program alignment
+        - Domain matching
+        - Information gain potential
+
+        Args:
+            draft: Draft question
+            user_config: User configuration
+            resume_text: Resume text
+
+        Returns:
+            Score from 1.0 to 5.0
+        """
+        score = 3.0  # Base score
+
+        # Factor 1: Confidence from agent
+        score += (draft.confidence - 0.7) * 5  # Scale confidence contribution
+
+        # Factor 2: Tag relevance to domain
+        if user_config.domain:
+            domain_lower = user_config.domain.lower()
+            tags_lower = ' '.join(draft.tags).lower()
+            if domain_lower in tags_lower or any(word in tags_lower for word in domain_lower.split()):
+                score += 0.5
+
+        # Factor 3: Question specificity (longer rationale = more thought)
+        if len(draft.rationale) > 100:
+            score += 0.3
+
+        # Factor 4: Metadata complexity
+        if draft.metadata.get('complexity') == 'high':
+            score += 0.3
+
+        # Clamp to 1.0-5.0 range
+        return max(1.0, min(5.0, score))
+
+    def _select_with_coverage(
+        self,
+        enriched: List[EnrichedDraftQuestion],
+        user_config: UserConfig
+    ) -> List[EnrichedDraftQuestion]:
+        """
+        Select questions with coverage constraints from modes.yaml
+
+        Ensures:
+        - Minimum coverage across dimensions
+        - Balanced difficulty distribution
+        - Respects target question count from modes config
+
+        Args:
+            enriched: Enriched draft questions
+            user_config: User configuration
+
+        Returns:
+            Selected questions with coverage guarantees
+        """
+        # Get mode config
+        mode_config = self.modes_config.get(user_config.mode, {})
+        target_count = mode_config.get('question_count', {}).get('target', 15)
+        min_count = mode_config.get('question_count', {}).get('min', 10)
+        max_count = mode_config.get('question_count', {}).get('max', 20)
+
+        # Sort by score (descending)
+        sorted_questions = sorted(enriched, key=lambda x: x.score, reverse=True)
+
+        # Phase 1: Greedy selection for high scores
+        selected = sorted_questions[:target_count]
+
+        # Phase 2: Ensure dimension coverage
+        selected = self._ensure_dimension_coverage(selected, sorted_questions, user_config)
+
+        # Phase 3: Balance difficulty (avoid all killers or all basics)
+        selected = self._balance_difficulty(selected, sorted_questions)
+
+        # Phase 4: Final count adjustment
+        if len(selected) < min_count:
+            # Add more questions to meet minimum
+            remaining = [q for q in sorted_questions if q not in selected]
+            selected.extend(remaining[:min_count - len(selected)])
+        elif len(selected) > max_count:
+            # Trim to max count, preserving high scores
+            selected = sorted(selected, key=lambda x: x.score, reverse=True)[:max_count]
+
+        self.logger.info(f"Coverage-aware selection: {len(selected)} questions")
+        self._log_coverage_stats(selected)
+
+        return selected
+
+    def _ensure_dimension_coverage(
+        self,
+        selected: List[EnrichedDraftQuestion],
+        all_questions: List[EnrichedDraftQuestion],
+        user_config: UserConfig
+    ) -> List[EnrichedDraftQuestion]:
+        """
+        Ensure minimum coverage across dimensions
+
+        For job mode: require at least 1 foundation, 1 project_depth, 1 soft_skill
+        For grad mode: require at least 1 research_method, 1 foundation
+        For mixed: require both engineering and research dimensions
+        """
+        dimension_counts = Counter(q.dimension for q in selected)
+
+        # Define minimum requirements per mode
+        if user_config.mode == "job":
+            requirements = {"foundation": 2, "project_depth": 2, "soft_skill": 1}
+        elif user_config.mode == "grad":
+            requirements = {"research_method": 2, "foundation": 1}
+        else:  # mixed
+            requirements = {"foundation": 1, "project_depth": 1, "research_method": 1, "soft_skill": 1}
+
+        # Check and fill gaps
+        for dimension, min_count in requirements.items():
+            current_count = dimension_counts.get(dimension, 0)
+            if current_count < min_count:
+                # Find questions with this dimension not already selected
+                candidates = [q for q in all_questions
+                              if q.dimension == dimension and q not in selected]
+                # Sort by score and add top ones
+                candidates.sort(key=lambda x: x.score, reverse=True)
+                to_add = candidates[:min_count - current_count]
+                selected.extend(to_add)
+                self.logger.info(f"Added {len(to_add)} questions for dimension '{dimension}'")
+
+        return selected
+
+    def _balance_difficulty(
+        self,
+        selected: List[EnrichedDraftQuestion],
+        all_questions: List[EnrichedDraftQuestion]
+    ) -> List[EnrichedDraftQuestion]:
+        """
+        Balance difficulty distribution
+
+        Aim for roughly:
+        - 30% basic
+        - 50% intermediate
+        - 20% killer
+        """
+        difficulty_counts = Counter(q.difficulty for q in selected)
+        total = len(selected)
+
+        # Calculate target counts
+        targets = {
+            "basic": int(total * 0.3),
+            "intermediate": int(total * 0.5),
+            "killer": int(total * 0.2)
+        }
+
+        # Check if adjustment needed
+        needs_adjustment = False
+        for diff, target in targets.items():
+            current = difficulty_counts.get(diff, 0)
+            if abs(current - target) > 2:  # Allow some tolerance
+                needs_adjustment = True
+                break
+
+        if not needs_adjustment:
+            return selected
+
+        # Rebuild selection with balanced difficulty
+        balanced = []
+        remaining = [q for q in all_questions]
+
+        for difficulty, target_count in targets.items():
+            candidates = [q for q in remaining if q.difficulty == difficulty]
+            candidates.sort(key=lambda x: x.score, reverse=True)
+            balanced.extend(candidates[:target_count])
+            # Remove selected from remaining
+            for q in balanced:
+                if q in remaining:
+                    remaining.remove(q)
+
+        # Fill remaining slots with highest scores
+        if len(balanced) < total:
+            remaining.sort(key=lambda x: x.score, reverse=True)
+            balanced.extend(remaining[:total - len(balanced)])
+
+        return balanced[:total]
+
+    def _log_coverage_stats(self, selected: List[EnrichedDraftQuestion]):
+        """Log coverage statistics for debugging"""
+        dimension_counts = Counter(q.dimension for q in selected)
+        difficulty_counts = Counter(q.difficulty for q in selected)
+
+        self.logger.info("Dimension coverage:")
+        for dim, count in dimension_counts.items():
+            self.logger.info(f"  {dim}: {count}")
+
+        self.logger.info("Difficulty distribution:")
+        for diff, count in difficulty_counts.items():
+            self.logger.info(f"  {diff}: {count}")
+
+    async def _advocate_review(
+        self,
+        selected: List[EnrichedDraftQuestion],
+        user_config: UserConfig
+    ) -> List[EnrichedDraftQuestion]:
+        """
+        Advocate agent as gatekeeper - review and filter problematic questions
+
+        The advocate agent reviews the selected questions and flags:
+        - Offensive or unfair questions
+        - Extremely low information gain
+        - Problematic tone or bias
+
+        For MVP, we use simple heuristic checks. In production, this could
+        call an LLM for more sophisticated review.
+
+        Args:
+            selected: Selected questions
+            user_config: User configuration
+
+        Returns:
+            Approved questions (filtered)
+        """
+        approved = []
+
+        for enriched in selected:
+            # Simple heuristic checks
+            question = enriched.draft.question.lower()
+
+            # Flag 1: Check for offensive keywords (basic filter)
+            offensive_keywords = ['愚蠢', '笨', '傻', 'stupid', 'dumb', 'idiot']
+            if any(kw in question for kw in offensive_keywords):
+                self.logger.warning(f"Advocate blocked offensive question: {enriched.draft.question[:50]}...")
+                continue
+
+            # Flag 2: Check for trick questions (too vague or impossible to answer)
+            trick_indicators = ['猜', '运气', 'guess', 'luck']
+            if any(ind in question for ind in trick_indicators):
+                self.logger.warning(f"Advocate blocked trick question: {enriched.draft.question[:50]}...")
+                continue
+
+            # Flag 3: Minimum information gain (avoid pure textbook questions)
+            if enriched.score < 2.0:
+                self.logger.warning(f"Advocate blocked low-value question (score={enriched.score:.2f})")
+                continue
+
+            # Approved
+            approved.append(enriched)
+
+        self.logger.info(f"Advocate review: {len(selected)} -> {len(approved)} (filtered {len(selected) - len(approved)})")
+
+        return approved
 
     def _deduplicate_questions(
         self,
@@ -242,28 +689,30 @@ class ForumEngine:
 
     async def _enhance_questions(
         self,
-        drafts: List[Tuple[DraftQuestion, str]],
+        enriched_drafts: List[EnrichedDraftQuestion],
         resume_text: str,
         user_config: UserConfig
     ) -> List[QuestionItem]:
         """
-        Convert DraftQuestions to final QuestionItems
+        Convert EnrichedDraftQuestions to final QuestionItems
 
         For MVP, we'll use a simplified enhancement that creates
         QuestionItems directly without additional LLM calls.
 
         Args:
-            drafts: Selected draft questions
+            enriched_drafts: Selected enriched draft questions
             resume_text: Candidate's resume
             user_config: User configuration
 
         Returns:
-            List of enhanced QuestionItems
+            List of enhanced QuestionItems with all metadata
         """
         final_items = []
 
-        for idx, (draft, agent_name) in enumerate(drafts, 1):
-            # Create QuestionItem with basic enhancement
+        for idx, enriched in enumerate(enriched_drafts, 1):
+            draft = enriched.draft
+
+            # Create QuestionItem with full metadata
             question_item = QuestionItem(
                 id=idx,
                 view_role=draft.role_display,
@@ -272,7 +721,11 @@ class ForumEngine:
                 rationale=draft.rationale,
                 baseline_answer=self._generate_baseline_answer(draft),
                 support_notes=self._generate_support_notes(draft, user_config),
-                prompt_template=self._generate_prompt_template(draft)
+                prompt_template=self._generate_prompt_template(draft),
+                # Multi-agent enhanced fields
+                dimension=enriched.dimension,
+                difficulty=enriched.difficulty,
+                relevance_score=enriched.score
             )
 
             final_items.append(question_item)

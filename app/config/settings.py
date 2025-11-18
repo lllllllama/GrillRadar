@@ -26,11 +26,16 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
 
+    # Multi-Agent配置
+    MULTI_AGENT_ENABLED: bool = True  # 启用多智能体模式
+    GRILLRADAR_DEBUG_AGENTS: bool = False  # 调试模式：保存中间产物
+
     # 路径配置
     BASE_DIR: Path = Path(__file__).parent.parent.parent
     CONFIG_DIR: Path = Path(__file__).parent
     DOMAINS_CONFIG: Path = CONFIG_DIR / "domains.yaml"
     MODES_CONFIG: Path = CONFIG_DIR / "modes.yaml"
+    DEBUG_DIR: Path = BASE_DIR / "debug"
 
     class Config:
         env_file = ".env"

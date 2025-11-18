@@ -20,8 +20,12 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from app.models.user_config import UserConfig
 from app.core.report_generator import ReportGenerator
+from app.core.agent_orchestrator import AgentOrchestrator
+from app.core.llm_client import LLMClient
 from app.utils.markdown import report_to_markdown
 from app.utils.document_parser import parse_resume, is_supported_format, DocumentParseError
+from app.config.settings import settings
+import asyncio
 
 # 配置日志
 logging.basicConfig(
@@ -155,7 +159,40 @@ config.json格式:
         help='LLM模型名称 (默认: 使用环境变量配置)'
     )
 
+    parser.add_argument(
+        '--multi-agent',
+        action='store_true',
+        default=None,
+        help='强制启用多智能体模式'
+    )
+
+    parser.add_argument(
+        '--no-multi-agent',
+        action='store_true',
+        help='强制禁用多智能体模式（使用单智能体fallback）'
+    )
+
+    parser.add_argument(
+        '--debug-agents',
+        action='store_true',
+        help='启用debug模式：保存中间产物到debug/目录'
+    )
+
     args = parser.parse_args()
+
+    # 处理多智能体模式设置
+    use_multi_agent = settings.MULTI_AGENT_ENABLED
+    if args.multi_agent:
+        use_multi_agent = True
+        logger.info("强制启用多智能体模式 (--multi-agent)")
+    elif args.no_multi_agent:
+        use_multi_agent = False
+        logger.info("强制禁用多智能体模式 (--no-multi-agent)")
+
+    # 处理debug模式设置
+    if args.debug_agents:
+        settings.GRILLRADAR_DEBUG_AGENTS = True
+        logger.info("已启用debug模式：将保存中间产物到debug/目录")
 
     # 加载配置和简历
     logger.info("正在加载配置和简历...")
@@ -170,14 +207,21 @@ config.json格式:
         logger.error(f"配置验证失败: {e}")
         sys.exit(1)
 
-    # 生成报告
+    # 生成报告：使用多智能体模式或单智能体模式
     logger.info("开始生成报告...")
     try:
-        generator = ReportGenerator(
-            llm_provider=args.provider,
-            llm_model=args.model
-        )
-        report = generator.generate_report(user_config)
+        if use_multi_agent:
+            logger.info("使用多智能体模式生成报告")
+            llm_client = LLMClient(provider=args.provider, model=args.model)
+            orchestrator = AgentOrchestrator(llm_client)
+            report = asyncio.run(orchestrator.generate_report(user_config, enable_multi_agent=True))
+        else:
+            logger.info("使用单智能体模式生成报告")
+            generator = ReportGenerator(
+                llm_provider=args.provider,
+                llm_model=args.model
+            )
+            report = generator.generate_report(user_config)
     except Exception as e:
         logger.error(f"报告生成失败: {e}")
         sys.exit(1)

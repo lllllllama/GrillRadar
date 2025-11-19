@@ -52,11 +52,12 @@ class ExternalInfoService:
                     config=crawler_config,
                     enable_github=True,    # ✅ GitHub trending (稳定)
                     enable_v2ex=True,      # ✅ V2EX技术讨论 (newsnow API, 稳定)
+                    enable_ithome=True,    # ✅ IT之家科技新闻 (newsnow API, 稳定)
                     enable_juejin=False,   # ❌ 需要JavaScript渲染
                     enable_zhihu=False,    # ❌ 403问题
                     enable_csdn=False      # ❌ SSL握手问题
                 )
-                self.logger.info("Using MultiSourceCrawlerProvider (GitHub + V2EX)")
+                self.logger.info("Using MultiSourceCrawlerProvider (GitHub + V2EX + IT之家)")
             except Exception as e:
                 self.logger.warning(f"Failed to initialize crawler provider: {e}. Falling back to mock.")
                 self.provider = MockDataProvider()

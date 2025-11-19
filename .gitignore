@@ -64,3 +64,4 @@ debug/
 
 # Debug output files
 scripts/*_debug.html
+.cache/

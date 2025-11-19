@@ -17,6 +17,7 @@ from app.sources.crawlers.csdn_crawler import CSDNCrawler
 from app.sources.crawlers.juejin_crawler import JuejinCrawler
 from app.sources.crawlers.zhihu_crawler import ZhihuCrawler
 from app.sources.crawlers.v2ex_api_crawler import V2EXAPICrawler
+from app.sources.crawlers.ithome_api_crawler import ITHomeAPICrawler
 from app.sources.crawlers.trend_aggregator import TrendAggregator
 
 logger = logging.getLogger(__name__)
@@ -33,9 +34,10 @@ class MultiSourceCrawlerProvider:
         self,
         config: Optional[CrawlerConfig] = None,
         enable_github: bool = True,
-        enable_v2ex: bool = True,   # V2EX默认启用 (推荐)
-        enable_csdn: bool = False,  # CSDN默认禁用（SSL问题）
-        enable_juejin: bool = False,  # Juejin默认禁用（需要JS渲染）
+        enable_v2ex: bool = True,    # V2EX默认启用 (推荐)
+        enable_ithome: bool = True,  # IT之家默认启用 (推荐，通过newsnow API)
+        enable_csdn: bool = False,   # CSDN默认禁用（SSL问题）
+        enable_juejin: bool = False, # Juejin默认禁用（需要JS渲染）
         enable_zhihu: bool = False   # Zhihu默认禁用（403问题）
     ):
         """
@@ -45,6 +47,7 @@ class MultiSourceCrawlerProvider:
             config: 爬虫配置
             enable_github: 是否启用GitHub爬虫 (推荐)
             enable_v2ex: 是否启用V2EX爬虫 (推荐，通过newsnow API)
+            enable_ithome: 是否启用IT之家爬虫 (推荐，通过newsnow API)
             enable_csdn: 是否启用CSDN爬虫
             enable_juejin: 是否启用掘金爬虫
             enable_zhihu: 是否启用知乎爬虫
@@ -60,6 +63,10 @@ class MultiSourceCrawlerProvider:
         if enable_v2ex:
             self.crawlers.append(V2EXAPICrawler(self.config))
             logger.info("V2EX crawler enabled")
+
+        if enable_ithome:
+            self.crawlers.append(ITHomeAPICrawler(self.config))
+            logger.info("IT之家 crawler enabled")
 
         if enable_juejin:
             self.crawlers.append(JuejinCrawler(self.config))
@@ -158,9 +165,9 @@ class MultiSourceCrawlerProvider:
 
         # 使用线程池并行执行
         with ThreadPoolExecutor(max_workers=len(self.crawlers)) as executor:
-            # 提交所有爬虫任务
+            # 提交所有爬虫任务（使用crawl_with_cache自动处理缓存）
             future_to_crawler = {
-                executor.submit(crawler.crawl, domain, keywords): crawler
+                executor.submit(crawler.crawl_with_cache, domain, keywords): crawler
                 for crawler in self.crawlers
             }
 

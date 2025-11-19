@@ -9,6 +9,7 @@ import logging
 import time
 import httpx
 from app.sources.crawlers.models import RawItem, CrawlerConfig, CrawlerResult
+from app.sources.crawlers.cache_manager import get_cache_manager, CacheManager
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,12 @@ class BaseCrawler(ABC):
         """
         self.config = config or CrawlerConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._cache = {}  # 简单的内存缓存
+
+        # 使用持久化缓存管理器
+        if self.config.use_cache:
+            self.cache_manager = get_cache_manager(default_ttl=self.config.cache_ttl)
+        else:
+            self.cache_manager = None
 
     @abstractmethod
     def crawl(self, domain: str, keywords: List[str]) -> CrawlerResult:
@@ -51,6 +57,36 @@ class BaseCrawler(ABC):
         """数据源名称（子类必须实现）"""
         pass
 
+    def crawl_with_cache(self, domain: str, keywords: List[str]) -> CrawlerResult:
+        """
+        带缓存的爬取（包装方法）
+
+        自动处理缓存的读取和写入，子类可以调用此方法而不是直接调用crawl()
+
+        Args:
+            domain: 目标领域
+            keywords: 关键词列表
+
+        Returns:
+            CrawlerResult: 爬取结果（可能来自缓存）
+        """
+        # 生成缓存键
+        cache_key = self._get_cache_key(domain, keywords)
+
+        # 尝试从缓存获取
+        cached_result = self._get_from_cache(cache_key)
+        if cached_result is not None:
+            return cached_result
+
+        # 缓存未命中，执行实际爬取
+        result = self.crawl(domain, keywords)
+
+        # 保存到缓存（仅成功的结果）
+        if result.success:
+            self._save_to_cache(cache_key, result)
+
+        return result
+
     def _get_cache_key(self, domain: str, keywords: List[str]) -> str:
         """生成缓存键"""
         keywords_str = "_".join(sorted(keywords))
@@ -58,24 +94,28 @@ class BaseCrawler(ABC):
 
     def _get_from_cache(self, cache_key: str) -> Optional[CrawlerResult]:
         """从缓存获取"""
-        if not self.config.use_cache:
+        if not self.cache_manager:
             return None
 
-        if cache_key in self._cache:
-            result, timestamp = self._cache[cache_key]
-            if time.time() - timestamp < self.config.cache_ttl:
-                self.logger.info(f"Cache hit for {cache_key}")
-                return result
-            else:
-                # 缓存过期
-                del self._cache[cache_key]
+        # 从缓存读取
+        cached_data = self.cache_manager.get(cache_key)
+        if cached_data:
+            self.logger.info(f"Cache hit for {cache_key}")
+            # 将字典转换回CrawlerResult
+            return CrawlerResult(**cached_data)
 
         return None
 
     def _save_to_cache(self, cache_key: str, result: CrawlerResult):
         """保存到缓存"""
-        if self.config.use_cache:
-            self._cache[cache_key] = (result, time.time())
+        if not self.cache_manager:
+            return
+
+        # 将CrawlerResult转换为字典以便JSON序列化
+        cache_data = result.model_dump()
+
+        # 保存到缓存
+        self.cache_manager.set(cache_key, cache_data, ttl=self.config.cache_ttl)
 
     def _make_request(
         self,

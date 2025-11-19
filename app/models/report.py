@@ -60,9 +60,9 @@ class Report(BaseModel):
 
     questions: List[QuestionItem] = Field(
         ...,
-        description="问题列表，通常10-20个",
-        min_length=10,
-        max_length=20
+        description="问题列表，通常15-30个，高级候选人可达30+",
+        min_length=15,
+        max_length=35
     )
 
     meta: ReportMeta = Field(

@@ -114,10 +114,10 @@ class ReportGenerator:
         """
         # 验证问题数量
         num_questions = len(report.questions)
-        if num_questions < 10:
-            raise ValueError(f"问题数量不足：只有{num_questions}个，至少需要10个")
-        if num_questions > 20:
-            raise ValueError(f"问题数量过多：有{num_questions}个，最多20个")
+        if num_questions < 15:
+            raise ValueError(f"问题数量不足：只有{num_questions}个，至少需要15个")
+        if num_questions > 35:
+            raise ValueError(f"问题数量过多：有{num_questions}个，最多35个")
 
         # 验证模式匹配
         if report.mode != user_config.mode:

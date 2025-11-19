@@ -15,9 +15,9 @@ job:
     system_design: 0.25          # 系统设计与工程实践
     soft_skills: 0.15            # 软技能与职业规划
   question_count:
-    min: 12
-    max: 18
-    target: 15
+    min: 20
+    max: 30
+    target: 25
 
 grad:
   description: "学术/读研导向 - 硕士推免/考研复试、博士申请、科研岗位面试"

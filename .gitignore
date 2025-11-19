@@ -61,3 +61,6 @@ temp/
 
 # Multi-agent debug artifacts
 debug/
+
+# Debug output files
+scripts/*_debug.html

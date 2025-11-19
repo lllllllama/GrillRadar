@@ -4,24 +4,46 @@
 
 GrillRadar 支持三种外部信息提供者：
 1. **Mock Provider** (默认) - 快速模拟数据
-2. **Local Dataset Provider** (推荐) - 真实的本地JSON数据集
-3. **Multi-Source Crawler Provider** (需要更新) - GitHub + CSDN 实时爬虫
+2. **Local Dataset Provider** (推荐稳定性) - 真实的本地JSON数据集
+3. **Multi-Source Crawler Provider** (推荐实时性) - GitHub + Juejin + Zhihu 实时爬虫
 
-## 当前状态
+## 当前状态 (2025-11-19 更新)
 
 ### ✅ 正常工作
 - **Mock Provider**: 完全正常，快速生成模拟数据
+
 - **Local Dataset Provider**: 完全正常，使用真实的JD和面经数据
   - 数据位置: `app/sources/data/jd_database.json` 和 `interview_database.json`
   - 包含8个真实JD，10个真实面经
   - 支持关键词趋势和主题趋势分析
   - 覆盖领域: backend, frontend, ml, nlp, cv_segmentation
 
-### ⚠️ 需要更新
-- **Multi-Source Crawler Provider**: HTML解析器需要更新
-  - GitHub和CSDN的网页结构已经改变
-  - 当前解析器返回0条结果
-  - HTTP请求成功，但CSS选择器已过时
+- **Multi-Source Crawler Provider**: ✅ 部分工作
+  - **GitHub爬虫**: ✅ 完全正常 (10个trending项目 in ~4秒)
+  - **Juejin爬虫**: 已实现但遇到403 (反爬虫机制)
+  - **Zhihu爬虫**: 已实现但遇到403 (反爬虫机制)
+  - **CSDN爬虫**: 已禁用 (SSL握手问题)
+
+### 🚀 最新改进 (v2.0)
+
+#### 新增爬虫
+1. **掘金(Juejin)爬虫** - `app/sources/crawlers/juejin_crawler.py`
+   - 专注技术文章和面试经验
+   - 11+技术领域关键词映射
+   - 智能数字解析 (支持k/w/万/千单位)
+   - 状态: 已实现，遇到403需改进
+
+2. **知乎(Zhihu)爬虫** - `app/sources/crawlers/zhihu_crawler.py`
+   - 专注技术问答和经验分享
+   - 面试导向的关键词优化
+   - 区分问题和文章类型
+   - 投票数提取和互动指标
+   - 状态: 已实现，遇到403需改进
+
+#### 基础设施改进
+- **SSL错误处理**: base_crawler添加`verify=False`
+- **多源编排**: 支持4个爬虫并行运行
+- **智能重试**: 指数退避策略
 
 ## 测试结果
 
@@ -37,19 +59,36 @@ python scripts/test_local_dataset.py
 - ✅ 主题趋势分析正常
 - ✅ 高频问题提取正常
 
-### Multi-Source Crawler 测试 (⚠️ 需要更新)
+### Multi-Source Crawler V2 测试 (✅ 部分成功)
 ```bash
-python scripts/test_multi_source_crawler.py
+python scripts/test_multi_source_v2.py
 ```
 
 结果:
-- ✅ HTTP请求成功 (GitHub trending: 200 OK)
-- ✅ HTTP请求成功 (CSDN search: 200 OK)
-- ❌ 解析结果: 0 items (HTML结构变更)
+- ✅ **GitHub**: 10项目 in 4秒 (trending repositories)
+- ⚠️ **Juejin**: 0项目 (HTTP 403 Forbidden)
+- ⚠️ **Zhihu**: 0项目 (HTTP 403 Forbidden)
+- ✅ **数据聚合**: 5个JD from GitHub
+- ✅ **关键词提取**: 8个核心技术栈
+- ✅ **Prompt生成**: 正常
 
-## 解决方案
+## 推荐方案
 
-### 短期方案 (推荐)
+### 方案1: Multi-Source Crawler (推荐用于获取最新趋势)
+使用 **Multi-Source Crawler Provider** with GitHub:
+
+```bash
+# 在 .env 中设置
+EXTERNAL_INFO_PROVIDER=multi_source_crawler
+```
+
+**优势:**
+- ✅ GitHub trending实时数据 (最新技术趋势)
+- ✅ 10个项目 in ~4秒 (性能优秀)
+- ✅ 自动数据聚合和关键词提取
+- ⚠️ Juejin/Zhihu暂时无法使用 (403)
+
+### 方案2: Local Dataset (推荐用于稳定性)
 使用 **Local Dataset Provider**:
 
 ```bash
@@ -57,24 +96,44 @@ python scripts/test_multi_source_crawler.py
 EXTERNAL_INFO_PROVIDER=local_dataset
 ```
 
-这将使用真实的本地数据集，包含：
-- 字节跳动、阿里巴巴、腾讯等公司的JD
-- NLP、LLM、后端、前端等领域的面经
-- 关键词和主题趋势分析
+**优势:**
+- ✅ 稳定可靠 (无网络依赖)
+- ✅ 真实JD和面经数据
+- ✅ 包含字节跳动、阿里巴巴、腾讯等
+- ✅ 关键词和主题趋势分析
+- ❌ 数据需手动更新
 
-### 长期方案
-更新爬虫的HTML解析器:
+### 方案3: Mock (开发测试用)
+```bash
+EXTERNAL_INFO_PROVIDER=mock
+```
 
-1. **GitHub Crawler** (`app/sources/crawlers/github_crawler.py`)
-   - 需要更新CSS选择器
-   - GitHub trending页面结构已改变
-   - 原选择器: `article.Box-row`, `h2.h3`
-   - 需要检查新的HTML结构
+## 改进建议 (Juejin/Zhihu 403问题)
 
-2. **CSDN Crawler** (`app/sources/crawlers/csdn_crawler.py`)
-   - 需要更新CSS选择器
-   - CSDN搜索页面结构已改变
-   - 可能需要处理反爬虫机制
+### 短期解决方案
+1. **继续使用GitHub作为主要数据源** - 已经工作良好
+2. **补充本地数据集** - 手动添加Juejin/Zhihu的优质文章
+3. **定期更新local_dataset** - 保持数据新鲜度
+
+### 长期解决方案 (未来改进)
+1. **Playwright浏览器自动化**
+   - 参考MediaCrawler的实现
+   - 可绕过基本的反爬虫检测
+   - 缺点: 资源消耗大，部署复杂
+
+2. **官方API集成**
+   - Juejin: 寻找官方API或RSS feed
+   - Zhihu: 可能需要申请开发者权限
+
+3. **高级反检测技术**
+   - 轮换User-Agent
+   - Cookie池管理
+   - 请求间隔随机化
+   - IP代理池
+
+4. **RSS/Atom订阅**
+   - 部分网站提供RSS feed
+   - 更稳定，不易被封
 
 ## 配置说明
 

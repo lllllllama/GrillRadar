@@ -48,8 +48,12 @@ class ExternalInfoService:
                     use_cache=os.getenv('CRAWLER_USE_CACHE', 'true').lower() == 'true'
                 )
 
-                self.provider = MultiSourceCrawlerProvider(config=crawler_config)
-                self.logger.info("Using MultiSourceCrawlerProvider (real crawlers)")
+                self.provider = MultiSourceCrawlerProvider(
+                    config=crawler_config,
+                    enable_github=True,
+                    enable_csdn=False  # 暂时禁用CSDN (SSL握手问题)
+                )
+                self.logger.info("Using MultiSourceCrawlerProvider (GitHub only)")
             except Exception as e:
                 self.logger.warning(f"Failed to initialize crawler provider: {e}. Falling back to mock.")
                 self.provider = MockDataProvider()

@@ -302,10 +302,11 @@ Generate a report with {target_question_count} questions in JSON format.
             elif "算法" in position_desc or "nlp" in position_desc.lower():
                 position = "算法"
 
-            logger.info(f"Retrieving TrendRadar external info for company={company}, position={position}, domain={domain}")
+            logger.info(f"Retrieving external info using provider: {external_info_service.provider_type}")
 
-            # 使用增强版服务，包含关键词频率分析
-            summary, high_freq_keywords = enhanced_info_service.retrieve_with_trends(
+            # 使用配置的external_info_service（支持多种provider）
+            summary = external_info_service.retrieve_external_info(
+                user_config=user_config,
                 company=company,
                 position=position,
                 domain=domain,
@@ -313,15 +314,15 @@ Generate a report with {target_question_count} questions in JSON format.
                 enable_interview_exp=True
             )
 
-            if summary is None and not high_freq_keywords:
+            if summary is None:
                 logger.info("No external info found, continuing without it")
                 return ""
 
-            # 获取格式化文本，包含关键词频率提示
-            external_text = enhanced_info_service.format_for_prompt(summary, high_freq_keywords)
+            # 获取格式化文本
+            external_text = external_info_service.get_prompt_summary(summary)
 
             logger.info(f"External info retrieved: {len(summary.job_descriptions) if summary else 0} JDs, "
-                       f"{len(high_freq_keywords)} high-freq keywords")
+                       f"{len(summary.interview_experiences) if summary else 0} interviews")
 
             return f"\n{external_text}\n"
 

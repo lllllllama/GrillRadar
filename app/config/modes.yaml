@@ -15,9 +15,9 @@ job:
     system_design: 0.25          # 系统设计与工程实践
     soft_skills: 0.15            # 软技能与职业规划
   question_count:
-    min: 20
-    max: 30
-    target: 25
+    min: 30          # 最少30个问题
+    max: 50          # 最多50个问题
+    target: 40       # 目标40个问题（更全面的评估）
 
 grad:
   description: "学术/读研导向 - 硕士推免/考研复试、博士申请、科研岗位面试"
@@ -34,9 +34,9 @@ grad:
     cs_fundamentals: 0.20        # CS基础（研究的基础）
     attitude: 0.10               # 科研态度与合作意愿
   question_count:
-    min: 10
-    max: 16
-    target: 13
+    min: 20          # 最少20个问题
+    max: 35          # 最多35个问题
+    target: 28       # 目标28个问题（深度学术评估）
 
 mixed:
   description: "工程+学术双视角 - 同时准备求职和读研、或者申请工业界研究岗位"
@@ -50,9 +50,9 @@ mixed:
     engineering: 0.50            # 工程视角问题
     research: 0.50               # 学术视角问题
   question_count:
-    min: 14
-    max: 20
-    target: 17
+    min: 25          # 最少25个问题
+    max: 40          # 最多40个问题
+    target: 32       # 目标32个问题（双视角综合评估）
   special_requirements:
     - "每个问题必须标注[工程视角]或[学术视角]"
     - "summary需包含双线评估：【工程候选人评估】和【科研候选人评估】"

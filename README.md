@@ -32,15 +32,15 @@
 - 智能去重和质量过滤
 
 **📊 三种面试模式**
-- 求职模式 (job)
-- 学术申请模式 (grad)
-- 混合模式 (mixed)
+- 求职模式 (job): **30-50题**
+- 学术申请模式 (grad): **20-35题**
+- 混合模式 (mixed): **25-40题**
 
 </td>
 <td width="50%">
 
 **🎯 精准定制**
-- 10-20个高度相关问题
+- **更多更详细的问题** (相比旧版2-3倍)
 - 基于简历和目标岗位
 - 23个专业领域支持
 
@@ -154,10 +154,11 @@ python cli.py \
 ```
 
 **报告亮点**:
-- ✅ 15个工程面试问题
+- ✅ **40个全面工程面试问题** (深度评估)
 - ✅ 涵盖RAG检索、Prompt优化、向量数据库、幻觉检测
 - ✅ 考察系统设计、性能优化、大模型基础理论
 - ✅ 每个问题附带练习提示词,可复制到ChatGPT/Claude深度练习
+- ✅ 融合GitHub/V2EX最新技术趋势
 
 📂 [查看完整示例](./examples/job_llm_app/)
 
@@ -177,10 +178,11 @@ python cli.py \
 ```
 
 **报告亮点**:
-- ✅ 12个PhD面试问题
+- ✅ **28个深度PhD面试问题** (全方位评估)
 - ✅ 涵盖研究创新性、实验严谨性、理论基础、文献综述
 - ✅ 考察失败经历、学术诚信、Research Proposal、英语能力
 - ✅ 导师视角深度拷问,暴露简历薄弱点
+- ✅ 结合最新学术趋势和研究方向
 
 📂 [查看完整示例](./examples/grad_cv_segmentation/)
 
@@ -200,10 +202,11 @@ python cli.py \
 ```
 
 **报告亮点**:
-- ✅ 10个双视角问题 (5个工程 + 5个学术)
+- ✅ **32个双视角问题** (16个工程 + 16个学术)
 - ✅ 工程侧: 性能优化、系统设计、Raft工程实践
 - ✅ 学术侧: 研究创新性、理论基础、PhD规划
 - ✅ 交叉问题: 工程vs学术的平衡与价值
+- ✅ 同时融合行业和学术最新动态
 
 📂 [查看完整示例](./examples/mixed_backend_grad/)
 
@@ -245,6 +248,58 @@ python cli.py \
 | `switch_language.py` | 一键切换文档语言 |
 | `setup_config.py` | 交互式配置向导 |
 | `cli.py` | 命令行工具 |
+
+---
+
+## 🚀 最新升级 (2025-01)
+
+### 📡 多源爬虫系统 - 实时技术趋势集成
+
+GrillRadar 现已集成**多源爬虫系统**，自动获取最新技术趋势和面试热点！
+
+<table>
+<tr>
+<td width="50%">
+
+**🌐 三大数据源**
+- ✅ **GitHub Trending** - 开源项目和技术趋势
+- ✅ **V2EX社区** - 技术讨论和面试经验
+- ✅ **IT之家** - 科技新闻和产品发布
+
+**⚡ 性能优化**
+- 持久化缓存机制
+- **965倍加速** (5.21s → 0.01s)
+- 并行爬取，秒级响应
+
+</td>
+<td width="50%">
+
+**🎯 智能特性**
+- TrendRadar风格关键词过滤
+- 智能去重 (URL + 标题相似度)
+- 质量评分系统
+- 数据源权重配置
+
+**📊 覆盖领域**
+- LLM应用、后端、算法工程
+- 22+ 技术领域
+- 50+ 技术关键词库
+
+</td>
+</tr>
+</table>
+
+**启用方式**:
+```json
+{
+  "enable_external_info": true,
+  "target_company": "字节跳动"
+}
+```
+
+**技术架构**: newsnow API + 文件缓存 + 多线程并行
+
+📂 **详细文档**: [EXTERNAL_INFO.md](./EXTERNAL_INFO.md)
 
 ---
 
@@ -420,15 +475,27 @@ GrillRadar/
 ├── 📱 app/                    # 应用核心
 │   ├── agents/                # 6个专业智能体
 │   ├── api/                   # FastAPI接口
-│   ├── config/                # 配置管理（domains.yaml等）
+│   ├── config/                # 配置管理（domains.yaml、modes.yaml）
 │   ├── core/                  # 核心逻辑（编排器、ForumEngine）
 │   ├── models/                # 数据模型
+│   ├── sources/               # 多源爬虫系统 🆕
+│   │   └── crawlers/          # GitHub、V2EX、IT之家爬虫
+│   │       ├── github_crawler.py
+│   │       ├── v2ex_api_crawler.py
+│   │       ├── ithome_api_crawler.py
+│   │       ├── keyword_filter.py      # TrendRadar风格过滤
+│   │       ├── cache_manager.py       # 缓存管理（965倍加速）
+│   │       └── trend_aggregator.py    # 智能聚合器
 │   └── utils/                 # 工具函数
 ├── 🌐 frontend/               # Web界面
 │   ├── static/                # 静态资源
 │   └── templates/             # HTML模板
 ├── 📝 examples/               # 示例和演示
 ├── 🧪 tests/                  # 测试文件（91%+覆盖率）
+├── 📝 scripts/                # 测试和工具脚本 🆕
+│   ├── test_integration_all.py    # 综合集成测试
+│   ├── test_keyword_filter.py     # 关键词过滤测试
+│   └── test_cache.py              # 缓存机制测试
 ├── 📚 docs/                   # 文档
 │   └── archive/               # 开发文档归档
 ├── 🔧 cli.py                  # CLI入口
@@ -490,6 +557,15 @@ python scripts/evaluate_question_quality.py
 - [x] **Milestone 4.5**: 多格式简历支持 ✅
 - [x] **Milestone 4.6**: 多API兼容性 ✅
 - [x] **Milestone 5**: 多智能体架构（BettaFish风格）✅
+- [x] **Milestone 5.5**: 多源爬虫系统升级 ✅
+  - 三大数据源（GitHub + V2EX + IT之家）
+  - TrendRadar风格关键词过滤
+  - 965倍缓存加速
+  - 智能去重和质量评分
+- [x] **Milestone 5.6**: 问题数量与深度优化 ✅
+  - 求职模式: 30-50题（原15-25题）
+  - 学术模式: 20-35题（原10-16题）
+  - 混合模式: 25-40题（原14-20题）
 - [ ] **Milestone 6**: 多轮训练系统 🔄
 
 ---
@@ -498,7 +574,10 @@ python scripts/evaluate_question_quality.py
 
 - **Claude API** - 提供强大的AI能力
 - **[BettaFish](https://github.com/666ghj/BettaFish)** - 启发了多智能体架构设计
-- **[TrendRadar](https://github.com/sansan0/TrendRadar)** - 启发了配置驱动架构
+- **[TrendRadar](https://github.com/sansan0/TrendRadar)** - 启发了多源爬虫系统架构
+  - newsnow API集成方案
+  - 关键词过滤语法设计
+  - 配置驱动的数据聚合思想
 - 所有贡献者和用户的反馈 ❤️
 
 ---

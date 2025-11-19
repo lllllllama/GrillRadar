@@ -14,6 +14,8 @@ from app.sources.crawlers.base_crawler import BaseCrawler
 from app.sources.crawlers.models import RawItem, CrawlerConfig, CrawlerResult
 from app.sources.crawlers.github_crawler import GitHubCrawler
 from app.sources.crawlers.csdn_crawler import CSDNCrawler
+from app.sources.crawlers.juejin_crawler import JuejinCrawler
+from app.sources.crawlers.zhihu_crawler import ZhihuCrawler
 from app.sources.crawlers.trend_aggregator import TrendAggregator
 
 logger = logging.getLogger(__name__)
@@ -30,7 +32,9 @@ class MultiSourceCrawlerProvider:
         self,
         config: Optional[CrawlerConfig] = None,
         enable_github: bool = True,
-        enable_csdn: bool = True
+        enable_csdn: bool = False,  # CSDN默认禁用（SSL问题）
+        enable_juejin: bool = True,
+        enable_zhihu: bool = True
     ):
         """
         初始化多源提供者
@@ -39,6 +43,8 @@ class MultiSourceCrawlerProvider:
             config: 爬虫配置
             enable_github: 是否启用GitHub爬虫
             enable_csdn: 是否启用CSDN爬虫
+            enable_juejin: 是否启用掘金爬虫
+            enable_zhihu: 是否启用知乎爬虫
         """
         self.config = config or CrawlerConfig()
         self.crawlers: List[BaseCrawler] = []
@@ -47,6 +53,14 @@ class MultiSourceCrawlerProvider:
         if enable_github:
             self.crawlers.append(GitHubCrawler(self.config))
             logger.info("GitHub crawler enabled")
+
+        if enable_juejin:
+            self.crawlers.append(JuejinCrawler(self.config))
+            logger.info("Juejin crawler enabled")
+
+        if enable_zhihu:
+            self.crawlers.append(ZhihuCrawler(self.config))
+            logger.info("Zhihu crawler enabled")
 
         if enable_csdn:
             self.crawlers.append(CSDNCrawler(self.config))

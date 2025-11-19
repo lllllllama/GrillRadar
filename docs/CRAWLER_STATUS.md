@@ -5,9 +5,9 @@
 GrillRadar 支持三种外部信息提供者：
 1. **Mock Provider** (默认) - 快速模拟数据
 2. **Local Dataset Provider** (推荐稳定性) - 真实的本地JSON数据集
-3. **Multi-Source Crawler Provider** (推荐实时性) - GitHub + Juejin + Zhihu 实时爬虫
+3. **Multi-Source Crawler Provider** (推荐实时性) - GitHub + V2EX 实时爬虫
 
-## 当前状态 (2025-11-19 更新 - 反爬虫改进测试)
+## 当前状态 (2025-11-19 更新 - V2EX API 集成)
 
 ### ✅ 正常工作
 - **Mock Provider**: 完全正常，快速生成模拟数据
@@ -18,11 +18,12 @@ GrillRadar 支持三种外部信息提供者：
   - 支持关键词趋势和主题趋势分析
   - 覆盖领域: backend, frontend, ml, nlp, cv_segmentation
 
-- **Multi-Source Crawler Provider**: ✅ 部分工作
+- **Multi-Source Crawler Provider**: ✅ 推荐使用
   - **GitHub爬虫**: ✅ 完全正常 (10个trending项目 in ~4秒)
-  - **Juejin爬虫**: ⚠️ 突破403但需JavaScript渲染 (详见下文)
-  - **Zhihu爬虫**: ❌ 仍遇到403 (需要更强的反检测)
-  - **CSDN爬虫**: 已禁用 (SSL握手问题)
+  - **V2EX爬虫**: ✅ 完全正常 (通过newsnow API，约9条技术讨论/次) ⭐ 新增
+  - **Juejin爬虫**: ⚠️ 突破403但需JavaScript渲染（默认禁用）
+  - **Zhihu爬虫**: ❌ 仍遇到403 (默认禁用)
+  - **CSDN爬虫**: ❌ SSL握手问题 (已禁用)
 
 ### 🚀 最新改进 (v2.0)
 
@@ -45,7 +46,60 @@ GrillRadar 支持三种外部信息提供者：
 - **多源编排**: 支持4个爬虫并行运行
 - **智能重试**: 指数退避策略
 
-### 🛡️ 反爬虫检测改进 (v2.1 - 最新)
+### 🌟 V2EX API 集成 (v3.0 - 最新推荐) ⭐
+
+#### 新增 V2EX API 爬虫
+创建了 `app/sources/crawlers/v2ex_api_crawler.py` - **V2EXAPICrawler**:
+
+**技术特点**:
+- ✅ **使用 newsnow 聚合API** - 完全绕过反爬虫机制
+- ✅ **无需JavaScript渲染** - 直接获取JSON数据
+- ✅ **零403问题** - API稳定可靠
+- ✅ **技术内容丰富** - 约30%内容为技术相关
+
+**数据质量**:
+- 获取V2EX热门技术讨论（约30条/次）
+- 筛选后技术相关内容（约9条/次）
+- 包含：AI/LLM、编程语言、开发工具、算法面试等话题
+
+**示例内容**:
+```
+✅ "你们的国外大模型 api 都怎么充值的呢？"
+✅ "开源软件 ShowDoc 新版发布，支持 AI 知识库助手"
+✅ "写一个最近做 AI 的感受"
+✅ "Google 发布 AI Coding IDE"
+✅ "哈哈哈, 原来 cloudflare 写代码也用 unwarp() 呀"
+```
+
+**领域支持**:
+- 支持22+技术领域关键词映射
+- 可按domain筛选（llm_application, backend, algorithm等）
+- 技术关键词库包含70+常用技术术语
+
+**API来源**:
+- API endpoint: `https://newsnow.busiyi.world/api/s?id=v2ex&latest`
+- 参考项目: [TrendRadar](https://github.com/sansan0/TrendRadar)
+- API聚合项目: [newsnow](https://github.com/ourongxing/newsnow)
+
+**实现亮点**:
+- 智能重试机制（最多3次，指数退避）
+- 完整的技术关键词分类系统
+- 与现有架构无缝集成
+- 默认启用，推荐使用
+
+**测试结果**:
+```bash
+python scripts/test_v2ex_crawler.py
+```
+
+| 测试项 | 结果 | 说明 |
+|--------|------|------|
+| 总技术讨论 | 9条 | 从30条中筛选 |
+| LLM应用 | 4条 | 大模型相关讨论 |
+| 后端开发 | 1条 | API/服务端讨论 |
+| 获取速度 | <3秒 | API响应快速 |
+
+### 🛡️ 反爬虫检测改进 (v2.1)
 
 #### 实现的反检测技术
 创建了 `app/sources/crawlers/anti_detection.py` - **AntiDetectionHelper**:
@@ -253,7 +307,7 @@ EXTERNAL_INFO_PROVIDER=mock
 # 选项2: 本地数据集 (推荐，真实数据)
 EXTERNAL_INFO_PROVIDER=local_dataset
 
-# 选项3: 实时爬虫 (需要更新)
+# 选项3: 实时爬虫 (GitHub + V2EX, 推荐!)
 EXTERNAL_INFO_PROVIDER=multi_source_crawler
 ```
 

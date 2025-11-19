@@ -50,12 +50,13 @@ class ExternalInfoService:
 
                 self.provider = MultiSourceCrawlerProvider(
                     config=crawler_config,
-                    enable_github=True,
-                    enable_juejin=True,
-                    enable_zhihu=True,
-                    enable_csdn=False  # 禁用CSDN (SSL握手问题)
+                    enable_github=True,    # ✅ GitHub trending (稳定)
+                    enable_v2ex=True,      # ✅ V2EX技术讨论 (newsnow API, 稳定)
+                    enable_juejin=False,   # ❌ 需要JavaScript渲染
+                    enable_zhihu=False,    # ❌ 403问题
+                    enable_csdn=False      # ❌ SSL握手问题
                 )
-                self.logger.info("Using MultiSourceCrawlerProvider (GitHub + Juejin + Zhihu)")
+                self.logger.info("Using MultiSourceCrawlerProvider (GitHub + V2EX)")
             except Exception as e:
                 self.logger.warning(f"Failed to initialize crawler provider: {e}. Falling back to mock.")
                 self.provider = MockDataProvider()

@@ -16,6 +16,7 @@ from app.sources.crawlers.github_crawler import GitHubCrawler
 from app.sources.crawlers.csdn_crawler import CSDNCrawler
 from app.sources.crawlers.juejin_crawler import JuejinCrawler
 from app.sources.crawlers.zhihu_crawler import ZhihuCrawler
+from app.sources.crawlers.v2ex_api_crawler import V2EXAPICrawler
 from app.sources.crawlers.trend_aggregator import TrendAggregator
 
 logger = logging.getLogger(__name__)
@@ -32,16 +33,18 @@ class MultiSourceCrawlerProvider:
         self,
         config: Optional[CrawlerConfig] = None,
         enable_github: bool = True,
+        enable_v2ex: bool = True,   # V2EX默认启用 (推荐)
         enable_csdn: bool = False,  # CSDN默认禁用（SSL问题）
-        enable_juejin: bool = True,
-        enable_zhihu: bool = True
+        enable_juejin: bool = False,  # Juejin默认禁用（需要JS渲染）
+        enable_zhihu: bool = False   # Zhihu默认禁用（403问题）
     ):
         """
         初始化多源提供者
 
         Args:
             config: 爬虫配置
-            enable_github: 是否启用GitHub爬虫
+            enable_github: 是否启用GitHub爬虫 (推荐)
+            enable_v2ex: 是否启用V2EX爬虫 (推荐，通过newsnow API)
             enable_csdn: 是否启用CSDN爬虫
             enable_juejin: 是否启用掘金爬虫
             enable_zhihu: 是否启用知乎爬虫
@@ -49,10 +52,14 @@ class MultiSourceCrawlerProvider:
         self.config = config or CrawlerConfig()
         self.crawlers: List[BaseCrawler] = []
 
-        # 注册爬虫
+        # 注册爬虫 (按推荐优先级排序)
         if enable_github:
             self.crawlers.append(GitHubCrawler(self.config))
             logger.info("GitHub crawler enabled")
+
+        if enable_v2ex:
+            self.crawlers.append(V2EXAPICrawler(self.config))
+            logger.info("V2EX crawler enabled")
 
         if enable_juejin:
             self.crawlers.append(JuejinCrawler(self.config))

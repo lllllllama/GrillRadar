@@ -35,7 +35,7 @@ def test_v2ex_crawler():
     print("📋 测试 1: 获取所有技术相关讨论")
     print("-" * 80)
 
-    result = crawler.crawl()
+    result = crawler.crawl(domain="general", keywords=[])
 
     print(f"✅ 爬取状态: {'成功' if result.success else '失败'}")
     print(f"📊 获取条目: {len(result.items)} 条")
@@ -58,7 +58,7 @@ def test_v2ex_crawler():
     print("📋 测试 2: LLM应用领域相关讨论")
     print("-" * 80)
 
-    result_llm = crawler.crawl(domain='llm_application')
+    result_llm = crawler.crawl(domain='llm_application', keywords=[])
 
     print(f"✅ 爬取状态: {'成功' if result_llm.success else '失败'}")
     print(f"📊 获取条目: {len(result_llm.items)} 条")
@@ -77,7 +77,7 @@ def test_v2ex_crawler():
     print("📋 测试 3: 后端开发领域相关讨论")
     print("-" * 80)
 
-    result_backend = crawler.crawl(domain='backend')
+    result_backend = crawler.crawl(domain='backend', keywords=[])
 
     print(f"✅ 爬取状态: {'成功' if result_backend.success else '失败'}")
     print(f"📊 获取条目: {len(result_backend.items)} 条")
@@ -96,7 +96,7 @@ def test_v2ex_crawler():
     print("📋 测试 4: 算法/面试相关讨论")
     print("-" * 80)
 
-    result_algo = crawler.crawl(domain='algorithm')
+    result_algo = crawler.crawl(domain='algorithm', keywords=[])
 
     print(f"✅ 爬取状态: {'成功' if result_algo.success else '失败'}")
     print(f"📊 获取条目: {len(result_algo.items)} 条")

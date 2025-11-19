@@ -126,7 +126,9 @@ class V2EXAPICrawler(BaseCrawler):
                 source=self.source_name,
                 items=filtered_items,
                 success=True,
-                error_message=None
+                error_message=None,
+                crawled_count=len(filtered_items),
+                duration_ms=elapsed_ms
             )
 
         except Exception as e:
@@ -136,7 +138,9 @@ class V2EXAPICrawler(BaseCrawler):
                 source=self.source_name,
                 items=[],
                 success=False,
-                error_message=str(e)
+                error_message=str(e),
+                crawled_count=0,
+                duration_ms=elapsed_ms
             )
 
     def _fetch_from_api(self) -> List[Dict]:

@@ -2,11 +2,18 @@
 趋势聚合器 / Trend Aggregator
 
 将多源RawItem数据聚合、清洗、转换为ExternalInfoSummary
+
+优化版本 (V2):
+- 智能去重（URL + 标题相似度）
+- 多源加权评分（GitHub/V2EX/IT之家）
+- 时序优先（新鲜度加分）
+- 质量过滤
 """
 from typing import List, Dict, Tuple
 from collections import Counter
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
+from difflib import SequenceMatcher
 
 from app.sources.crawlers.models import RawItem
 from app.models.external_info import (
@@ -20,7 +27,26 @@ logger = logging.getLogger(__name__)
 
 
 class TrendAggregator:
-    """趋势聚合器"""
+    """趋势聚合器 V2 - 优化版"""
+
+    # 数据源权重配置
+    SOURCE_WEIGHTS = {
+        'github': 1.5,     # GitHub项目权重高（代码质量和stars说明价值）
+        'v2ex': 1.2,       # V2EX讨论权重中等（实时讨论有价值）
+        'ithome': 1.0,     # IT之家新闻权重中等（新闻时效性）
+        'csdn': 0.8,       # CSDN权重较低（内容质量参差）
+        'juejin': 1.0,     # 掘金权重中等
+        'zhihu': 1.1,      # 知乎权重较高（专业内容多）
+    }
+
+    # 内容类型权重
+    CONTENT_TYPE_WEIGHTS = {
+        'code': 1.5,       # 代码/项目
+        'discussion': 1.2, # 技术讨论
+        'news': 1.0,       # 新闻
+        'article': 1.1,    # 文章
+        'interview': 1.3,  # 面试经验
+    }
 
     @staticmethod
     def aggregate(
@@ -45,26 +71,36 @@ class TrendAggregator:
         """
         logger.info(f"Aggregating {len(raw_items)} raw items")
 
-        # 1. 去重（基于URL）
-        unique_items = TrendAggregator._deduplicate(raw_items)
-        logger.info(f"After deduplication: {len(unique_items)} items")
+        # 1. 智能去重（URL + 标题相似度）
+        unique_items = TrendAggregator._deduplicate_smart(raw_items)
+        logger.info(f"After smart deduplication: {len(unique_items)} items")
 
-        # 2. 按互动分数排序
-        unique_items.sort(key=lambda x: x.get_engagement_score(), reverse=True)
+        # 2. 计算质量分数（综合评分）
+        for item in unique_items:
+            item.metadata['quality_score'] = TrendAggregator._calculate_quality_score(item)
 
-        # 3. 分组：技术项目(GitHub) vs 文章/面经(CSDN)
+        # 3. 按质量分数排序
+        unique_items.sort(key=lambda x: x.metadata.get('quality_score', 0), reverse=True)
+
+        # 4. 分组：技术项目 vs 讨论 vs 新闻 vs 文章
         github_items = [item for item in unique_items if item.source == 'github']
+        v2ex_items = [item for item in unique_items if item.source == 'v2ex']
+        ithome_items = [item for item in unique_items if item.source == 'ithome']
         csdn_items = [item for item in unique_items if item.source == 'csdn']
 
-        # 4. 转换为JD和面经
+        # 5. 转换为JD和面经
+        # JD来源：GitHub项目 + V2EX讨论 + IT之家新闻 + CSDN文章
+        jd_source_items = github_items + v2ex_items[:3] + ithome_items[:3] + csdn_items[:5]
         job_descriptions = TrendAggregator._convert_to_jds(
-            github_items + csdn_items[:5],
+            jd_source_items,
             domain,
             max_jd
         )
 
+        # 面经来源：V2EX面试讨论 + CSDN面经文章
+        exp_source_items = v2ex_items + csdn_items
         interview_experiences = TrendAggregator._convert_to_experiences(
-            csdn_items,
+            exp_source_items,
             domain,
             max_exp
         )
@@ -106,7 +142,7 @@ class TrendAggregator:
 
     @staticmethod
     def _deduplicate(items: List[RawItem]) -> List[RawItem]:
-        """根据URL去重"""
+        """根据URL去重（基础版）"""
         seen_urls = set()
         unique = []
 
@@ -116,6 +152,106 @@ class TrendAggregator:
                 unique.append(item)
 
         return unique
+
+    @staticmethod
+    def _deduplicate_smart(items: List[RawItem], similarity_threshold: float = 0.85) -> List[RawItem]:
+        """
+        智能去重：URL + 标题相似度
+
+        Args:
+            items: 原始数据项
+            similarity_threshold: 标题相似度阈值（0-1），默认0.85
+
+        Returns:
+            去重后的数据项列表
+        """
+        seen_urls = set()
+        seen_titles = []
+        unique = []
+
+        for item in items:
+            # 1. URL精确去重
+            if item.url in seen_urls:
+                continue
+
+            # 2. 标题相似度去重
+            is_duplicate = False
+            for prev_title in seen_titles:
+                similarity = SequenceMatcher(None, item.title.lower(), prev_title.lower()).ratio()
+                if similarity >= similarity_threshold:
+                    is_duplicate = True
+                    logger.debug(f"Duplicate title detected (similarity={similarity:.2f}): {item.title}")
+                    break
+
+            if not is_duplicate:
+                seen_urls.add(item.url)
+                seen_titles.append(item.title)
+                unique.append(item)
+
+        return unique
+
+    @staticmethod
+    def _calculate_quality_score(item: RawItem) -> float:
+        """
+        计算数据项的质量分数（综合评分）
+
+        评分因素：
+        1. 数据源权重 (SOURCE_WEIGHTS)
+        2. 内容类型权重 (CONTENT_TYPE_WEIGHTS)
+        3. 互动分数 (engagement: stars, likes, views, comments)
+        4. 新鲜度加分 (created_at, crawled_at)
+
+        Returns:
+            float: 质量分数 (0-100+)
+        """
+        score = 0.0
+
+        # 1. 基础分
+        score += 10.0
+
+        # 2. 数据源权重
+        source_weight = TrendAggregator.SOURCE_WEIGHTS.get(item.source, 1.0)
+        score *= source_weight
+
+        # 3. 内容类型权重
+        content_type = item.metadata.get('content_type', 'article')
+        content_weight = TrendAggregator.CONTENT_TYPE_WEIGHTS.get(content_type, 1.0)
+        score *= content_weight
+
+        # 4. 互动分数（归一化到0-50分）
+        engagement_score = item.get_engagement_score()
+        # 对数归一化，避免极端值主导
+        import math
+        normalized_engagement = min(50.0, math.log10(max(1, engagement_score)) * 10)
+        score += normalized_engagement
+
+        # 5. 新鲜度加分（最近7天的内容加分）
+        if item.created_at:
+            age_days = (datetime.utcnow() - item.created_at).days
+            if age_days <= 1:
+                score *= 1.3  # 24小时内 +30%
+            elif age_days <= 3:
+                score *= 1.2  # 3天内 +20%
+            elif age_days <= 7:
+                score *= 1.1  # 7天内 +10%
+        elif item.crawled_at:
+            # 如果没有created_at，用crawled_at估算
+            age_days = (datetime.utcnow() - item.crawled_at).days
+            if age_days == 0:
+                score *= 1.1  # 今天爬取的内容 +10%
+
+        # 6. 标题长度合理性（太短或太长都扣分）
+        title_len = len(item.title)
+        if title_len < 10:
+            score *= 0.7  # 标题太短
+        elif title_len > 150:
+            score *= 0.8  # 标题太长
+
+        # 7. 有tags加分
+        if item.tags:
+            score += min(10.0, len(item.tags) * 2)  # 每个tag +2分，最多+10分
+
+        return round(score, 2)
 
     @staticmethod
     def _convert_to_jds(
@@ -141,9 +277,20 @@ class TrendAggregator:
                 if not keywords and not requirements:
                     continue
 
+                # 根据来源生成更具体的公司名
+                company_names = {
+                    'github': 'GitHub热门项目',
+                    'v2ex': 'V2EX技术社区',
+                    'ithome': 'IT之家科技资讯',
+                    'csdn': 'CSDN技术社区',
+                    'juejin': '掘金技术社区',
+                    'zhihu': '知乎技术圈',
+                }
+                company = company_names.get(item.source, f'{item.source.upper()}')
+
                 # 生成JD
                 jd = JobDescription(
-                    company=f"技术趋势来源 ({item.source.upper()})",
+                    company=company,
                     position=f"{domain} - 相关技术岗位",
                     location="全国",
                     salary_range="面议",
@@ -182,10 +329,12 @@ class TrendAggregator:
         """
         experiences = []
 
-        # 优先处理面试相关的内容
+        # 优先处理面试相关的内容（CSDN面经 + V2EX讨论）
         interview_items = [
             item for item in items
-            if item.metadata.get('is_interview') == 'True'
+            if (item.metadata.get('is_interview') == 'True' or
+                item.source == 'v2ex' or
+                '面试' in item.title or '面经' in item.title)
         ]
 
         for item in interview_items[:max_count]:
@@ -204,8 +353,17 @@ class TrendAggregator:
                 # 提取主题
                 topics = item.tags[:5]
 
+                # 根据来源确定公司名
+                source_names = {
+                    'csdn': 'CSDN技术社区',
+                    'v2ex': 'V2EX技术社区',
+                    'juejin': '掘金技术社区',
+                    'zhihu': '知乎技术圈',
+                }
+                company = source_names.get(item.source, '技术社区')
+
                 exp = InterviewExperience(
-                    company="技术社区面经汇总 (CSDN)",
+                    company=company,
                     position=f"{domain} - 技术岗位",
                     interview_type="技术面",
                     questions=questions[:6],  # 最多6个问题

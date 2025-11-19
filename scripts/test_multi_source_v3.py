@@ -18,9 +18,9 @@ def test_multi_source_v3():
     """测试多源爬虫系统 V3 - GitHub + V2EX"""
 
     print("=" * 80)
-    print("🚀 测试多源爬虫系统 V3 (GitHub + V2EX)")
+    print("🚀 测试多源爬虫系统 V4 (GitHub + V2EX + IT之家)")
     print("=" * 80)
-    print("   数据源: GitHub Trending + V2EX技术讨论")
+    print("   数据源: GitHub Trending + V2EX技术讨论 + IT之家科技新闻")
     print("=" * 80)
     print()
 
@@ -37,6 +37,7 @@ def test_multi_source_v3():
         config=config,
         enable_github=True,
         enable_v2ex=True,
+        enable_ithome=True,
         enable_juejin=False,
         enable_zhihu=False,
         enable_csdn=False
@@ -103,9 +104,10 @@ def test_multi_source_v3():
     print("=" * 80)
     print()
     print("💡 结论:")
-    print("   如果看到 GitHub 和 V2EX 的数据，说明多源系统工作正常")
-    print("   V2EX 提供技术讨论和面试相关内容")
+    print("   如果看到 GitHub、V2EX 和 IT之家 的数据，说明多源系统工作正常")
     print("   GitHub 提供开源项目和技术趋势")
+    print("   V2EX 提供技术讨论和面试相关内容")
+    print("   IT之家 提供科技新闻和产品发布信息")
     print()
 
 

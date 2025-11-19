@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 
 from .base_crawler import BaseCrawler
 from .models import RawItem, CrawlerResult
+from .anti_detection import AntiDetectionHelper
 
 
 class ZhihuCrawler(BaseCrawler):
@@ -23,6 +24,7 @@ class ZhihuCrawler(BaseCrawler):
     def __init__(self, config):
         super().__init__(config)
         self.logger = logging.getLogger("ZhihuCrawler")
+        self.anti_detect = AntiDetectionHelper()
 
         # 知乎关键词映射（添加"面试"、"经验"等词提高相关性）
         self.domain_keywords_map = {
@@ -128,14 +130,15 @@ class ZhihuCrawler(BaseCrawler):
             # 知乎搜索URL（使用通用搜索）
             url = f"https://www.zhihu.com/search?type=content&q={quote(keyword)}"
 
-            # 设置headers模拟浏览器
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Referer': 'https://www.zhihu.com/',
-            }
+            # 使用反检测工具获取完整的浏览器请求头
+            headers = self.anti_detect.get_browser_headers(
+                referer='https://www.zhihu.com/',
+                accept='text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+            )
+
+            # 添加随机延迟
+            delay = self.anti_detect.get_random_delay(0.5, 1.5)
+            time.sleep(delay)
 
             response = self._make_request(url, headers=headers)
             if not response:

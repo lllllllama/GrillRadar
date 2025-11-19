@@ -99,7 +99,11 @@ class BaseCrawler(ABC):
 
         for attempt in range(self.config.retry_times + 1):
             try:
-                with httpx.Client(timeout=self.config.timeout) as client:
+                with httpx.Client(
+                    timeout=self.config.timeout,
+                    verify=False,  # 禁用SSL验证以避免某些网站的SSL问题
+                    follow_redirects=True
+                ) as client:
                     response = client.request(
                         method=method,
                         url=url,

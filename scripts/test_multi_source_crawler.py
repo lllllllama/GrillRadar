@@ -96,8 +96,8 @@ def test_multi_source_provider(domain: str):
         mode='job',
         target_desc=f'{domain} 开发工程师',
         domain=domain,
-        resume_text='测试简历内容',
-        level='mid'
+        resume_text='这是一个测试用的简历内容，用于验证多源爬虫功能是否正常工作。',
+        level='junior'
     )
 
     # 检索外部信息

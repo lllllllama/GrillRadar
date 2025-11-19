@@ -79,8 +79,8 @@ class GitHubCrawler(BaseCrawler):
 
             self.logger.info(f"Crawling GitHub for domain '{domain}' with keywords: {all_keywords}")
 
-            # 2. 抓取trending repositories
-            trending_items = self._crawl_trending(all_keywords[0] if all_keywords else 'python')
+            # 2. 抓取trending repositories (不过滤语言，获取全部trending)
+            trending_items = self._crawl_trending(language=None)
             items.extend(trending_items)
 
             # 3. 抓取搜索结果
@@ -140,10 +140,8 @@ class GitHubCrawler(BaseCrawler):
         items = []
 
         try:
-            # GitHub Trending URL
-            url = f"https://github.com/trending?since=daily"
-            if language:
-                url = f"https://github.com/trending/{language}?since=daily"
+            # GitHub Trending URL (不使用语言过滤，获取所有trending)
+            url = "https://github.com/trending?since=daily"
 
             response = self._make_request(url)
             if not response:
@@ -173,14 +171,21 @@ class GitHubCrawler(BaseCrawler):
                     desc_p = article.find('p', class_='col-9')
                     description = desc_p.get_text(strip=True) if desc_p else ""
 
-                    # 提取star数
-                    star_span = article.find('span', class_='d-inline-block')
-                    star_text = star_span.get_text(strip=True) if star_span else "0"
+                    # 提取star数 - 在stargazers链接中
+                    star_link = article.find('a', href=lambda x: x and '/stargazers' in x)
+                    star_text = star_link.get_text(strip=True) if star_link else "0"
                     star_count = self._parse_github_number(star_text)
 
-                    # 提取语言
-                    lang_span = article.find('span', {'itemprop': 'programmingLanguage'})
-                    language_name = lang_span.get_text(strip=True) if lang_span else "Unknown"
+                    # 提取语言 - 在repo-language-color之后的文本
+                    lang_color = article.find('span', class_='repo-language-color')
+                    language_name = "Unknown"
+                    if lang_color and lang_color.next_sibling:
+                        # 语言名通常紧随颜色点之后
+                        lang_text = lang_color.next_sibling
+                        if isinstance(lang_text, str):
+                            language_name = lang_text.strip()
+                        elif hasattr(lang_text, 'get_text'):
+                            language_name = lang_text.get_text(strip=True)
 
                     # 提取标签
                     tags = self._extract_keywords_from_text(f"{repo_name} {description}")

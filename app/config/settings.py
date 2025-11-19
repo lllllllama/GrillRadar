@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     MULTI_AGENT_ENABLED: bool = True  # 启用多智能体模式
     GRILLRADAR_DEBUG_AGENTS: bool = False  # 调试模式：保存中间产物
 
+    # 外部信息提供者配置
+    EXTERNAL_INFO_PROVIDER: str = "mock"  # mock | local_dataset | multi_source_crawler
+
     # 路径配置
     BASE_DIR: Path = Path(__file__).parent.parent.parent
     CONFIG_DIR: Path = Path(__file__).parent

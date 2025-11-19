@@ -1,0 +1,9 @@
+{
+  "target_desc": "字节跳动抖音推荐 - LLM应用架构师（P6-P7）",
+  "mode": "job",
+  "domain": "llm_application",
+  "level": "senior",
+  "enable_external_info": true,
+  "target_company": "字节跳动",
+  "multi_agent_enabled": true
+}

@@ -14,7 +14,7 @@ class RawItem(BaseModel):
 
     所有爬虫返回此标准格式，便于后续聚合处理
     """
-    source: Literal["github", "csdn", "leetcode", "zhihu", "nowcoder"] = Field(
+    source: Literal["github", "csdn", "leetcode", "zhihu", "nowcoder", "juejin", "v2ex", "ithome"] = Field(
         ...,
         description="数据来源"
     )

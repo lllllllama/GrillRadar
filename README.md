@@ -55,11 +55,26 @@
 
 ---
 
+## 📋 环境要求
+
+| 依赖 | 版本要求 |
+|------|----------|
+| **Python** | 3.8+ (推荐 3.10+) |
+| **pip** | 21.0+ |
+| **操作系统** | Windows 10+, Ubuntu 18.04+, macOS 10.15+ |
+
+> ⚠️ **注意**: 部分 OCR 功能需要安装额外依赖，详见 `requirements-ocr.txt`
+
+---
+
 ## ⚡ 5分钟快速开始
 
 ### 1️⃣ 安装
 
 ```bash
+# 检查 Python 版本 (需要 3.8+)
+python --version
+
 # 克隆项目
 git clone https://github.com/lllllllama/GrillRadar.git
 cd GrillRadar

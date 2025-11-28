@@ -52,13 +52,13 @@ class TestQuestionItem:
         with pytest.raises(ValidationError):
             QuestionItem(
                 id=1,
-                view_role="A",  # Too short
-                tag="B",
-                question="C",  # Too short
-                rationale="D",
-                baseline_answer="E",
-                support_notes="F",
-                prompt_template="G"
+                view_role="",  # Too short (empty)
+                tag="",
+                question="",  # Too short
+                rationale="",
+                baseline_answer="",
+                support_notes="",
+                prompt_template=""
             )
 
     def test_question_item_dict_conversion(self):
@@ -181,11 +181,11 @@ class TestReport:
                 target_desc="工程师",
                 highlights="亮点" * 10,
                 risks="风险" * 10,
-                questions=sample_questions[:5],  # Only 5 questions (need 10-20)
+                questions=[],  # Empty list (need at least 1)
                 meta=ReportMeta(
                     generated_at="2025-11-17T10:00:00Z",
                     model="claude-sonnet-4",
-                    num_questions=5
+                    num_questions=0
                 )
             )
 

@@ -2,7 +2,7 @@
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 from pydantic import BaseModel, Field
-from .question_item import QuestionItem
+from .question_item import QuestionItem, RawQuestionItem
 
 
 class ReportMeta(BaseModel):
@@ -24,14 +24,27 @@ class ReportMeta(BaseModel):
         description="问题总数",
         ge=1
     )
+    difficulty_distribution: Optional[dict] = None
+    question_categories: Optional[List[str]] = None
+
+
+class RawReport(BaseModel):
+    """LLM初步解析的报告对象，允许宽松的校验"""
+    summary: str = Field(..., description="总体评估", min_length=1)
+    mode: str = Field(..., description="报告模式")
+    target_desc: str = Field(..., description="目标岗位")
+    highlights: Optional[str] = Field(default="", description="候选人亮点")
+    risks: Optional[str] = Field(default="", description="关键风险点")
+    questions: List[RawQuestionItem] = Field(..., description="问题列表", min_length=1)
+    meta: Optional[Dict[str, Any]] = None  # Allow raw dict for meta or missing
 
 
 class Report(BaseModel):
-    """最终生成的grilling报告，包含总结 + 问题列表"""
+    """最终生成的grilling报告，包含总结 + 问题列表 (Strict Validation)"""
 
     summary: str = Field(
         ...,
-        description="总体评估：候选人的优势、风险点、准备建议。语气略带grilling但建设性强",
+        description="总体评估：候选人的优势、风险点、准备建议",
         min_length=30
     )
 
@@ -48,26 +61,26 @@ class Report(BaseModel):
 
     highlights: str = Field(
         ...,
-        description="候选人亮点：从简历和问题设计中推断出的优势",
+        description="候选人亮点",
         min_length=20
     )
 
     risks: str = Field(
         ...,
-        description="关键风险点：简历暴露的薄弱环节",
+        description="关键风险点",
         min_length=20
     )
 
     questions: List[QuestionItem] = Field(
         ...,
-        description="问题列表，通常15-30个，高级候选人可达30+",
-        min_length=15,
-        max_length=35
+        description="问题列表",
+        min_length=10,
+        max_length=50
     )
 
     meta: ReportMeta = Field(
         ...,
-        description="元数据：生成时间、LLM模型版本、配置参数等"
+        description="元数据"
     )
 
     class Config:

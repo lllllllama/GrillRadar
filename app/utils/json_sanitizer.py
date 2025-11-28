@@ -103,8 +103,12 @@ def basic_repair_json(raw_text: str) -> str:
     Raises:
         JSONRepairError: If basic repair fails
     """
+    # Try to extract JSON if mixed with text (CoT support)
+    extracted = extract_json_from_text(raw_text)
+    text_to_clean = extracted if extracted else raw_text
+
     # Apply basic cleanup
-    cleaned = clean_json_text(raw_text)
+    cleaned = clean_json_text(text_to_clean)
 
     # Try to parse
     try:

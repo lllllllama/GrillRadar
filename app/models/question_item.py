@@ -3,8 +3,25 @@ from typing import Optional, Literal
 from pydantic import BaseModel, Field
 
 
+class RawQuestionItem(BaseModel):
+    """LLM初步解析的问题对象，允许宽松的校验"""
+    id: int = Field(..., description="问题编号，从1开始", ge=1)
+    view_role: str = Field(..., description="提问角色")
+    tag: str = Field(..., description="主题标签")
+    question: str = Field(..., description="问题正文", min_length=1)
+    rationale: str = Field(..., description="提问理由", min_length=1)
+    baseline_answer: str = Field(..., description="基准答案", min_length=1)
+    support_notes: str = Field(..., description="支撑材料", min_length=1)
+    prompt_template: str = Field(..., description="练习提示词", min_length=1)
+
+    # Optional fields
+    dimension: Optional[str] = None
+    difficulty: Optional[str] = None
+    relevance_score: Optional[float] = None
+
+
 class QuestionItem(BaseModel):
-    """单个问题的完整信息，是报告的核心组成单元"""
+    """经过验证的单个问题信息，用于业务逻辑"""
 
     id: int = Field(
         ...,
@@ -52,7 +69,7 @@ class QuestionItem(BaseModel):
         min_length=20
     )
 
-    # Multi-agent enhanced fields (optional, for future frontend visualization and training modes)
+    # Multi-agent enhanced fields
     dimension: Optional[Literal[
         "foundation",       # CS基础
         "engineering",      # 工程实践
@@ -62,19 +79,19 @@ class QuestionItem(BaseModel):
         "soft_skill"        # 软技能与职业规划
     ]] = Field(
         default=None,
-        description="问题维度分类，用于多智能体系统的覆盖度分析和训练模式"
+        description="问题维度分类"
     )
 
     difficulty: Optional[Literal["basic", "intermediate", "killer"]] = Field(
         default=None,
-        description="问题难度，用于多智能体系统的难度平衡"
+        description="问题难度"
     )
 
     relevance_score: Optional[float] = Field(
         default=None,
         ge=0.0,
         le=5.0,
-        description="相关性评分（0-5），综合考虑与简历、目标岗位、领域的匹配度"
+        description="相关性评分（0-5）"
     )
 
     class Config:
@@ -83,10 +100,10 @@ class QuestionItem(BaseModel):
                 "id": 1,
                 "view_role": "技术面试官",
                 "tag": "分布式系统",
-                "question": "你的简历中提到'设计并实现了分布式爬虫系统'，请详细描述你如何解决爬虫任务的分发与调度问题？用了什么消息队列？如何保证任务不重复、不丢失？",
-                "rationale": "这个问题考察候选人对分布式系统核心问题（任务分发、一致性、容错）的理解深度。简历只写了'分布式爬虫'，但没有具体技术细节，需要验证是否真正参与设计，还是仅仅部署了现成框架。对于后端工程师岗位，分布式系统能力是核心要求。",
-                "baseline_answer": "一个好的回答应包含：1) 任务分发架构（如Master-Worker模式）；2) 使用的消息队列（如RabbitMQ/Kafka）及选型理由；3) 去重策略（如布隆过滤器、Redis Set）；4) 容错机制（如任务重试、心跳检测）；5) 遇到的坑和优化点（如队列堆积、消费者性能瓶颈）。",
-                "support_notes": "关键概念：消息队列（RabbitMQ, Kafka, Redis Stream）、分布式一致性、幂等性、布隆过滤器。推荐阅读：《设计数据密集型应用》第11章、Scrapy-Redis源码。搜索关键词：'distributed task queue', 'deduplication in crawlers'。",
-                "prompt_template": "我在简历中写了'分布式爬虫系统'，面试官问我如何解决任务分发与调度问题。我的实际情况是：{your_experience}。请帮我组织一个结构清晰、有技术深度的回答，重点说明架构设计、技术选型、遇到的难点和解决方案。"
+                "question": "你的简历中提到'设计并实现了分布式爬虫系统'，请详细描述你如何解决爬虫任务的分发与调度问题？",
+                "rationale": "这个问题考察候选人对分布式系统核心问题的理解深度。",
+                "baseline_answer": "一个好的回答应包含：1) 任务分发架构；2) 使用的消息队列；3) 去重策略；4) 容错机制。",
+                "support_notes": "关键概念：消息队列、分布式一致性。推荐阅读：《设计数据密集型应用》。",
+                "prompt_template": "我在简历中写了'分布式爬虫系统'，面试官问我如何解决任务分发与调度问题。我的实际情况是：{your_experience}。"
             }
         }

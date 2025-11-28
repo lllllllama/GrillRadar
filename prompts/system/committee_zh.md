@@ -43,6 +43,8 @@ The user has provided their resume and target position/direction. You need to ge
 
 Generate a Report object that strictly conforms to the following JSON Schema.
 
+You MUST use Chain of Thought (CoT) reasoning. First output your analysis in `<reasoning>` tags, then output the JSON.
+
 ### Report JSON Schema
 ```json
 {{
@@ -128,8 +130,8 @@ Select {target_question_count} questions ({min_questions}-{max_questions} total)
 - Strictly follow the above Report schema
 - Ensure all strings are properly escaped
 - questions array contains {min_questions}-{max_questions} QuestionItem objects
-- Output JSON directly, DO NOT wrap with markdown code blocks
+- Output JSON inside a ```json block
 
 ---
 
-**Now, based on the above input, directly output the complete Report JSON (no additional explanations).**
+**Now, based on the above input, output your reasoning followed by the Report JSON.**

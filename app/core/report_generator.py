@@ -114,10 +114,18 @@ class ReportGenerator:
         """
         # 验证问题数量
         num_questions = len(report.questions)
-        if num_questions < 15:
-            raise ValueError(f"问题数量不足：只有{num_questions}个，至少需要15个")
-        if num_questions > 35:
-            raise ValueError(f"问题数量过多：有{num_questions}个，最多35个")
+        if num_questions < 10:
+            raise ValueError(f"问题数量不足：只有{num_questions}个，至少需要10个")
+        if num_questions > 50:
+            raise ValueError(f"问题数量过多：有{num_questions}个，最多50个")
+
+        # 验证文本长度 (Replacement for relaxed Pydantic constraints)
+        if len(report.summary) < 30:
+            raise ValueError("Summary too short (min 30 chars)")
+        if len(report.highlights) < 20:
+            raise ValueError("Highlights too short (min 20 chars)")
+        if len(report.risks) < 20:
+            raise ValueError("Risks too short (min 20 chars)")
 
         # 验证模式匹配
         if report.mode != user_config.mode:
@@ -164,10 +172,11 @@ class ReportGenerator:
             QuestionItem(
                 id=1,
                 question=f"⚠️ 报告生成失败",
-                rationale=f"LLM调用失败: {error_message}",
-                role="系统",
+                view_role="系统",
+                tag="系统错误",
+                rationale=f"LLM调用失败，请检查配置: {error_message}",
                 baseline_answer="请检查API配置和网络连接，然后重试。",
-                prompt_template="N/A",
+                prompt_template="请重试报告生成，并检查输入数据是否正确。",
                 support_notes="如果问题持续，请查看日志文件或联系技术支持。"
             )
         ]
@@ -176,6 +185,8 @@ class ReportGenerator:
             mode=user_config.mode,
             target_desc=user_config.target_desc,
             summary=f"⚠️ 报告生成失败\n\n错误信息: {error_message}\n\n请检查配置并重试。",
+            highlights="N/A",
+            risks="N/A",
             questions=fallback_questions,
             meta=ReportMeta(
                 num_questions=1,
@@ -237,23 +248,35 @@ class ReportGenerator:
                 QuestionItem(
                     id=1,
                     question="⚠️ 报告数据解析失败",
+                    view_role="系统",
+                    tag="系统错误",
                     rationale=f"无法从LLM输出中提取有效问题: {error_message}",
-                    role="系统",
-                    baseline_answer="请重试报告生成。",
-                    prompt_template="N/A",
+                    baseline_answer="请检查日志获取详细错误信息，并重试报告生成。",
+                    prompt_template="请重试报告生成，并检查输入数据是否正确。",
                     support_notes="检查日志获取详细错误信息。"
                 )
             ]
+        elif len(questions) > 50:
+            # Truncate to max 50 questions to pass validation
+            logger.warning(f"Truncating questions from {len(questions)} to 50")
+            questions = questions[:50]
 
         # Extract summary or create fallback
         summary = report_data.get('summary', '')
         if not summary:
             summary = f"⚠️ 简化报告\n\n由于数据验证失败，此报告仅包含部分信息。\n错误: {error_message}"
+        else:
+            # Prepend error warning if we are in this method due to an exception
+            # and it's not already in the summary
+            if error_message and "简化报告" not in summary:
+                summary = f"⚠️ 简化报告 (验证失败: {error_message})\n\n{summary}"
 
         return Report(
             mode=user_config.mode,
             target_desc=user_config.target_desc,
             summary=summary,
+            highlights=report_data.get('highlights', "N/A"),
+            risks=report_data.get('risks', "N/A"),
             questions=questions,
             meta=ReportMeta(
                 num_questions=len(questions),

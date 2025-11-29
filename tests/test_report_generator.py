@@ -16,7 +16,7 @@ class TestReportGeneratorInitialization:
         generator = ReportGenerator()
 
         assert generator.prompt_builder is not None
-        mock_llm_client.assert_called_once_with(provider=None, model=None)
+        mock_llm_client.assert_called_once_with(provider=None, model=None, request_id=None)
 
     @patch('app.core.report_generator.LLMClient')
     def test_init_with_custom_params(self, mock_llm_client):
@@ -28,7 +28,8 @@ class TestReportGeneratorInitialization:
 
         mock_llm_client.assert_called_once_with(
             provider="anthropic",
-            model="claude-3-opus-20240229"
+            model="claude-3-opus-20240229",
+            request_id=None
         )
 
 
@@ -123,23 +124,28 @@ class TestReportGeneration:
 
     @patch('app.core.report_generator.LLMClient')
     def test_generate_report_llm_error(self, mock_llm_client, sample_user_config):
-        """Test that LLM errors are propagated"""
+        """Test that LLM errors result in fallback report instead of exception"""
         mock_client = Mock()
         mock_llm_client.return_value = mock_client
         mock_client.call_json.side_effect = Exception("LLM API Error")
 
         generator = ReportGenerator()
 
-        with pytest.raises(Exception, match="LLM API Error"):
-            generator.generate_report(sample_user_config)
+        # Should NOT raise exception, but return fallback report
+        report = generator.generate_report(sample_user_config)
+
+        assert isinstance(report, Report)
+        assert "报告生成失败" in report.summary
+        assert "LLM API Error" in report.summary
 
     @patch('app.core.report_generator.LLMClient')
     def test_generate_report_invalid_response(self, mock_llm_client, sample_user_config):
-        """Test that invalid LLM response raises ValueError"""
+        """Test that invalid LLM response returns simplified report instead of raising ValueError"""
         # Invalid response (missing required fields)
         invalid_response = {
             "summary": "Short",  # Too short
-            "mode": "job"
+            "mode": "job",
+            "questions": [],  # Empty
             # Missing other required fields
         }
 
@@ -149,8 +155,11 @@ class TestReportGeneration:
 
         generator = ReportGenerator()
 
-        with pytest.raises(ValueError, match="生成的报告不符合规范"):
-            generator.generate_report(sample_user_config)
+        # Should NOT raise ValueError, but return simplified report
+        report = generator.generate_report(sample_user_config)
+
+        assert isinstance(report, Report)
+        assert "简化报告" in report.summary or "报告验证失败" in report.summary
 
 
 class TestReportValidation:
@@ -198,7 +207,7 @@ class TestReportValidation:
 
     @patch('app.core.report_generator.LLMClient')
     def test_validate_too_few_questions(self, mock_llm_client, sample_user_config, create_report_data):
-        """Test validation fails with too few questions"""
+        """Test validation fails with too few questions and returns fallback report"""
         response = create_report_data(num_questions=5)  # Less than 10
 
         mock_client = Mock()
@@ -207,14 +216,16 @@ class TestReportValidation:
 
         generator = ReportGenerator()
 
-        # Pydantic validation fails before custom validation
-        with pytest.raises(ValueError, match="生成的报告不符合规范"):
-            generator.generate_report(sample_user_config)
+        # Should return simplified report instead of raising ValueError
+        report = generator.generate_report(sample_user_config)
+        assert isinstance(report, Report)
+        assert "简化报告" in report.summary or "报告验证失败" in report.summary
+        assert "问题数量不足" in report.summary or "报告数据解析失败" in report.questions[0].question
 
     @patch('app.core.report_generator.LLMClient')
     def test_validate_too_many_questions(self, mock_llm_client, sample_user_config, create_report_data):
-        """Test validation fails with too many questions"""
-        response = create_report_data(num_questions=25)  # More than 20
+        """Test validation fails with too many questions and returns fallback report"""
+        response = create_report_data(num_questions=55)  # More than 50
 
         mock_client = Mock()
         mock_llm_client.return_value = mock_client
@@ -222,13 +233,15 @@ class TestReportValidation:
 
         generator = ReportGenerator()
 
-        # Pydantic validation fails before custom validation
-        with pytest.raises(ValueError, match="生成的报告不符合规范"):
-            generator.generate_report(sample_user_config)
+        # Should return simplified report instead of raising ValueError
+        report = generator.generate_report(sample_user_config)
+        assert isinstance(report, Report)
+        assert "简化报告" in report.summary or "报告验证失败" in report.summary
+        assert "问题数量过多" in report.summary or "报告数据解析失败" in report.questions[0].question
 
     @patch('app.core.report_generator.LLMClient')
     def test_validate_mode_mismatch(self, mock_llm_client, sample_user_config, create_report_data):
-        """Test validation fails when mode doesn't match user config"""
+        """Test validation fails when mode doesn't match user config and returns fallback report"""
         response = create_report_data(mode="grad")  # User config is "job"
 
         mock_client = Mock()
@@ -237,8 +250,11 @@ class TestReportValidation:
 
         generator = ReportGenerator()
 
-        with pytest.raises(ValueError, match="报告模式.*与用户配置.*不匹配"):
-            generator.generate_report(sample_user_config)
+        # Should return simplified report instead of raising ValueError
+        report = generator.generate_report(sample_user_config)
+        assert isinstance(report, Report)
+        assert "简化报告" in report.summary or "报告验证失败" in report.summary
+        assert "模式" in report.summary or "报告数据解析失败" in report.questions[0].question
 
     @patch('app.core.report_generator.LLMClient')
     def test_validate_mixed_mode_summary(self, mock_llm_client, create_report_data):

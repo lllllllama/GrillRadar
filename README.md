@@ -2,6 +2,8 @@
 
 # GrillRadar | 烤网雷达
 
+项目作者 [饶承坤 Chengkun Rao](https://lllllllama.github.io/ai-full-stack/)。
+
 **[中文](#chinese) | [English](./README.en.md) | [切换语言](./switch_language.py)**
 
 > **AI驱动的程序员与研究生面试准备平台**
